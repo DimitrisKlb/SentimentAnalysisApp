@@ -6,6 +6,8 @@ using Tweetinvi;
 using Tweetinvi.Parameters;
 using Tweetinvi.Models;
 using System.Web.Configuration;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SentimentAnalysisApp.Controllers
 {
@@ -37,26 +39,34 @@ namespace SentimentAnalysisApp.Controllers
             defaultSearchKeywork = value;
         }
 
-    // Naive miner from Twitter, to get tweets that contain searchKeyword
+        // Basic Twitter miner, to get tweets that contain searchKeyword
         private static string getTweets(string searchKeyword)
         {
             string twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret;
+        
+            // Set up your credentials
             twitterConsumerKey = WebConfigurationManager.AppSettings["twitterConsumerKey"];
             twitterConsumerSecret = WebConfigurationManager.AppSettings["twitterConsumerSecret"];
             twitterAccessToken = WebConfigurationManager.AppSettings["twitterAccessToken"];
             twitterAccessTokenSecret = WebConfigurationManager.AppSettings["twitterAccessTokenSecret"];
 
-            // Set up your credentials
             Auth.SetUserCredentials(twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret);
 
             // Get relevant tweets
-            var searchParameters = new SearchTweetsParameters(searchKeyword)
+            SearchTweetsParameters searchParameters = new SearchTweetsParameters(searchKeyword)
             {
                 Lang = LanguageFilter.English,
-                SearchType = SearchResultType.Mixed
+                SearchType = SearchResultType.Mixed,
+                MaximumNumberOfResults = 2
             };
-            var theTweets1 = Search.SearchTweets(searchParameters);
-            var theTweets2 = Search.SearchTweets(searchParameters);
+
+            searchParameters.SinceId = 0;
+            searchParameters.MaxId = 0;             
+            IEnumerable<ITweet> theTweets1 = Search.SearchTweets(searchParameters);
+            foreach (var tweet in theTweets1)
+            {
+               // System.Diagnostics.Debug.WriteLine("Id {0}: {1}", tweet.Id, tweet.Text);
+            }
 
             return searchKeyword + " in text.";
         }
