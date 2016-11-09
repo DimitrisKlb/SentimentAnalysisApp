@@ -255,10 +255,21 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MinedTextsController.cs" />
     <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611071714006_Initial.cs" />
+    <Compile Include="Migrations\201611071714006_Initial.Designer.cs">
+      <DependentUpon>201611071714006_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611091318300_NoCreator.cs" />
+    <Compile Include="Migrations\201611091318300_NoCreator.Designer.cs">
+      <DependentUpon>201611091318300_NoCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\MinedDataContext.cs" />
     <Compile Include="Models\MinedText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -278,7 +289,14 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201611071714006_Initial.resx">
+      <DependentUpon>201611071714006_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611091318300_NoCreator.resx">
+      <DependentUpon>201611091318300_NoCreator.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

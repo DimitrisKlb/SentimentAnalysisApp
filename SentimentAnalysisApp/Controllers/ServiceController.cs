@@ -1,13 +1,14 @@
 ﻿using System.Net;
 using System.Web.Http;
+using System.Web.Configuration;
+using System.Collections.Generic;
 using Swashbuckle.Swagger.Annotations;
 
 using Tweetinvi;
 using Tweetinvi.Parameters;
 using Tweetinvi.Models;
-using System.Web.Configuration;
-using System.Collections.Generic;
-using System.Diagnostics;
+
+using SentimentAnalysisApp.Models;
 
 namespace SentimentAnalysisApp.Controllers
 {
@@ -57,18 +58,25 @@ namespace SentimentAnalysisApp.Controllers
             {
                 Lang = LanguageFilter.English,
                 SearchType = SearchResultType.Mixed,
-                MaximumNumberOfResults = 2
+                MaximumNumberOfResults = 5
             };
 
             searchParameters.SinceId = 0;
             searchParameters.MaxId = 0;             
-            IEnumerable<ITweet> theTweets1 = Search.SearchTweets(searchParameters);
-            foreach (var tweet in theTweets1)
-            {
-               // System.Diagnostics.Debug.WriteLine("Id {0}: {1}", tweet.Id, tweet.Text);
-            }
+            IEnumerable<ITweet> theTweets = Search.SearchTweets(searchParameters);
 
-            return searchKeyword + " in text.";
+            // Store tweets in the database
+            using (var db = new MinedDataContext())
+            {
+
+                foreach (var tweet in theTweets)
+                {
+                    db.MinedTexts.Add(new MinedText() { TheText = tweet.FullText, TheSource = Source.Twitter });
+                }
+                db.SaveChanges();
+            }
+            
+                return searchKeyword + " in text.";
         }
 
     }
