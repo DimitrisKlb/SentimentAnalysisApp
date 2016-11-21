@@ -10,12 +10,34 @@
 </div>
 
 <div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Add Search Request</h2>
+            </div>
 
+            <div class="panel-body">
+                <form class="form-horizontal" data-bind="submit: addSRequest">
+                    <div class="form-group" data-bind="with: newSRequest">
+                        <label for="inputSKeyword" class="col-sm-3 control-label">Keyword</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputSKeyword" data-bind="value:SKeyword" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-md-4">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title">Open</h2>
             </div>
+
             <div class="panel-body">
                 <ul class="list-unstyled" data-bind="foreach: SRequestsOpen">
                     <li>
@@ -34,6 +56,7 @@
             <div class="panel-heading">
                 <h2 class="panel-title">Pending</h2>
             </div>
+
             <div class="panel-body">
                 <ul class="list-unstyled" data-bind="foreach: SRequestsPending">
                     <li>
@@ -50,6 +73,7 @@
             <div class="panel-heading">
                 <h2 class="panel-title">Fulfilled</h2>
             </div>
+
             <div class="panel-body">
                 <ul class="list-unstyled" data-bind="foreach: SRequestsFulfilled">
                     <li>
@@ -60,7 +84,19 @@
             </div>
         </div>
         <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
-    </div>
+    </div> 
+</div>
 
- 
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Results</h2>
+            </div>
+
+            <div class="panel-body">
+               
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,4 +1,4 @@
-﻿var SRequestsState = {
+﻿var SRequestsStatus = {
     Open: 0,
     Pending: 1,
     Fulfilled: 2
@@ -6,6 +6,8 @@
 
 var ViewModel = function () {
     var self = this;
+
+    // Display Search Requests
     self.SRequestsOpen = ko.observableArray();
     self.SRequestsPending = ko.observableArray();
     self.SRequestsFulfilled = ko.observableArray();
@@ -33,10 +35,28 @@ var ViewModel = function () {
         });
     }
 
-    // Fetch the initial data.
-    getSRequests(SRequestsState.Open, self.SRequestsOpen);
-    getSRequests(SRequestsState.Pending, self.SRequestsPending);
-    getSRequests(SRequestsState.Fulfilled, self.SRequestsFulfilled);    
+    // Fetch the initial data
+    getSRequests(SRequestsStatus.Open, self.SRequestsOpen);
+    getSRequests(SRequestsStatus.Pending, self.SRequestsPending);
+    getSRequests(SRequestsStatus.Fulfilled, self.SRequestsFulfilled);
+
+    // Add a new Search Request
+    self.newSRequest = {
+        SKeyword: ko.observable()       
+    }
+
+    self.addSRequest = function (formElement) {
+        var aSRequest = {
+            TheSearchKeyword: self.newSRequest.SKeyword(),
+            TheStatus: SRequestsStatus.Open     
+        };
+
+        ajaxHelper(SRequestsURI, 'POST', aSRequest).done(function (item) {
+            self.SRequestsOpen.push(item);
+        });
+    }
+
+
 };
 
 ko.applyBindings(new ViewModel());
