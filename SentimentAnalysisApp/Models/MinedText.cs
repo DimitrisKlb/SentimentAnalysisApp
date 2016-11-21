@@ -5,7 +5,8 @@ namespace SentimentAnalysisApp.Models
 {
     public enum Source
     {
-        Twitter, Other
+        Twitter,
+        Other
     }
 
     public class MinedText
@@ -14,6 +15,10 @@ namespace SentimentAnalysisApp.Models
         public string TheText { get; set; }
         public Source TheSource { get; set; }
 
+        // Foreign key, pointing to the one SearchRequest that each MinedText belongs to
+        public int SearchRequestID { get; set; }
+        // Navigation property
+        public SearchRequest TheSearchRequest;
     }
 
 }

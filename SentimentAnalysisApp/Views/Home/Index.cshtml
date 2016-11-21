@@ -1,3 +1,66 @@
 ﻿@{
     ViewBag.Title = "<SentimentAnalysis App's name pending...>";
 }
+@section scripts {
+    @Scripts.Render("~/bundles/app")
+}
+
+<div class="page-header">
+    <h1>My Requests</h1>
+</div>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Open</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled" data-bind="foreach: SRequestsOpen">
+                    <li>
+                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
+                        <small><a href="#">Execute</a></small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Pending</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled" data-bind="foreach: SRequestsPending">
+                    <li>
+                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Fulfilled</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-unstyled" data-bind="foreach: SRequestsFulfilled">
+                    <li>
+                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
+                        <small><a href="#">Results</a></small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
+    </div>
+
+ 
+</div>

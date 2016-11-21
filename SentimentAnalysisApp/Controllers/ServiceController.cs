@@ -63,12 +63,11 @@ namespace SentimentAnalysisApp.Controllers
 
             searchParameters.SinceId = 0;
             searchParameters.MaxId = 0;             
-            IEnumerable<ITweet> theTweets = Search.SearchTweets(searchParameters);
+            var theTweets = Search.SearchTweets(searchParameters);
 
             // Store tweets in the database
             using (var db = new MinedDataContext())
             {
-
                 foreach (var tweet in theTweets)
                 {
                     db.MinedTexts.Add(new MinedText() { TheText = tweet.FullText, TheSource = Source.Twitter });

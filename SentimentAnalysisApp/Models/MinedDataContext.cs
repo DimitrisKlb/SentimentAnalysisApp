@@ -15,6 +15,7 @@ namespace SentimentAnalysisApp.Models
         {
         }
 
-        public System.Data.Entity.DbSet<SentimentAnalysisApp.Models.MinedText> MinedTexts { get; set; }
+        public DbSet<SentimentAnalysisApp.Models.MinedText> MinedTexts { get; set; }
+        public DbSet<SentimentAnalysisApp.Models.SearchRequest> SearchRequests { get; set; }
     }
 }
