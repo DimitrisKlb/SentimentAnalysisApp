@@ -230,7 +230,6 @@
     <None Include="scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
-    <Content Include="scripts\homeViewModel.js" />
     <Content Include="scripts\jquery-3.1.1.js" />
     <Content Include="scripts\jquery-3.1.1.min.js" />
     <Content Include="scripts\jquery-3.1.1.slim.js" />
@@ -240,8 +239,6 @@
     <Content Include="scripts\jquery.validate.min.js" />
     <Content Include="scripts\jquery.validate.unobtrusive.js" />
     <Content Include="scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="scripts\knockout-3.4.0.debug.js" />
-    <Content Include="scripts\knockout-3.4.0.js" />
     <Content Include="scripts\modernizr-2.8.3.js" />
     <Content Include="Web.config" />
     <Content Include="packages.config" />
@@ -294,6 +291,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="scripts\jquery-3.1.1.min.map" />
+    <Content Include="Views\Home\_CreateSearchRequest.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>

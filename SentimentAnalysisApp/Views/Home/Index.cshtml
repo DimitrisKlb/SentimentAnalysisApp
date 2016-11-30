@@ -1,35 +1,16 @@
-﻿@{
+﻿@using SentimentAnalysisApp.Models
+@model IEnumerable<SentimentAnalysisApp.Models.SearchRequest>
+
+@{
     ViewBag.Title = "<SentimentAnalysis App's name pending...>";
 }
-@section scripts {
-    @Scripts.Render("~/bundles/app")
-}
+
 
 <div class="page-header">
     <h1>My Requests</h1>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Add Search Request</h2>
-            </div>
 
-            <div class="panel-body">
-                <form class="form-horizontal" data-bind="submit: addSRequest">
-                    <div class="form-group" data-bind="with: newSRequest">
-                        <label for="inputSKeyword" class="col-sm-3 control-label">Keyword</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="inputSKeyword" data-bind="value:SKeyword" />
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="row">
     <div class="col-md-4">
@@ -39,17 +20,25 @@
             </div>
 
             <div class="panel-body">
-                <ul class="list-unstyled" data-bind="foreach: SRequestsOpen">
-                    <li>
-                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
-                        <small><a href="#">Execute</a></small>
-                    </li>
+                <ul class="list-unstyled">
+
+                    @foreach (var item in Model)
+                    {
+                        if (item.TheStatus == Status.Open)
+                        {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                                <small><a href="#">Execute</a></small>
+                            </li>
+                        }
+                    }
+
                 </ul>
             </div>
         </div>
-        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
     </div>
-
 
     <div class="col-md-4">
         <div class="panel panel-default">
@@ -58,14 +47,23 @@
             </div>
 
             <div class="panel-body">
-                <ul class="list-unstyled" data-bind="foreach: SRequestsPending">
-                    <li>
-                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
-                    </li>
+                <ul class="list-unstyled">
+
+                    @foreach (var item in Model)
+                    {
+                        if (item.TheStatus == Status.Pending)
+                        {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                            </li>
+                        }
+                    }
+
                 </ul>
             </div>
         </div>
-        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
     </div>
 
     <div class="col-md-4">
@@ -75,28 +73,28 @@
             </div>
 
             <div class="panel-body">
-                <ul class="list-unstyled" data-bind="foreach: SRequestsFulfilled">
-                    <li>
-                        <strong><span data-bind="text: TheSearchKeyword"></span></strong>: <span data-bind="text: TheStatus"></span>
-                        <small><a href="#">Results</a></small>
-                    </li>
+                <ul class="list-unstyled">
+
+                    @foreach (var item in Model)
+                    {
+                        if (item.TheStatus == Status.Fulfilled)
+                        {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                                <small><a href="#">Results</a></small>
+                            </li>
+                        }
+                    }
+
                 </ul>
             </div>
         </div>
-        <div class="alert alert-danger" data-bind="visible: error"><p data-bind="text: error"></p></div>
-    </div> 
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Results</h2>
-            </div>
-
-            <div class="panel-body">
-               
-            </div>
-        </div>
     </div>
-</div>
+</div> 
+
+@{
+    var newSreq = new SearchRequest() {TheSearchKeyword = ""};
+}
+@Html.Partial("_CreateSearchRequest", newSreq)

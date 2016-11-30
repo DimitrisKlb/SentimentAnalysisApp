@@ -1,7 +1,7 @@
 ﻿
 namespace SentimentAnalysisApp.Models
 {
-    public enum Status
+    public enum Status : int
     {
         Open, 
         Pending,

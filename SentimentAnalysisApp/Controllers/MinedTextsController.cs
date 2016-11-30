@@ -7,7 +7,6 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using SentimentAnalysisApp.Models;
 
-/*
 namespace SentimentAnalysisApp.Controllers
 {
     public class MinedTextsController : ApiController
@@ -114,4 +113,3 @@ namespace SentimentAnalysisApp.Controllers
         }
     }
 }
-*/

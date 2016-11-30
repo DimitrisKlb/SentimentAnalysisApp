@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Web.Http;
 using System.Web.Configuration;
-using System.Collections.Generic;
 using Swashbuckle.Swagger.Annotations;
 
 using Tweetinvi;
@@ -16,14 +15,14 @@ namespace SentimentAnalysisApp.Controllers
     {
         static string defaultSearchKeywork = "coca-cola";
          
-    // GET api/values
+        // GET api/values
         [SwaggerOperation("GetDefaultKeyword")]
         public string Get()
         {
             return getTweets(defaultSearchKeywork);
         }
 
-    // GET api/values/searchKeywork
+        // GET api/values/searchKeywork
         [SwaggerOperation("GetByKeyword")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -32,7 +31,7 @@ namespace SentimentAnalysisApp.Controllers
             return getTweets(searchKeyword);
         }
 
-    // POST api/values
+        // POST api/values
         [SwaggerOperation("Create")]
         [SwaggerResponse(HttpStatusCode.Created)]
         public void Post([FromBody]string value)
