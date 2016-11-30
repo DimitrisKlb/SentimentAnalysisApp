@@ -13,6 +13,7 @@ namespace SentimentAnalysisApp.Migrations
 
         protected override void Seed(MinedDataContext context)
         {
+            /*
             context.SearchRequests.AddOrUpdate(x => x.ID,
                 new SearchRequest() { ID = 1, TheSearchKeyword = "open1", TheStatus = Status.Open },
                 new SearchRequest() { ID = 2, TheSearchKeyword = "open2", TheStatus = Status.Open },
@@ -27,6 +28,7 @@ namespace SentimentAnalysisApp.Migrations
             context.MinedTexts.AddOrUpdate(x => x.ID,
                 new MinedText() { ID = 1, TheText = "Just a default text", TheSource = Source.Twitter, SearchRequestID = 6}                
                 );
+               */
         }
     }
 }

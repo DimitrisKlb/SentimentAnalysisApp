@@ -94,7 +94,5 @@
     </div>
 </div> 
 
-@{
-    var newSreq = new SearchRequest() {TheSearchKeyword = ""};
-}
-@Html.Partial("_CreateSearchRequest", newSreq)
+
+@Html.Action("CreateSearchRequest", "Home")

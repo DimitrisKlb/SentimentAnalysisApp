@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SentimentAnalysisApp.Models
 {
@@ -10,14 +11,19 @@ namespace SentimentAnalysisApp.Models
 
     public class MinedText
     {
+        [Key]
         public int ID { get; set; }
+ 
         public string TheText { get; set; }
+
         public Source TheSource { get; set; }
 
-        // Foreign key, pointing to the one SearchRequest that each MinedText belongs to
+        [ForeignKey("SearchRequest")]
+        [Required]
         public int SearchRequestID { get; set; }
+
         // Navigation property
-        public SearchRequest TheSearchRequest;
+        public virtual SearchRequest SearchRequest { get; set; }
     }
 
 }

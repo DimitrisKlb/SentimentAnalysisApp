@@ -277,6 +277,22 @@
     <Compile Include="Migrations\201611181824044_Some-Initial-Test-Entries.Designer.cs">
       <DependentUpon>201611181824044_Some-Initial-Test-Entries.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611302046386_Add-DataAnnotations.cs" />
+    <Compile Include="Migrations\201611302046386_Add-DataAnnotations.Designer.cs">
+      <DependentUpon>201611302046386_Add-DataAnnotations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611302105503_Add-DataAnnotations2.cs" />
+    <Compile Include="Migrations\201611302105503_Add-DataAnnotations2.Designer.cs">
+      <DependentUpon>201611302105503_Add-DataAnnotations2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611302108407_Add-DataAnnotation2.cs" />
+    <Compile Include="Migrations\201611302108407_Add-DataAnnotation2.Designer.cs">
+      <DependentUpon>201611302108407_Add-DataAnnotation2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611302115222_Add-DataAnnotation3.cs" />
+    <Compile Include="Migrations\201611302115222_Add-DataAnnotation3.Designer.cs">
+      <DependentUpon>201611302115222_Add-DataAnnotation3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MinedDataContext.cs" />
     <Compile Include="Models\MinedText.cs" />
@@ -312,6 +328,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611181824044_Some-Initial-Test-Entries.resx">
       <DependentUpon>201611181824044_Some-Initial-Test-Entries.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611302046386_Add-DataAnnotations.resx">
+      <DependentUpon>201611302046386_Add-DataAnnotations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611302105503_Add-DataAnnotations2.resx">
+      <DependentUpon>201611302105503_Add-DataAnnotations2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611302108407_Add-DataAnnotation2.resx">
+      <DependentUpon>201611302108407_Add-DataAnnotation2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611302115222_Add-DataAnnotation3.resx">
+      <DependentUpon>201611302115222_Add-DataAnnotation3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

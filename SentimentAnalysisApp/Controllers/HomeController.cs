@@ -17,6 +17,13 @@ namespace SentimentAnalysisApp.Controllers
             return View(searchRequests);
         }
 
+        [HttpGet]
+        [ChildActionOnly]
+        public PartialViewResult CreateSearchRequest()
+        {
+            return PartialView("_CreateSearchRequest", new SearchRequest());
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateSearchRequest([Bind(Include = "ID,TheSearchKeyword,TheStatus")] SearchRequest searchRequest)
@@ -26,8 +33,8 @@ namespace SentimentAnalysisApp.Controllers
                 searchRequest.TheStatus = Status.Open;
                 await SReqController.PostSearchRequest(searchRequest);
             }
-
             return RedirectToAction("Index");
+
         }
 
        /*
