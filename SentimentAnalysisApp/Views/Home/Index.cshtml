@@ -30,7 +30,7 @@
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
                                 </span>
-                                <small><a href="#">Execute</a></small>
+                                <small><a href="@Url.Action("ExecuteSearchRequest", "Home", new { searchRequestID = item.ID})">Execute</a></small>
                             </li>
                         }
                     }
@@ -57,6 +57,7 @@
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
                                 </span>
+                                <small><a href="@Url.Action("EndSearchRequest", "Home", new { searchRequestID = item.ID})">Complete</a></small>
                             </li>
                         }
                     }

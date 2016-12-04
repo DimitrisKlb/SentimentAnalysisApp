@@ -1,6 +1,8 @@
-﻿using SentimentAnalysisApp.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+
+using SentimentAnalysisApp.Models;
+using System.Net.Http;
 
 namespace SentimentAnalysisApp.Controllers
 {
@@ -37,12 +39,24 @@ namespace SentimentAnalysisApp.Controllers
 
         }
 
-       /*
-        public ActionResult ExecuteSearchRequest(int id)
+        public async Task<ActionResult> ExecuteSearchRequest(int searchRequestID)
         {
-            
+            await SReqController.UpdateSearchRequestStatus(searchRequestID, Status.Pending);
+            return RedirectToAction("Index");
         }
-        */
+
+        // Will be called by server threads-jobs
+        public async Task<ActionResult> EndSearchRequest(int searchRequestID)
+        {
+            var client = new HttpClient { BaseAddress = new System.Uri("http://localhost:60835/") };
+            SearchRequest searchRequest = client.GetAsync("api/SearchRequests/" + searchRequestID).Result.Content.ReadAsAsync<SearchRequest>().Result;
+
+            ServiceController.getTweets(searchRequest.TheSearchKeyword, searchRequestID);
+
+            await SReqController.UpdateSearchRequestStatus(searchRequestID, Status.Fulfilled);
+            return RedirectToAction("Index");
+        }
+
 
     }
 

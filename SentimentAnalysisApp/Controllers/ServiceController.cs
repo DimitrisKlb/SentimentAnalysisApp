@@ -19,16 +19,18 @@ namespace SentimentAnalysisApp.Controllers
         [SwaggerOperation("GetDefaultKeyword")]
         public string Get()
         {
-            return getTweets(defaultSearchKeywork);
+            getTweets(defaultSearchKeywork, 1);
+            return "";
         }
 
         // GET api/values/searchKeywork
         [SwaggerOperation("GetByKeyword")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
-        public string Get(string searchKeyword)
+        public string Get(SearchRequest searchRequest)
         {
-            return getTweets(searchKeyword);
+            getTweets(searchRequest.TheSearchKeyword, searchRequest.ID);
+            return "";            
         }
 
         // POST api/values
@@ -40,7 +42,7 @@ namespace SentimentAnalysisApp.Controllers
         }
 
         // Basic Twitter miner, to get tweets that contain searchKeyword
-        private static string getTweets(string searchKeyword)
+        public static string getTweets(string searchKeyword, int searchRequestID)
         {
             string twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret;
         
@@ -69,12 +71,12 @@ namespace SentimentAnalysisApp.Controllers
             {
                 foreach (var tweet in theTweets)
                 {
-                    db.MinedTexts.Add(new MinedText() { TheText = tweet.FullText, TheSource = Source.Twitter });
+                    db.MinedTexts.Add(new MinedText() { TheText = tweet.FullText, TheSource = Source.Twitter, SearchRequestID = searchRequestID });
                 }
-                db.SaveChanges();
+                db.SaveChangesAsync();
             }
-            
-                return searchKeyword + " in text.";
+
+            return searchKeyword + "in text";   
         }
 
     }
