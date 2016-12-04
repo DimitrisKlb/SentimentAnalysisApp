@@ -5,12 +5,15 @@
     ViewBag.Title = "<SentimentAnalysis App's name pending...>";
 }
 
+@section Scripts
+{
+    <script src="@Url.Content("~/scripts/homeIndex.js")"></script>
+}
+
 
 <div class="page-header">
     <h1>My Requests</h1>
 </div>
-
-
 
 <div class="row">
     <div class="col-md-4">
@@ -84,7 +87,10 @@
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
                                 </span>
-                                <small><a href="#">Results</a></small>
+                                <a href="#" class="viewTextResults">
+                                    <small>Results</small>
+                                    <div class="sRequestID hidden">@item.ID</div>
+                                </a>
                             </li>
                         }
                     }
@@ -95,5 +101,7 @@
     </div>
 </div> 
 
-
 @Html.Action("CreateSearchRequest", "Home")
+
+<div class="row" id="textResults">
+</div>

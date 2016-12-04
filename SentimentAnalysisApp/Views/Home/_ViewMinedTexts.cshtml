@@ -1,0 +1,33 @@
+﻿@model IEnumerable<SentimentAnalysisApp.Models.MinedText>
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Results</h2>
+        </div>
+
+        <div class="panel-body">
+            <div class="list-unstyled">
+
+                @foreach (var item in Model)
+                {
+                        <div class="row">
+                            <div class="col-md-1">
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </div>
+                            <div class="col-md-10">
+                                @Html.DisplayFor(modelItem => item.TheText)
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DisplayFor(modelItem => item.SearchRequestID)
+                            </div>                     
+                        </div>    
+                        <br />             
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

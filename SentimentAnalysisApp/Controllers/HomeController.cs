@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Linq;
 
 using SentimentAnalysisApp.Models;
 using System.Net.Http;
@@ -37,6 +38,16 @@ namespace SentimentAnalysisApp.Controllers
             }
             return RedirectToAction("Index");
 
+        }
+     
+        public PartialViewResult ViewMinedTexts(int searchRequestID)
+        {
+            MinedDataContext db = new MinedDataContext();
+            var theTexts = from minedTexts in db.MinedTexts
+                           where minedTexts.SearchRequestID == searchRequestID
+                           select minedTexts;
+
+            return PartialView("_ViewMinedTexts", theTexts);
         }
 
         public async Task<ActionResult> ExecuteSearchRequest(int searchRequestID)

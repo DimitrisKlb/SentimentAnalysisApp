@@ -73,7 +73,7 @@ namespace SentimentAnalysisApp.Controllers
                 {
                     db.MinedTexts.Add(new MinedText() { TheText = tweet.FullText, TheSource = Source.Twitter, SearchRequestID = searchRequestID });
                 }
-                db.SaveChangesAsync();
+                db.SaveChanges();
             }
 
             return searchKeyword + "in text";   
