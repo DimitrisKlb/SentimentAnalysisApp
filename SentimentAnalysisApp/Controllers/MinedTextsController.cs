@@ -8,25 +8,20 @@ using System.Web.Http.Description;
 
 using SentimentAnalysisApp.Models;
 
-namespace SentimentAnalysisApp.Controllers
-{
-    public class MinedTextsController : ApiController
-    {
+namespace SentimentAnalysisApp.Controllers {
+    public class MinedTextsController: ApiController {
         private MinedDataContext db = new MinedDataContext();
 
         // GET: api/MinedTexts
-        public IQueryable<MinedText> GetMinedTexts()
-        {
+        public IQueryable<MinedText> GetMinedTexts() {
             return db.MinedTexts;
         }
 
         // GET: api/MinedTexts/5
         [ResponseType(typeof(MinedText))]
-        public async Task<IHttpActionResult> GetMinedText(int id)
-        {
+        public async Task<IHttpActionResult> GetMinedText(int id) {
             MinedText minedText = await db.MinedTexts.FindAsync(id);
-            if (minedText == null)
-            {
+            if(minedText == null) {
                 return NotFound();
             }
 
@@ -35,32 +30,23 @@ namespace SentimentAnalysisApp.Controllers
 
         // PUT: api/MinedTexts/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutMinedText(int id, MinedText minedText)
-        {
-            if (!ModelState.IsValid)
-            {
+        public async Task<IHttpActionResult> PutMinedText(int id, MinedText minedText) {
+            if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            if (id != minedText.ID)
-            {
+            if(id != minedText.ID) {
                 return BadRequest();
             }
 
             db.Entry(minedText).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MinedTextExists(id))
-                {
+            } catch(DbUpdateConcurrencyException) {
+                if(!MinedTextExists(id)) {
                     return NotFound();
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -70,10 +56,8 @@ namespace SentimentAnalysisApp.Controllers
 
         // POST: api/MinedTexts
         [ResponseType(typeof(MinedText))]
-        public async Task<IHttpActionResult> PostMinedText(MinedText minedText)
-        {
-            if (!ModelState.IsValid)
-            {
+        public async Task<IHttpActionResult> PostMinedText(MinedText minedText) {
+            if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
@@ -85,11 +69,9 @@ namespace SentimentAnalysisApp.Controllers
 
         // DELETE: api/MinedTexts/5
         [ResponseType(typeof(MinedText))]
-        public async Task<IHttpActionResult> DeleteMinedText(int id)
-        {
+        public async Task<IHttpActionResult> DeleteMinedText(int id) {
             MinedText minedText = await db.MinedTexts.FindAsync(id);
-            if (minedText == null)
-            {
+            if(minedText == null) {
                 return NotFound();
             }
 
@@ -99,17 +81,14 @@ namespace SentimentAnalysisApp.Controllers
             return Ok(minedText);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
+        protected override void Dispose(bool disposing) {
+            if(disposing) {
                 db.Dispose();
             }
             base.Dispose(disposing);
         }
 
-        private bool MinedTextExists(int id)
-        {
+        private bool MinedTextExists(int id) {
             return db.MinedTexts.Count(e => e.ID == id) > 0;
         }
     }

@@ -25,10 +25,8 @@
             <div class="panel-body">
                 <ul class="list-unstyled">
 
-                    @foreach (var item in Model)
-                    {
-                        if (item.TheStatus == Status.Open)
-                        {
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Open) {
                             <li>
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
@@ -52,10 +50,8 @@
             <div class="panel-body">
                 <ul class="list-unstyled">
 
-                    @foreach (var item in Model)
-                    {
-                        if (item.TheStatus == Status.Pending)
-                        {
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Pending) {
                             <li>
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
@@ -79,10 +75,8 @@
             <div class="panel-body">
                 <ul class="list-unstyled">
 
-                    @foreach (var item in Model)
-                    {
-                        if (item.TheStatus == Status.Fulfilled)
-                        {
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Fulfilled) {
                             <li>
                                 <span>
                                     @Html.DisplayFor(modelItem => item.TheSearchKeyword)
@@ -99,7 +93,7 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 @Html.Action("CreateSearchRequest", "Home")
 

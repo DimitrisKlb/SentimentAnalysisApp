@@ -1,9 +1,8 @@
 ﻿@model SentimentAnalysisApp.Models.SearchRequest
 
-@using (Html.BeginForm("CreateSearchRequest", "Home")) 
-{
+@using(Html.BeginForm("CreateSearchRequest", "Home")) {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>New SearchRequest</h4>
         <hr />

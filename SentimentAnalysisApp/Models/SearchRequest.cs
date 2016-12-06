@@ -2,17 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace SentimentAnalysisApp.Models
-{
-    public enum Status : int
-    {
-        Open, 
+namespace SentimentAnalysisApp.Models {
+    public enum Status: int {
+        Open,
         Pending,
         Fulfilled
     }
 
-    public class SearchRequest
-    {
+    public class SearchRequest {
         [Key]
         public int ID { get; set; }
 

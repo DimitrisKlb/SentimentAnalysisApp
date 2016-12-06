@@ -294,6 +294,10 @@
     <Compile Include="Migrations\201611302115222_Add-DataAnnotation3.Designer.cs">
       <DependentUpon>201611302115222_Add-DataAnnotation3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612061552422_FieldAdded-MinedText.TwitterID.cs" />
+    <Compile Include="Migrations\201612061552422_FieldAdded-MinedText.TwitterID.Designer.cs">
+      <DependentUpon>201612061552422_FieldAdded-MinedText.TwitterID.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\MinedDataContext.cs" />
     <Compile Include="Models\MinedText.cs" />
@@ -342,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611302115222_Add-DataAnnotation3.resx">
       <DependentUpon>201611302115222_Add-DataAnnotation3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612061552422_FieldAdded-MinedText.TwitterID.resx">
+      <DependentUpon>201612061552422_FieldAdded-MinedText.TwitterID.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

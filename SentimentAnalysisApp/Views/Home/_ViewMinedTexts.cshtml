@@ -9,25 +9,35 @@
         <div class="panel-body">
             <div class="list-unstyled">
 
-                @foreach (var item in Model)
-                {
-                        <div class="row">
-                            <div class="col-md-1">
-                                @Html.DisplayFor(modelItem => item.ID)
-                            </div>
-                            <div class="col-md-10">
-                                @Html.DisplayFor(modelItem => item.TheText)
-                            </div>
-                            <div class="col-md-1">
-                                @Html.DisplayFor(modelItem => item.SearchRequestID)
-                            </div>                     
-                        </div>    
-                        <br />             
+                @{
+                    int i = 1;
+                    long previous = Model.First().TwitterID;
+                    long diff;
+                }
+                @foreach(var item in Model) {
+                    diff = item.TwitterID - previous;
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            @i
+                        </div>
+                        <div class="col-md-1">
+                            @Html.DisplayFor(modelItem => item.ID)
+                        </div>
+                        <div class="col-md-5">
+                            @Html.DisplayFor(modelItem => item.TheText)
+                        </div>
+                        <div class="col-md-4">
+                            @Html.DisplayFor(modelItem => item.TwitterID) | @diff
+                        </div>
+                    </div>
+                    <br />
+
+                    i++;
+                    previous = item.TwitterID;
                 }
 
             </div>
         </div>
     </div>
 </div>
-
-
