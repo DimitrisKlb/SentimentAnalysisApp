@@ -12,6 +12,7 @@ using Tweetinvi.Models;
 using Tweetinvi.Parameters;
 
 using SentimentAnalysisApp.Models;
+using Tweetinvi.Exceptions;
 
 namespace SentimentAnalysisApp.Controllers {
     public class ServiceController: ApiController {
@@ -41,7 +42,7 @@ namespace SentimentAnalysisApp.Controllers {
         }
 
         // Basic Twitter miner, to get tweets that contain searchKeyword
-        public static string getTweets(string searchKeyword, int searchRequestID) {
+        public static int getTweets(string searchKeyword, int searchRequestID) {
             string twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret;
             SearchTweetsParameters searchParameters;
             IEnumerable<ITweet> theTweets;
@@ -60,7 +61,7 @@ namespace SentimentAnalysisApp.Controllers {
             Auth.SetUserCredentials(twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret);
 
             // Basic Search Parameters 
-            windowSize = 2000;
+            windowSize = 1000;
             searchParameters = new SearchTweetsParameters("\"" + searchKeyword + "\"") {
                 Lang = LanguageFilter.English,
                 SearchType = SearchResultType.Recent,
@@ -69,7 +70,7 @@ namespace SentimentAnalysisApp.Controllers {
 
             // Find relevant tweets iteratively, in windows of a certains size (windowSize)
             totalTweets = 0;
-            tweetsReturned = 10;
+            tweetsReturned = windowSize;
             theTweets = null;
             do {
                 try {
@@ -79,7 +80,7 @@ namespace SentimentAnalysisApp.Controllers {
                     }
 
                     tweetsReturned = theTweets.Count();
-                    if(tweetsReturned != 0) {                        
+                    if(tweetsReturned != 0) {
                         totalTweets += tweetsReturned;
                         searchParameters.MaxId = theTweets.Last().Id - 1;
 
@@ -96,17 +97,19 @@ namespace SentimentAnalysisApp.Controllers {
                             db.SaveChanges();
                         }
                     }
-                } catch(Exception e) {
-                    var x = e.Data;
-                    var y = e.Message;
-                    
+                } catch(ArgumentException ex) {
+                    var msg = ex.Message;
+                } catch(TwitterException ex) {
+                    var msg = ex.Message;
+                    var msg2 = ex.TwitterDescription;
+                    var msg3 = ex.TwitterExceptionInfos;
+                } catch(Exception ex) {
+                    var msg = ex.Message;
                 }
             } while(tweetsReturned != 0);
 
 
-
-
-            return searchKeyword + "in text";
+            return totalTweets;
         }
 
     }

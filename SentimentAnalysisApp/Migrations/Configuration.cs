@@ -13,6 +13,14 @@ namespace SentimentAnalysisApp.Migrations
 
         protected override void Seed(MinedDataContext context)
         {
+            // Delete all previous data           
+            context.Database.ExecuteSqlCommand("TRUNCATE TABLE [MinedTexts]");
+            // context.Database.ExecuteSqlCommand("TRUNCATE TABLE [SearchRequests]");
+
+            // Reset auto-increment IDs to 0
+            context.Database.ExecuteSqlCommand("DBCC CHECKIDENT('SearchRequests', RESEED, 0)");
+            context.Database.ExecuteSqlCommand("DBCC CHECKIDENT('MinedTexts', RESEED, 0)");
+            
             /*
             context.SearchRequests.AddOrUpdate(x => x.ID,
                 new SearchRequest() { ID = 1, TheSearchKeyword = "open1", TheStatus = Status.Open },
