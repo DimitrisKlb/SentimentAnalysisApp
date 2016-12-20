@@ -53,9 +53,11 @@ namespace SentimentAnalysisApp.Controllers {
             var client = new HttpClient { BaseAddress = new System.Uri("http://localhost:60835/") };
             SearchRequest searchRequest = client.GetAsync("api/SearchRequests/" + searchRequestID).Result.Content.ReadAsAsync<SearchRequest>().Result;
 
-            ServiceController.getTweets(searchRequest.TheSearchKeyword, searchRequestID);
+            int returnedTweets = ServiceController.getTweets(searchRequest.TheSearchKeyword, searchRequestID);
 
-            await SReqController.UpdateSearchRequestStatus(searchRequestID, Status.Fulfilled);
+            if(returnedTweets >= 0) {
+                await SReqController.UpdateSearchRequestStatus(searchRequestID, Status.Fulfilled);
+            }
             return RedirectToAction("Index");
         }
 

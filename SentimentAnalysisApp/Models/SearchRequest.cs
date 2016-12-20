@@ -10,7 +10,7 @@ namespace SentimentAnalysisApp.Models {
     }
 
     public class SearchRequest {
-        [Key]
+        [Key]   
         public int ID { get; set; }
 
         [Required]

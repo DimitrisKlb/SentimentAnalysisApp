@@ -4,15 +4,16 @@ using System.Linq;
 using System.Net;
 using System.Web.Configuration;
 using System.Web.Http;
+using System.Threading;
 
 using Swashbuckle.Swagger.Annotations;
 
 using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
+using Tweetinvi.Exceptions;
 
 using SentimentAnalysisApp.Models;
-using Tweetinvi.Exceptions;
 
 namespace SentimentAnalysisApp.Controllers {
     public class ServiceController: ApiController {
@@ -51,6 +52,28 @@ namespace SentimentAnalysisApp.Controllers {
 
             // Disable the exception swallowing to allow exception to be thrown by Tweetinvi
             ExceptionHandler.SwallowWebExceptions = false;
+
+            // Enable RateLimit Tracking
+            RateLimit.RateLimitTrackerMode = RateLimitTrackerMode.TrackOnly;
+
+            // Event handler executed before each TwitterAPI call
+            TweetinviEvents.QueryBeforeExecute += (sender, args) => {
+                var queryRateLimits = RateLimit.GetQueryRateLimit(args.QueryURL);
+
+                // Some methods are not RateLimited. Invoking such a method will result in the queryRateLimits to be null
+                if(queryRateLimits != null) {
+                    if(queryRateLimits.Remaining > 0) {
+                        // We have enough resource to execute the query
+                        return;
+                    }
+
+                    // Wait for RateLimits to be available
+                    //Thread.Sleep((int)queryRateLimits.ResetDateTimeInMilliseconds);
+
+                    // Cancel Query
+                    args.Cancel = true;
+                }
+            };
 
             // Set up your credentials
             twitterConsumerKey = WebConfigurationManager.AppSettings["twitterConsumerKey"];
@@ -99,18 +122,23 @@ namespace SentimentAnalysisApp.Controllers {
                     }
                 } catch(ArgumentException ex) {
                     var msg = ex.Message;
+                    break;
                 } catch(TwitterException ex) {
                     var msg = ex.Message;
                     var msg2 = ex.TwitterDescription;
                     var msg3 = ex.TwitterExceptionInfos;
+                    break;
                 } catch(Exception ex) {
                     var msg = ex.Message;
+                    break;
                 }
             } while(tweetsReturned != 0);
 
 
             return totalTweets;
         }
+
+
 
     }
 }
