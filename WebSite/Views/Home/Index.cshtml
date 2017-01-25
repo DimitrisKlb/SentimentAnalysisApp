@@ -1,0 +1,97 @@
+﻿@using WebSite.Models
+@model IEnumerable<WebSite.Models.FESearchRequest>
+
+@{
+    ViewBag.Title = "<SentimentAnalysis App's name pending...>";
+}
+
+@section Scripts
+{
+    <script src="@Url.Content("~/scripts/homeIndex.js")"></script>
+}
+
+
+<div class="page-header">
+    <h1>My Requests</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Open</h2>
+            </div>
+
+            <div class="panel-body">
+                <ul class="list-unstyled">
+
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Open) {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                                <small>Execute</small>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Pending</h2>
+            </div>
+
+            <div class="panel-body">
+                <ul class="list-unstyled">
+
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Pending) {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                                <small>Complete</small>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Fulfilled</h2>
+            </div>
+
+            <div class="panel-body">
+                <ul class="list-unstyled">
+
+                    @foreach(var item in Model) {
+                        if(item.TheStatus == Status.Fulfilled) {
+                            <li>
+                                <span>
+                                    @Html.DisplayFor(modelItem => item.TheSearchKeyword)
+                                </span>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Action("CreateSearchRequest", "Home")
+
+<div class="row" id="textResults">
+</div>
