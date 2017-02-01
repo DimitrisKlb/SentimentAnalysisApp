@@ -14,5 +14,14 @@ namespace SentimentAnalysisApp.SharedModels {
 
         // Navigation property
         public virtual ICollection<BaseMinedText> MinedTexts { get; set; }
+
+        public BaseSearchRequest() {
+        }
+
+        public BaseSearchRequest(BaseSearchRequest baseSource) {
+            ID = baseSource.ID;
+            TheSearchKeyword = baseSource.TheSearchKeyword;
+        }       
+
     }
 }
