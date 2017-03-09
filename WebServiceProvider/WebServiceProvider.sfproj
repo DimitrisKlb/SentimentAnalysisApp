@@ -29,6 +29,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WSP.MasterActor\WSP.MasterActor.csproj" />
+    <ProjectReference Include="..\WSP.MinerActor\WSP.MinerActor.csproj" />
     <ProjectReference Include="..\WSP.WebAPI\WSP.WebAPI.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
