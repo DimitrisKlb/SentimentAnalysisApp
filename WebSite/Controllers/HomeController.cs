@@ -11,7 +11,7 @@ namespace WebSite.Controllers {
     public class HomeController: Controller {
 
         private FESearchRequestsController SReqController = new FESearchRequestsController();
-        private HttpClient clientBEserver = new HttpClient {
+        private static HttpClient clientBEserver = new HttpClient {
             BaseAddress = new System.Uri(WebConfigurationManager.AppSettings["WebApiProviderURI"])
         };
 
