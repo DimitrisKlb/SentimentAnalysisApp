@@ -17,6 +17,15 @@
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WSP.MasterActorPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="WebSiteInfo">
+            <Parameter Name="WebSiteURI" Value="http://localhost:60500/" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WSP.WebAPIPkg" ServiceManifestVersion="1.0.0" />
@@ -33,12 +42,12 @@
         <SingletonPartition />
       </StatelessService>
     </Service>
-    <Service Name="MasterActorService" GeneratedIdRef="fbab1916-3948-4c71-bd46-ba7f915b4373|Persisted">
+    <Service Name="MasterActorService" GeneratedIdRef="51473b53-60a2-4102-bf28-a11edce3c4b0|Persisted">
       <StatefulService ServiceTypeName="MasterActorServiceType" TargetReplicaSetSize="[MasterActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MasterActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[MasterActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-    <Service Name="MinerActorService" GeneratedIdRef="003a22f4-4291-4ecc-8b97-b799c23d5092|Persisted">
+    <Service Name="MinerActorService" GeneratedIdRef="37300fdc-7207-453d-85b0-54bcbebd1d63|Persisted">
       <StatefulService ServiceTypeName="MinerActorServiceType" TargetReplicaSetSize="[MinerActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MinerActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[MinerActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>

@@ -2,10 +2,10 @@
 using System.Web.Mvc;
 using System.Web.Http.Results;
 using System.Net.Http;
+using System.Web.Configuration;
 
 using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
-using System.Web.Configuration;
 
 namespace WebSite.Controllers {
     public class HomeController: Controller {

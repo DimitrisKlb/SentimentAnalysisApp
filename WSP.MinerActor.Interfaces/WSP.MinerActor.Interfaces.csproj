@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{1C51E63F-0995-4E88-849F-EC3A5E17B7BD}</ProjectGuid>
+    <ProjectGuid>{A8866396-8578-4518-BA47-6AF6A18344B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WSP.MinerActor.Interfaces</RootNamespace>

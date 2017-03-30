@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{D4215680-6E0A-435B-BDEA-5ECF4077BE3B}</ProjectGuid>
+    <ProjectGuid>{8B2E10FC-24C8-49DD-BDED-BB3184A79102}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WSP.MasterActor</RootNamespace>
@@ -67,6 +67,10 @@
       <HintPath>..\packages\Microsoft.ServiceFabric.Services.2.4.164\lib\net45\Microsoft.ServiceFabric.Services.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceFabricServiceModel, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <HintPath>..\packages\Microsoft.ServiceFabric.Actors.2.4.164\lib\net45\ServiceFabricServiceModel.dll</HintPath>
       <Private>True</Private>
@@ -81,6 +85,11 @@
       <HintPath>..\packages\Microsoft.ServiceFabric.5.4.164\lib\net45\System.Fabric.Strings.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
@@ -88,21 +97,31 @@
     <Compile Include="MasterActor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ActorEventSource.cs" />
+    <Compile Include="ReminderNames.cs" />
+    <Compile Include="StateNames.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PackageRoot\ServiceManifest.xml" />
-    <None Include="PackageRoot\Config\Settings.xml" />
+    <None Include="PackageRoot\ServiceManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="PackageRoot\Config\Settings.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharedModels\SharedModels.csproj">
+      <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
+      <Name>SharedModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WSP.MasterActor.Interfaces\WSP.MasterActor.Interfaces.csproj">
-      <Project>{F111A7C1-BBDF-48E5-8B6C-D1ABE09BEEA8}</Project>
+      <Project>{A51C3622-FC6E-4846-8CB0-CC4C234814C1}</Project>
       <Name>WSP.MasterActor.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WSP.MinerActor.Interfaces\WSP.MinerActor.Interfaces.csproj">
-      <Project>{1c51e63f-0995-4e88-849f-ec3a5e17b7bd}</Project>
-      <Name>WSP.MinerActor.Interfaces</Name>
+    <ProjectReference Include="..\WSP.Models\WSP.Models.csproj">
+      <Project>{a048cc25-9a11-45f5-bdb7-08016dd34a77}</Project>
+      <Name>WSP.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

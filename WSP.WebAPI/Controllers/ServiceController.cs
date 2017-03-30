@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
@@ -28,12 +29,17 @@ namespace WSP.WebAPI.Controllers {
                 BESearchRequest createdSearchRequest = ((CreatedAtRouteNegotiatedContentResult<BESearchRequest>)response).Content;
 
                 IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>(new ActorId(createdSearchRequest.ID));
-                theMasterActor.FulfillSearchRequestAsync(3);
-
-                return Ok();
+                try {
+                    await theMasterActor.FulfillSearchRequestAsync(createdSearchRequest);
+                    return Ok();
+                } catch(InvalidOperationException) {
+                    return InternalServerError();
+                } catch(Exception ex) {
+                    return InternalServerError();
+                }
             } else {
                 return InternalServerError();
-            }           
+            }
         }
 
     }

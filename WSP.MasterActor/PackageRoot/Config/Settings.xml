@@ -7,5 +7,8 @@
   <Section Name="MasterActorServiceReplicatorSecurityConfig">
     <Parameter Name="CredentialType" Value="None" />
   </Section>
+  <Section Name="WebSiteInfo">
+    <Parameter Name="WebSiteURI" Value="http://localhost:60502/" />
+  </Section>
   <!-- The content will be generated during build -->
 </Settings>

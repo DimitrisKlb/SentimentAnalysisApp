@@ -2,10 +2,12 @@
 
 using Microsoft.ServiceFabric.Actors;
 
+using WSP.Models;
+
 namespace WSP.MasterActor.Interfaces {
 
     public interface IMasterActor: IActor {
 
-        Task<int> FulfillSearchRequestAsync(int id);
+        Task FulfillSearchRequestAsync(BESearchRequest searchRequest);
     }
 }
