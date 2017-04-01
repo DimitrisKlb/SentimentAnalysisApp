@@ -98,7 +98,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="ActorEventSource.cs" />
     <Compile Include="ReminderNames.cs" />
-    <Compile Include="StateNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PackageRoot\ServiceManifest.xml">
@@ -118,6 +117,10 @@
     <ProjectReference Include="..\WSP.MasterActor.Interfaces\WSP.MasterActor.Interfaces.csproj">
       <Project>{A51C3622-FC6E-4846-8CB0-CC4C234814C1}</Project>
       <Name>WSP.MasterActor.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WSP.MinerActor.Interfaces\WSP.MinerActor.Interfaces.csproj">
+      <Project>{a8866396-8578-4518-ba47-6af6a18344b9}</Project>
+      <Name>WSP.MinerActor.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\WSP.Models\WSP.Models.csproj">
       <Project>{a048cc25-9a11-45f5-bdb7-08016dd34a77}</Project>

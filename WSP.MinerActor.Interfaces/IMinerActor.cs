@@ -2,11 +2,13 @@
 
 using Microsoft.ServiceFabric.Actors;
 
+using WSP.Models;
+
 namespace WSP.MinerActor.Interfaces {
 
     public interface IMinerActor: IActor {
 
-        Task<int> MineAsync(string searchKeyword, int searchRequestID);
+        Task<int> MineAsync(BESearchRequest searchRequest);
 
     }
 }

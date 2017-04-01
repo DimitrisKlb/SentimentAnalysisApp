@@ -1,17 +1,24 @@
-﻿using System.Threading;
+﻿using WSP.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 
-//using Tweetinvi;
-//using Tweetinvi.Models;
-//using Tweetinvi.Parameters;
-//using Tweetinvi.Exceptions;
+using Tweetinvi;
+using Tweetinvi.Models;
+using Tweetinvi.Parameters;
+using Tweetinvi.Exceptions;
 
+using SentimentAnalysisApp.SharedModels;
 using WSP.MinerActor.Interfaces;
+using System.Linq;
+using System;
 
 namespace WSP.MinerActor {
+    static internal class StateNames {
+        public const string TheSearchRequest = "theSearchRequest";
+    }
 
     [StatePersistence(StatePersistence.Persisted)]
     internal class MinerActor: Actor, IMinerActor {
@@ -20,9 +27,24 @@ namespace WSP.MinerActor {
             : base(actorService, actorId) {
         }
 
+        protected override Task OnActivateAsync() {
+            ActorEventSource.Current.ActorMessage(this, "MinerActor {0} activated.", this.Id);
+
+            return this.StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
+        }
+
+        private Task SetTheSearchRequest(BESearchRequest theSearchRequest) {
+            return this.StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
+        }
+        private Task<BESearchRequest> GetTheSearchRequest() {
+            return this.StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
+        }
+
+
         // Basic Twitter miner, to get tweets that contain searchKeyword
-        public async Task<int> MineAsync(string searchKeyword, int searchRequestID) {
-            /*
+        public async Task<int> MineAsync(BESearchRequest searchRequest) {
+            await SetTheSearchRequest(searchRequest);
+
             string twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret;
             SearchTweetsParameters searchParameters;
             IEnumerable<ITweet> theTweets;
@@ -55,20 +77,19 @@ namespace WSP.MinerActor {
             };
 
             // Set up your credentials
-            //twitterConsumerKey = WebConfigurationManager.AppSettings["twitterConsumerKey"];
-            //twitterConsumerSecret = WebConfigurationManager.AppSettings["twitterConsumerSecret"];
-            //twitterAccessToken = WebConfigurationManager.AppSettings["twitterAccessToken"];
-            //twitterAccessTokenSecret = WebConfigurationManager.AppSettings["twitterAccessTokenSecret"];
+            var configPackage = ActorService.Context.CodePackageActivationContext.
+                                GetConfigurationPackageObject("Config").Settings.Sections["TwitterCredentials"];
 
-            //var storageConfig = ActorService.Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
-            //var x = storageConfig.Settings.Sections["TwitterCredentials"].Parameters["twitterConsumerKey"].Value;
+            twitterConsumerKey = configPackage.Parameters["ConsumerKey"].Value;
+            twitterConsumerSecret = configPackage.Parameters["ConsumerSecret"].Value;
+            twitterAccessToken = configPackage.Parameters["AccessToken"].Value;
+            twitterAccessTokenSecret = configPackage.Parameters["AccessTokenSecret"].Value;
 
-
-            //Auth.SetUserCredentials(twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret);
+            Auth.SetUserCredentials(twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret);
 
             // Basic Search Parameters 
-            windowSize = 1000;
-            searchParameters = new SearchTweetsParameters("\"" + searchKeyword + "\"") {
+            windowSize = 100;
+            searchParameters = new SearchTweetsParameters("\"" + searchRequest.TheSearchKeyword + "\"") {
                 Lang = LanguageFilter.English,
                 SearchType = SearchResultType.Recent,
                 MaximumNumberOfResults = windowSize
@@ -89,7 +110,7 @@ namespace WSP.MinerActor {
                     if(tweetsReturned != 0) {
                         totalTweets += tweetsReturned;
                         searchParameters.MaxId = theTweets.Last().Id - 1;
-
+                        /*
                         // Store tweets in the database
                         using(var db = new MinedDataContext()) {
                             foreach(var tweet in theTweets) {
@@ -102,6 +123,7 @@ namespace WSP.MinerActor {
                             }
                             db.SaveChanges();
                         }
+                        */
                     }
                 } catch(ArgumentException ex) {
                     var msg = ex.Message;
@@ -116,10 +138,9 @@ namespace WSP.MinerActor {
                     break;
                 }
             } while(tweetsReturned != 0);
-            */
 
-            Thread.Sleep(10 * 1000);
-            return 100;
+
+            return tweetsReturned;
         }
     }
 }

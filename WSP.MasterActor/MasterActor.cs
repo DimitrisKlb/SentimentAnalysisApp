@@ -10,9 +10,12 @@ using Microsoft.ServiceFabric.Actors.Client;
 using SentimentAnalysisApp.SharedModels;
 using WSP.MasterActor.Interfaces;
 using WSP.Models;
-//using WSP.MinerActor.Interfaces;
+using WSP.MinerActor.Interfaces;
 
 namespace WSP.MasterActor {
+    static internal class StateNames {
+        public const string TheSearchRequest = "theSearchRequest";
+    }
 
     [StatePersistence(StatePersistence.Persisted)]
     internal class MasterActor: Actor, IMasterActor, IRemindable {
@@ -40,6 +43,7 @@ namespace WSP.MasterActor {
         private Task<BESearchRequest> GetTheSearchRequest() {
             return this.StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
         }
+
 
         public async Task FulfillSearchRequestAsync(BESearchRequest searchRequest) {
             await SetTheSearchRequest(searchRequest);
@@ -76,10 +80,11 @@ namespace WSP.MasterActor {
 
         // Fullfills the SearchRequest. Invoked by a Reminder (FulfillSReqReminder)
         private async Task mainFulfillSearchRequestAsync() {
-            //IMinerActor theMiner = ActorProxy.Create<IMinerActor>(new ActorId(id));
-            //Thread.Sleep(15 * 1000);
-            //int x = await theMiner.MineAsync("try", 1);
-            //Thread.Sleep(15 * 1000);
+            BESearchRequest theSearchRequest = await GetTheSearchRequest();
+
+            IMinerActor theMiner = ActorProxy.Create<IMinerActor>(new ActorId(theSearchRequest.ID)); 
+            var mineTask = theMiner.MineAsync(theSearchRequest);
+            await mineTask;
 
             // Set a Reminder to Send the Results to the Website
             try {
@@ -94,7 +99,7 @@ namespace WSP.MasterActor {
         }
 
         // Send the Results to the Website. Invoked by a Reminder (SendResultsReminder)
-        private async Task sendResults() {
+        private async Task sendResults(){
             var theResults = (BaseSearchRequest)(await GetTheSearchRequest()); // Temporary Type
             var response = await clientFEserver.PostAsJsonAsync("api/Results", theResults);
             // Upon successful transmission, delete the reminder. Else the sendResults method will be invoked again

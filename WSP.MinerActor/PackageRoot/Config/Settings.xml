@@ -10,7 +10,7 @@
   <Section Name="TwitterCredentials">
     <Parameter Name="ConsumerKey" Value="bQ05Y6TcsbrNIJKayFHHDeS5k" />
     <Parameter Name="ConsumerSecret" Value="OFtnT8a6rNs71k56z7IyqYqmnOJlbrk5nOMHTQrLzdRwVhecFq" />
-    <Parameter Name="AccessToke" Value="790073232472862720-sMVIAUR3Nm0Ja3vy4NFdStOeNB52lLJ" />
+    <Parameter Name="AccessToken" Value="790073232472862720-sMVIAUR3Nm0Ja3vy4NFdStOeNB52lLJ" />
     <Parameter Name="AccessTokenSecret" Value="RuxkMABK4UrmjSY27BqbTRCEjkvldkhps9gtgfwIiwKOV" />
   </Section>
   <!-- The content will be generated during build -->
