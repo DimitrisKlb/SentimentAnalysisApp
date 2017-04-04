@@ -135,6 +135,10 @@
       <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
       <Name>SharedModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WSP.MasterActor.Interfaces\WSP.MasterActor.Interfaces.csproj">
+      <Project>{a51c3622-fc6e-4846-8cb0-cc4c234814c1}</Project>
+      <Name>WSP.MasterActor.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WSP.MinerActor.Interfaces\WSP.MinerActor.Interfaces.csproj">
       <Project>{A8866396-8578-4518-BA47-6AF6A18344B9}</Project>
       <Name>WSP.MinerActor.Interfaces</Name>

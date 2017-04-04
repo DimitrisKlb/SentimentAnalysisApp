@@ -40,6 +40,7 @@ namespace WebSite.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateSearchRequest([Bind(Include = "ID,TheSearchKeyword,TheStatus")] FESearchRequest newSearchRequest) {
             if(ModelState.IsValid) {
+                
                 newSearchRequest.TheStatus = Status.Pending;
                 var response = await SReqController.PostFESearchRequest(newSearchRequest);
                 if(response.GetType() == typeof(CreatedAtRouteNegotiatedContentResult<FESearchRequest>)) {
@@ -71,6 +72,7 @@ namespace WebSite.Controllers {
 
             var response = await clientBEserver.PostAsJsonAsync("api/Service", (BaseSearchRequest)searchRequest);
             if(response.IsSuccessStatusCode) {
+                await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Pending);
                 return RedirectToIndex(BannnerMsgCode.CreateOk);
             } else {
                 await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Open);

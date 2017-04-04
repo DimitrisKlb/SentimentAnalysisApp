@@ -13,16 +13,25 @@ using WSP.Models;
 using WSP.MinerActor.Interfaces;
 
 namespace WSP.MasterActor {
+
+    /******************** Helper Classes for String definitions ********************/
+
     static internal class StateNames {
         public const string TheSearchRequest = "theSearchRequest";
     }
+    static internal class ReminderNames {
+        public const string FulfillSReqReminder = "FulfillSearchRequest";
+        public const string SendResultsReminder = "SendResults";
+    }
+
+    /******************** The Actor ********************/
 
     [StatePersistence(StatePersistence.Persisted)]
     internal class MasterActor: Actor, IMasterActor, IRemindable {
         private HttpClient clientFEserver;
 
         public MasterActor(ActorService actorService, ActorId actorId)
-            : base(actorService, actorId) {            
+            : base(actorService, actorId) {
         }
 
         protected override Task OnActivateAsync() {
@@ -37,35 +46,61 @@ namespace WSP.MasterActor {
             return this.StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
         }
 
-        private Task SetTheSearchRequest(BESearchRequest theSearchRequest) {
-            return this.StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
-        }
+        /******************** State Management Methods ********************/
+    
         private Task<BESearchRequest> GetTheSearchRequest() {
             return this.StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
         }
 
+        private async Task SaveTheSearchRequest(BESearchRequest theSearchRequest) {
+            await this.StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
+            await this.SaveStateAsync();
+        }        
+
+        private async Task SetTheSerchRequestStatus(Status newStatus) {
+            BESearchRequest newSearchRequest = await GetTheSearchRequest();
+            newSearchRequest.TheStatus = newStatus;
+            await SaveTheSearchRequest(newSearchRequest);            
+        }
+
+        /******************** Actor Interface Methods ********************/
 
         public async Task FulfillSearchRequestAsync(BESearchRequest searchRequest) {
-            await SetTheSearchRequest(searchRequest);
+            // Initialize the SearchRequest in the state manager if this MasterActor is called for the first time      
+            if(await GetTheSearchRequest() == null) {
+                await SaveTheSearchRequest(searchRequest);
+            }
 
+            // Set the Reminder for the method that implements the core logic of the Actor (mainFulfillSearchRequestAsync)
             try {
-                await RegisterReminderAsync(
-                    ReminderNames.FulfillSReqReminder,
-                    null,
-                    TimeSpan.FromSeconds(10),
-                    TimeSpan.FromSeconds(10));
+                await RegisterReminderAsync(ReminderNames.FulfillSReqReminder, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
             } catch(Exception) {
                 throw;
             }
 
         }
 
-        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period) {
+        public async Task UpdateSerchRequestStatus(Status newStatus) {
+            await SetTheSerchRequestStatus(newStatus);
+            try {
+                await RegisterReminderAsync(ReminderNames.FulfillSReqReminder, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            } catch(Exception) {
+                throw;
+            }
+        }
+
+        /******************** Remider Management Method ********************/
+
+        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period){
             switch(reminderName) {
 
                 case ReminderNames.FulfillSReqReminder:
-                    await mainFulfillSearchRequestAsync();
-                    await UnregisterReminderAsync(this.GetReminder(ReminderNames.FulfillSReqReminder));
+                    try {
+                        await UnregisterReminderAsync(this.GetReminder(ReminderNames.FulfillSReqReminder));
+                        await mainFulfillSearchRequestAsync();                       
+                    } catch {
+
+                    }                    
                     break;
 
                 case ReminderNames.SendResultsReminder:
@@ -75,31 +110,46 @@ namespace WSP.MasterActor {
                 default:
                     // This point should never be reached. 
                     throw new InvalidOperationException("Unknown Reminder: " + reminderName);
+                    break;
             }
         }
+
+        /******************** Actor Logic Implementation Methods ********************/
 
         // Fullfills the SearchRequest. Invoked by a Reminder (FulfillSReqReminder)
         private async Task mainFulfillSearchRequestAsync() {
             BESearchRequest theSearchRequest = await GetTheSearchRequest();
 
-            IMinerActor theMiner = ActorProxy.Create<IMinerActor>(new ActorId(theSearchRequest.ID)); 
-            var mineTask = theMiner.MineAsync(theSearchRequest);
-            await mineTask;
+            Status theStatus = theSearchRequest.TheStatus;
+            switch(theStatus) {
+                case Status.New:
+                    //Call the Miner
+                    IMinerActor theMiner = ActorProxy.Create<IMinerActor>(new ActorId(theSearchRequest.ID));
+                    try {
+                        await theMiner.StartMiningAsync(theSearchRequest);
+                        await SetTheSerchRequestStatus(Status.Mining);
+                    } catch {
+                        throw;
+                    }
+                    break;
 
-            // Set a Reminder to Send the Results to the Website
-            try {
-                await RegisterReminderAsync(
-                    ReminderNames.SendResultsReminder,
-                    null,
-                    TimeSpan.FromSeconds(10),
-                    TimeSpan.FromSeconds(10));
-            } catch(Exception) {
-                throw;
+                case Status.Mining:
+
+                    break;
+
+                case Status.Mining_Done:
+                    // Set a Reminder to Send the Results to the Website
+                    try {
+                        await RegisterReminderAsync(ReminderNames.SendResultsReminder, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+                    } catch(Exception) {
+                        throw;
+                    }
+                    break;               
             }
         }
 
         // Send the Results to the Website. Invoked by a Reminder (SendResultsReminder)
-        private async Task sendResults(){
+        private async Task sendResults() {
             var theResults = (BaseSearchRequest)(await GetTheSearchRequest()); // Temporary Type
             var response = await clientFEserver.PostAsJsonAsync("api/Results", theResults);
             // Upon successful transmission, delete the reminder. Else the sendResults method will be invoked again

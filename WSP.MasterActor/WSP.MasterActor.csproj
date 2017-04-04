@@ -97,7 +97,6 @@
     <Compile Include="MasterActor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ActorEventSource.cs" />
-    <Compile Include="ReminderNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PackageRoot\ServiceManifest.xml">
