@@ -8,7 +8,6 @@ namespace WSP.Models {
         New,
         Mining,
         Mining_Done,
-        StagesAll_Done,
         Fulfilled
     }
 
@@ -19,10 +18,13 @@ namespace WSP.Models {
         [DataMember]
         public Status TheStatus { get; set; }
 
-        // The ID used by the Twitter, belonging to the last
-        // tweet (MinedText) mined in a previous execution
+        // The IDs used by the Twitter, belonging to the oldest and
+        // newest tweets (MinedText) mined in a previous execution
         [DataMember]
-        public long TwitterIDLast { get; set; }
+        public long TwitterIdOldest { get; set; }
+
+        [DataMember]
+        public long TwitterIdNewest { get; set; }
 
         public BESearchRequest() {
         }
@@ -30,7 +32,8 @@ namespace WSP.Models {
         public BESearchRequest(BaseSearchRequest baseSource)
             : base(baseSource) {
             TheStatus = Status.New;
-            TwitterIDLast = -1;
+            TwitterIdOldest = -1;
+            TwitterIdNewest = -1;
         }
 
     }

@@ -8,6 +8,8 @@ using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
 
 namespace WebSite.Controllers {
+
+    [Authorize]
     public class HomeController: Controller {
 
         private FESearchRequestsController SReqController = new FESearchRequestsController();
@@ -70,11 +72,16 @@ namespace WebSite.Controllers {
 
         private async Task<ActionResult> ExecuteSearchRequest(FESearchRequest searchRequest) {
 
-            var response = await clientBEserver.PostAsJsonAsync("api/Service", (BaseSearchRequest)searchRequest);
-            if(response.IsSuccessStatusCode) {
-                await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Pending);
-                return RedirectToIndex(BannnerMsgCode.CreateOk);
-            } else {
+            try {
+                var response = await clientBEserver.PostAsJsonAsync("api/Service", (BaseSearchRequest)searchRequest);
+                if(response.IsSuccessStatusCode) {
+                    await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Pending);
+                    return RedirectToIndex(BannnerMsgCode.CreateOk);
+                } else {
+                    await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Open);
+                    return RedirectToIndex(BannnerMsgCode.ErrorNotExecuted);
+                }
+            } catch {
                 await SReqController.UpdateSearchRequestStatus(searchRequest.ID, Status.Open);
                 return RedirectToIndex(BannnerMsgCode.ErrorNotExecuted);
             }
