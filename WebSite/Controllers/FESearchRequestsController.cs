@@ -9,10 +9,10 @@ using System.Web.Http.Description;
 using WebSite.Models;
 
 namespace WebSite.Controllers {
-
+    
     public class FESearchRequestsController : ApiController
     {
-        private SentimentDBContext db = new SentimentDBContext();
+        private FEMainDBContext db = new FEMainDBContext();
 
         // GET: api/FESearchRequests
         public IQueryable<FESearchRequest> GetFESearchRequests()

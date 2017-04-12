@@ -1,19 +1,13 @@
-namespace WebSite.Migrations
-{
-    using System;
-    using System.Data.Entity;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
+using System.Data.Entity.Migrations;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<WebSite.Models.SentimentDBContext>
-    {
-        public Configuration()
-        {
-            AutomaticMigrationsEnabled = false;
+namespace WebSite.Migrations.Migrations_AppUserDB {
+
+    internal sealed class Configuration_AppUserDB: DbMigrationsConfiguration<WebSite.Models.ApplicationDbContext> {
+        public Configuration_AppUserDB() {
+            AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(WebSite.Models.SentimentDBContext context)
-        {
+        protected override void Seed(WebSite.Models.ApplicationDbContext context) {
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

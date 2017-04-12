@@ -7,6 +7,7 @@ using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
 
 namespace WebSite.Controllers {
+
     public class ResultsController: ApiController {
         private FESearchRequestsController SReqController = new FESearchRequestsController();
 

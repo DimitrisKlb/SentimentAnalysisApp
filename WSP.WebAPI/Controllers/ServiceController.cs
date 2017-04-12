@@ -27,7 +27,7 @@ namespace WSP.WebAPI.Controllers {
 
             if(response.GetType() == typeof(CreatedAtRouteNegotiatedContentResult<BESearchRequest>)) {
                 BESearchRequest createdSearchRequest = ((CreatedAtRouteNegotiatedContentResult<BESearchRequest>)response).Content;
-
+                createdSearchRequest.TheStatus = Status.New;
                 IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>(new ActorId(createdSearchRequest.ID));
                 try {
                     await theMasterActor.FulfillSearchRequestAsync(createdSearchRequest);

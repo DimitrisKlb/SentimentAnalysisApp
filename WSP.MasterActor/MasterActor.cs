@@ -152,6 +152,7 @@ namespace WSP.MasterActor {
         private async Task sendResults() {
             var theResults = (BaseSearchRequest)(await GetTheSearchRequest()); // Temporary Type
             var response = await clientFEserver.PostAsJsonAsync("api/Results", theResults);
+
             // Upon successful transmission, delete the reminder. Else the sendResults method will be invoked again
             if(response.IsSuccessStatusCode) {
                 await UnregisterReminderAsync(this.GetReminder(ReminderNames.SendResultsReminder));

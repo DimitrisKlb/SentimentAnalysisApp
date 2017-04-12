@@ -1,6 +1,6 @@
 ﻿@model WebSite.Models.FESearchRequest
 
-@using(Html.BeginForm("CreateSearchRequest", "Home")) {
+@using(Html.BeginForm(null, null, FormMethod.Post, new { id = "create_form"})) {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
@@ -18,7 +18,17 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input id="submit_button" type="submit" value="Create" class="btn btn-default" />
+                <i id="loading_banner" class="fa fa-spinner fa-pulse fa-3x fa-fw" style="display:none;"></i>
             </div>
         </div>
     </div>
 }
+
+<script>
+    $(document).ready(function () {
+        $('#create_form').submit(function () {
+            $("#submit_button").attr('disabled', true);
+            $("#loading_banner").show();
+        });
+    });
+</script>
