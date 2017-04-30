@@ -1,0 +1,50 @@
+﻿@using WebSite.ViewModels
+@model UserRoleInfo
+
+@{
+    ViewBag.Title = "Edit Role";
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Edit Role</h2>
+            </div>
+
+            <div class="panel-body">
+
+
+                @using(Html.BeginForm( "EditRole", null, FormMethod.Post, new { id = "create_form" } )) {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor( model => model.roleID )
+
+                    <div class="form-horizontal">
+
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                Role Name:
+                            </div>
+                            <div class="col-md-7">
+                                @Html.EditorFor( model => model.roleName, new { htmlAttributes = new { @class = "form-control" } } )
+                                @Html.ValidationMessageFor( model => model.roleName, "", new { @class = "text-danger" } )
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-10">
+                                <input id="submit_button" type="submit" value="Create" class="btn btn-default" />
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<hr />
+@Html.ActionLink( "Return to Role Manager", "Index" )

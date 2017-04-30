@@ -9,17 +9,17 @@ namespace WSP.WebAPI.Controllers {
     public class BESearchRequestsController: ApiController {
         //private MainDBContext db = new MainDBContext();
 
-        // POST: api/BESearchRequests
-        [ResponseType(typeof(BESearchRequest))]
+        [NonAction]
+        [ResponseType( typeof( BESearchRequest ) )]
         public async Task<IHttpActionResult> PostBESearchRequest(BESearchRequest newBESearchRequest) {
             if(!ModelState.IsValid) {
-                return BadRequest(ModelState);
+                return BadRequest( ModelState );
             }
 
             //db.BESearchRequests.Add(newBESearchRequest);
             //await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = newBESearchRequest.ID }, newBESearchRequest);
+            return CreatedAtRoute( "DefaultApi", new { id = newBESearchRequest.ID }, newBESearchRequest );
         }
 
         private bool BESearchRequestExists(int id) {

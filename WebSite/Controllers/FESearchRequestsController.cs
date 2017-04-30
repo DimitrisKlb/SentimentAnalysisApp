@@ -10,103 +10,93 @@ using WebSite.Models;
 
 namespace WebSite.Controllers {
     
-    public class FESearchRequestsController : ApiController
-    {
+    public class FESearchRequestsController: ApiController {
         private FEMainDBContext db = new FEMainDBContext();
 
-        // GET: api/FESearchRequests
-        public IQueryable<FESearchRequest> GetFESearchRequests()
-        {
+        [NonAction]
+        public IQueryable<FESearchRequest> GetFESearchRequests() {
             return db.FESearchRequests;
         }
 
-        // GET: api/FESearchRequests/5
-        [ResponseType(typeof(FESearchRequest))]
-        public async Task<IHttpActionResult> GetFESearchRequest(int id)
-        {
-            FESearchRequest fESearchRequest = await db.FESearchRequests.FindAsync(id);
-            if (fESearchRequest == null)
-            {
+        [NonAction]
+        public IQueryable<FESearchRequest> GetFESearchRequests(string userID) {
+            var searchRequestsByUser = from searchRequests in db.FESearchRequests
+                                       where searchRequests.TheUserID == userID
+                                       select searchRequests;
+            return searchRequestsByUser;
+        }
+
+        [NonAction]
+        [ResponseType( typeof( FESearchRequest ) )]
+        public async Task<IHttpActionResult> GetFESearchRequest(int id) {
+            FESearchRequest fESearchRequest = await db.FESearchRequests.FindAsync( id );
+            if(fESearchRequest == null) {
                 return NotFound();
             }
 
-            return Ok(fESearchRequest);
+            return Ok( fESearchRequest );
         }
 
-        // PUT: api/FESearchRequests/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutFESearchRequest(int id, FESearchRequest fESearchRequest)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+        [NonAction]
+        [ResponseType( typeof( void ) )]
+        public async Task<IHttpActionResult> PutFESearchRequest(int id, FESearchRequest fESearchRequest) {
+            if(!ModelState.IsValid) {
+                return BadRequest( ModelState );
             }
 
-            if (id != fESearchRequest.ID)
-            {
+            if(id != fESearchRequest.ID) {
                 return BadRequest();
             }
 
-            db.Entry(fESearchRequest).State = EntityState.Modified;
+            db.Entry( fESearchRequest ).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FESearchRequestExists(id))
-                {
+            } catch(DbUpdateConcurrencyException) {
+                if(!FESearchRequestExists( id )) {
                     return NotFound();
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return StatusCode( HttpStatusCode.NoContent );
         }
 
-        // PUT:
-        [ResponseType(typeof(void))]
+        [NonAction]
+        [ResponseType( typeof( void ) )]
         public async Task<IHttpActionResult> UpdateSearchRequestStatus(int id, Status newStatus) {
-            FESearchRequest oldSearchRequest = await db.FESearchRequests.FindAsync(id);
+            FESearchRequest oldSearchRequest = await db.FESearchRequests.FindAsync( id );
             if(oldSearchRequest == null) {
                 return NotFound();
             }
 
             oldSearchRequest.TheStatus = newStatus;
-            return await PutFESearchRequest(id, oldSearchRequest);
+            return await PutFESearchRequest( id, oldSearchRequest );
         }
 
-        // POST: api/FESearchRequests
-        [ResponseType(typeof(FESearchRequest))]
-        public async Task<IHttpActionResult> PostFESearchRequest(FESearchRequest fESearchRequest)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+        [NonAction]
+        [ResponseType( typeof( FESearchRequest ) )]
+        public async Task<IHttpActionResult> PostFESearchRequest(FESearchRequest fESearchRequest) {
+            if(!ModelState.IsValid) {
+                return BadRequest( ModelState );
             }
 
-            db.FESearchRequests.Add(fESearchRequest);
+            db.FESearchRequests.Add( fESearchRequest );
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = fESearchRequest.ID }, fESearchRequest);
+            return CreatedAtRoute( "DefaultApi", new { id = fESearchRequest.ID }, fESearchRequest );
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
+        protected override void Dispose(bool disposing) {
+            if(disposing) {
                 db.Dispose();
             }
-            base.Dispose(disposing);
+            base.Dispose( disposing );
         }
 
-        private bool FESearchRequestExists(int id)
-        {
-            return db.FESearchRequests.Count(e => e.ID == id) > 0;
+        private bool FESearchRequestExists(int id) {
+            return db.FESearchRequests.Count( e => e.ID == id ) > 0;
         }
     }
 }

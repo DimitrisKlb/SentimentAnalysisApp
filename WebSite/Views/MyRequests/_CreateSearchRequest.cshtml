@@ -1,12 +1,11 @@
 ﻿@model WebSite.Models.FESearchRequest
 
-@using(Html.BeginForm(null, null, FormMethod.Post, new { id = "create_form"})) {
+@using(Html.BeginForm("CreateSearchRequest", null, FormMethod.Post, new { id = "create_form"})) {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
         <h4>New SearchRequest</h4>
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.TheSearchKeyword, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -18,7 +17,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input id="submit_button" type="submit" value="Create" class="btn btn-default" />
-                <i id="loading_banner" class="fa fa-spinner fa-pulse fa-3x fa-fw" style="display:none;"></i>
+                <i id="loadingBanner" class="fa fa-spinner fa-pulse fa-3x fa-fw" style="display:none;"></i>
             </div>
         </div>
     </div>
@@ -28,7 +27,7 @@
     $(document).ready(function () {
         $('#create_form').submit(function () {
             $("#submit_button").attr('disabled', true);
-            $("#loading_banner").show();
+            $("#loadingBanner").show();
         });
     });
 </script>

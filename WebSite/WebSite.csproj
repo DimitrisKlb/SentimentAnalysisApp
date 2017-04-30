@@ -213,27 +213,40 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\FESearchRequestsController.cs" />
+    <Compile Include="Controllers\FluentDisplayController.cs" />
+    <Compile Include="Controllers\UserRolesController.cs" />
+    <Compile Include="Controllers\MyRequestsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201704141936338_Initial_AppUserDB.cs" />
-    <Compile Include="Migrations\201704141936338_Initial_AppUserDB.Designer.cs">
-      <DependentUpon>201704141936338_Initial_AppUserDB.cs</DependentUpon>
+    <Compile Include="Migrations\Migrations_AppUserDB\201704151222433_Initial_AppUserDB.cs" />
+    <Compile Include="Migrations\Migrations_AppUserDB\201704151222433_Initial_AppUserDB.Designer.cs">
+      <DependentUpon>201704151222433_Initial_AppUserDB.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201704141941544_Initial_FEMainDB.cs" />
-    <Compile Include="Migrations\201704141941544_Initial_FEMainDB.Designer.cs">
-      <DependentUpon>201704141941544_Initial_FEMainDB.cs</DependentUpon>
+    <Compile Include="Migrations\Migrations_AppUserDB\Configuration_AppUserDB.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.Designer.cs">
+      <DependentUpon>201704151223346_Initial_FEMainDB.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration_FEMainDB.cs" />
-    <Compile Include="Migrations\Configuration_AppUserDB.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.Designer.cs">
+      <DependentUpon>201704161417148_ConnectToUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.Designer.cs">
+      <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Migrations_FEMainDB\Configuration_FEMainDB.cs" />
+    <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\FEMainDBContext.cs" />
-    <Compile Include="Models\HomeViewModel.cs" />
+    <Compile Include="ViewModels\BannerMsg.cs" />
+    <Compile Include="ViewModels\UserRolesViewModel.cs" />
+    <Compile Include="ViewModels\MyRequestsViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="ViewModels\ManageViewModels.cs" />
     <Compile Include="Models\FESearchRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -245,7 +258,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\home.css" />
+    <Content Include="Content\FluentDisplay.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -319,7 +332,11 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Home\_CreateSearchRequest.cshtml" />
+    <Content Include="Views\MyRequests\_CreateSearchRequest.cshtml" />
+    <Content Include="Views\MyRequests\Index.cshtml" />
+    <Content Include="Views\UserRoles\Index.cshtml" />
+    <Content Include="Views\UserRoles\EditRole.cshtml" />
+    <Content Include="Views\UserRoles\_CreateRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -337,11 +354,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201704141936338_Initial_AppUserDB.resx">
-      <DependentUpon>201704141936338_Initial_AppUserDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Migrations_AppUserDB\201704151222433_Initial_AppUserDB.resx">
+      <DependentUpon>201704151222433_Initial_AppUserDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201704141941544_Initial_FEMainDB.resx">
-      <DependentUpon>201704141941544_Initial_FEMainDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.resx">
+      <DependentUpon>201704151223346_Initial_FEMainDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.resx">
+      <DependentUpon>201704161417148_ConnectToUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.resx">
+      <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

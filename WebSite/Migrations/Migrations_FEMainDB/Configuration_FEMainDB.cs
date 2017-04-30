@@ -1,13 +1,14 @@
 using System.Data.Entity.Migrations;
 
-namespace WebSite.Migrations.Migrations_AppUserDB {
+namespace WebSite.Migrations.Migrations_FEMainDB {
 
-    internal sealed class Configuration_AppUserDB: DbMigrationsConfiguration<WebSite.Models.ApplicationDbContext> {
-        public Configuration_AppUserDB() {
-            AutomaticMigrationsEnabled = true;
+    internal sealed class Configuration_FEMainDB: DbMigrationsConfiguration<WebSite.Models.FEMainDBContext> {
+        public Configuration_FEMainDB() {
+            AutomaticMigrationsEnabled = false;
+            MigrationsDirectory = @"Migrations\Migrations_FEMainDB";
         }
 
-        protected override void Seed(WebSite.Models.ApplicationDbContext context) {
+        protected override void Seed(WebSite.Models.FEMainDBContext context) {
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

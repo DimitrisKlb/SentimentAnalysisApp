@@ -1,0 +1,125 @@
+﻿@using WebSite.ViewModels
+@model UserRolesViewModel
+
+@{
+    ViewBag.Title = "<SentimentAnalysis App's name pending...>";
+}
+
+@section Styles {
+    <link href="@Url.Content("~/Content/FluentDisplay.css")" rel="stylesheet" type="text/css" />
+}
+
+@if(@Model.TheBannerMsg != null) {
+    <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @Model.TheBannerMsg.Text
+    </div>
+}
+
+<div class="page-header">
+    <h1>Manage User Roles</h1>
+</div>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Roles List</h2>
+            </div>
+
+            <div class="panel-body">
+                <div>
+
+                    @foreach(var role in Model.TheRolesList) {
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <strong class="text-left">
+                                    @Html.DisplayFor( modelItem => role.Text )
+                                </strong>
+                            </div>
+                            <div class="col-sm-8">
+                                @Html.ActionLink( "Edit", "EditRole", new { roleID = role.Value } )
+                                |
+                                <span onclick="return confirm('Delete this role?')">
+                                    @Html.ActionLink( "Delete", "DeleteRole", new { roleID = role.Value } )
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Create a new Role</h2>
+            </div>
+
+            <div class="panel-body">
+                @Html.Action( "CreateRole" )
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">List Roles for a User</h2>
+            </div>
+
+            <div class="panel-body">
+                @using(Html.BeginForm( "GetRolesForUser", null, FormMethod.Post )) {
+                    @Html.AntiForgeryToken()
+                    <p>
+                        User Name: @Html.DropDownList( "userID", Model.TheUsersList, "Select ..." )
+                        <input type="submit" value="Get Roles" class="btn btn-default" />
+                    </p>
+                }
+
+                @if(Model.RolesForTheUser != null) {
+                    <hr />
+                    <div>
+                        <div>Roles for this User: </div>
+                        <div>
+                            @foreach(var role in Model.RolesForTheUser) {
+                                <div class="row">
+                                    <div class="col-sm-4">@role</div>
+                                    <div class="col-sm-8">
+                                        <span onclick="return confirm('Delete this role?')">
+                                            @Html.ActionLink( "Remove", "DeleteRoleFromUser", new { userID = Model.TheUserID, roleName = role } )
+                                        </span>
+                                    </div>
+
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Add a Role to a User</h2>
+            </div>
+
+            <div class="panel-body">
+                @using(Html.BeginForm( "AddRoleToUser", null, FormMethod.Post )) {
+
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary( true )
+
+                    <p>User Name: @Html.DropDownList( "userID", Model.TheUsersList, "Select ..." )</p>
+                    <p>Role Name: @Html.DropDownList( "roleID", Model.TheRolesList, "Select ..." )</p>
+                    <p><input type="submit" value="Save" class="btn btn-default" /></p>
+
+                }
+            </div>
+        </div>   
+             
+    </div>
+
+</div>
