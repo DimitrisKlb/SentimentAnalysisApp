@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using SentimentAnalysisApp.SharedModels;
 
 namespace WSP.Models {
+
     public enum Status: int {
         New,
         Mining,

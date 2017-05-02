@@ -7,7 +7,7 @@ using WSP.Models;
 
 namespace WSP.WebAPI.Controllers {
     public class BESearchRequestsController: ApiController {
-        //private MainDBContext db = new MainDBContext();
+        //private BEMainDBContext db = new MainDBContext();
 
         [NonAction]
         [ResponseType( typeof( BESearchRequest ) )]

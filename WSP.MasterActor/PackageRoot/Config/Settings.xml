@@ -8,7 +8,10 @@
     <Parameter Name="CredentialType" Value="None" />
   </Section>
   <Section Name="WebSiteInfo">
-    <Parameter Name="WebSiteURI" Value="http://localhost:60502/" />
+    <Parameter Name="WebSiteURI" Value="" />
+  </Section>
+  <Section Name="ApplicationServicesNames">
+    <Parameter Name="DBHandlerName" Value="" />
   </Section>
   <!-- The content will be generated during build -->
 </Settings>

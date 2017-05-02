@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MinerActor", "WSP.Miner
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MinerActor.Interfaces", "WSP.MinerActor.Interfaces\WSP.MinerActor.Interfaces.csproj", "{A8866396-8578-4518-BA47-6AF6A18344B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.DBHandlerService", "WSP.DBHandlerService\WSP.DBHandlerService.csproj", "{162ED859-9E23-41BC-B385-83F686371AE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.DBHandlerService.Interfaces", "WSP.DBHandlerService.Interfaces\WSP.DBHandlerService.Interfaces.csproj", "{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +95,20 @@ Global
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Release|Any CPU.ActiveCfg = Release|x64
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Release|x64.ActiveCfg = Release|x64
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Release|x64.Build.0 = Release|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Debug|x64.ActiveCfg = Debug|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Debug|x64.Build.0 = Debug|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Release|Any CPU.ActiveCfg = Release|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Release|x64.ActiveCfg = Release|x64
+		{162ED859-9E23-41BC-B385-83F686371AE7}.Release|x64.Build.0 = Release|x64
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Debug|x64.Build.0 = Debug|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|x64.ActiveCfg = Release|Any CPU
+		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

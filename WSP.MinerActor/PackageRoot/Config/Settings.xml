@@ -13,5 +13,8 @@
     <Parameter Name="AccessToken" Value="790073232472862720-sMVIAUR3Nm0Ja3vy4NFdStOeNB52lLJ" />
     <Parameter Name="AccessTokenSecret" Value="RuxkMABK4UrmjSY27BqbTRCEjkvldkhps9gtgfwIiwKOV" />
   </Section>
+  <Section Name="ApplicationServicesNames">
+    <Parameter Name="DBHandlerName" Value="" />
+  </Section>
   <!-- The content will be generated during build -->
 </Settings>

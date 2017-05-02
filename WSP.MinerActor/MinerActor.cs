@@ -40,18 +40,18 @@ namespace WSP.MinerActor {
         protected override Task OnActivateAsync() {
             ActorEventSource.Current.ActorMessage(this, "MinerActor {0} activated.", this.Id);
 
-            return this.StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
+            return StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
         }
 
         /******************** State Management Methods ********************/
 
         private Task<BESearchRequest> GetTheSearchRequest() {
-            return this.StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
+            return StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
         }
 
         private async Task SaveTheSearchRequest(BESearchRequest theSearchRequest) {
-            await this.StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
-            await this.SaveStateAsync();
+            await StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
+            await SaveStateAsync();
         }
 
         /******************** Actor Interface Methods ********************/

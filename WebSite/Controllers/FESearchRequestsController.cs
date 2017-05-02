@@ -33,7 +33,6 @@ namespace WebSite.Controllers {
             if(fESearchRequest == null) {
                 return NotFound();
             }
-
             return Ok( fESearchRequest );
         }
 

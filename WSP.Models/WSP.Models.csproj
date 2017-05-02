@@ -53,9 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BEMainDBContext.cs" />
     <Compile Include="BEMinedText.cs" />
     <Compile Include="BESearchRequest.cs" />
-    <Compile Include="MainDBContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

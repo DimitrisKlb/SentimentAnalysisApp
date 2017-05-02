@@ -43,18 +43,18 @@ namespace WSP.MasterActor {
                    configPackage.Settings.Sections["WebSiteInfo"].Parameters["WebSiteURI"].Value)
             };
 
-            return this.StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
+            return StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
         }
 
         /******************** State Management Methods ********************/
     
         private Task<BESearchRequest> GetTheSearchRequest() {
-            return this.StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
+            return StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
         }
 
         private async Task SaveTheSearchRequest(BESearchRequest theSearchRequest) {
-            await this.StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
-            await this.SaveStateAsync();
+            await StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
+            await SaveStateAsync();
         }        
 
         private async Task SetTheSerchRequestStatus(Status newStatus) {

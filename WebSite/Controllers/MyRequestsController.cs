@@ -15,7 +15,7 @@ namespace WebSite.Controllers {
     [Authorize]
     public class MyRequestsController: FluentDisplayController {
 
-        private FESearchRequestsController SReqController = new FESearchRequestsController();
+        private FESearchRequestsController TheSReqController = new FESearchRequestsController();
         private static HttpClient clientBEserver = new HttpClient {
             BaseAddress = new System.Uri( WebConfigurationManager.AppSettings["WebApiProviderURI"] )
         };
@@ -24,7 +24,7 @@ namespace WebSite.Controllers {
         [HttpGet]
         public ActionResult Index() {
             MyRequestsViewModel theVM = new MyRequestsViewModel();
-            theVM.TheSearchRequests = SReqController.GetFESearchRequests( User.Identity.GetUserId() );
+            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
 
             theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
 
@@ -50,7 +50,7 @@ namespace WebSite.Controllers {
                 newSearchRequest.TheStatus = Status.Pending;
                 newSearchRequest.TheUserID = User.Identity.GetUserId();
 
-                var response = await SReqController.PostFESearchRequest( newSearchRequest );
+                var response = await TheSReqController.PostFESearchRequest( newSearchRequest );
                 if(response.GetType() == typeof( CreatedAtRouteNegotiatedContentResult<FESearchRequest> )) {
                     FESearchRequest createdSearchRequest = ((CreatedAtRouteNegotiatedContentResult<FESearchRequest>)response).Content;
                     return await ExecuteSearchRequest( createdSearchRequest );
@@ -65,12 +65,12 @@ namespace WebSite.Controllers {
 
         public async Task<ActionResult> ExecuteSearchRequest(int searchRequestID) {
 
-            var response = await SReqController.GetFESearchRequest( searchRequestID );
+            var response = await TheSReqController.GetFESearchRequest( searchRequestID );
             if(response.GetType() == typeof( OkNegotiatedContentResult<FESearchRequest> )) {
                 FESearchRequest searchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
                 return await ExecuteSearchRequest( searchRequest );
             } else {
-                await SReqController.UpdateSearchRequestStatus( searchRequestID, Status.Open );
+                await TheSReqController.UpdateSearchRequestStatus( searchRequestID, Status.Open );
                 return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
             }
 
@@ -81,14 +81,14 @@ namespace WebSite.Controllers {
             try {
                 var response = await clientBEserver.PostAsJsonAsync( "api/Service", (BaseSearchRequest)searchRequest );
                 if(response.IsSuccessStatusCode) {
-                    await SReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Pending );
+                    await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Pending );
                     return RedirectToIndex( MR_BannerMsg.CreateOk );
                 } else {
-                    await SReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
+                    await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
                     return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
                 }
             } catch {
-                await SReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
+                await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
                 return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
             }
         }
