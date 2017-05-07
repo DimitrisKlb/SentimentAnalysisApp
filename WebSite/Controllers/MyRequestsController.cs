@@ -17,7 +17,7 @@ namespace WebSite.Controllers {
 
         private FESearchRequestsController TheSReqController = new FESearchRequestsController();
         private static HttpClient clientBEserver = new HttpClient {
-            BaseAddress = new System.Uri( WebConfigurationManager.AppSettings["WebApiProviderURI"] )
+            BaseAddress = new System.Uri( WebConfigurationManager.AppSettings["WebApiProvider-URI"] )
         };
 
 
@@ -39,7 +39,7 @@ namespace WebSite.Controllers {
             } else {
                 LoadModelState();
                 return PartialView( "_CreateSearchRequest" );
-            }            
+            }
         }
 
         [HttpPost]
@@ -79,7 +79,9 @@ namespace WebSite.Controllers {
         private async Task<ActionResult> ExecuteSearchRequest(FESearchRequest searchRequest) {
 
             try {
-                var response = await clientBEserver.PostAsJsonAsync( "api/Service", (BaseSearchRequest)searchRequest );
+                var response =  await clientBEserver.PostAsJsonAsync(
+                                WebConfigurationManager.AppSettings["WebApiProvider-SubmitRoute"],
+                                (BaseSearchRequest)searchRequest );
                 if(response.IsSuccessStatusCode) {
                     await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Pending );
                     return RedirectToIndex( MR_BannerMsg.CreateOk );

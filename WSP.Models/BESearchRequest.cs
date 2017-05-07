@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 using SentimentAnalysisApp.SharedModels;
@@ -19,6 +20,12 @@ namespace WSP.Models {
         [DataMember]
         public Status TheStatus { get; set; }
 
+        // The ID of the BaseSearchRequest object, 
+        // that was received by whoever called the API and submited it
+        [Required]
+        [DataMember]        
+        public int TheReceivedID { get; set; }
+
         // The IDs used by the Twitter, belonging to the oldest and
         // newest tweets (MinedText) mined in a previous execution
         [DataMember]
@@ -33,8 +40,15 @@ namespace WSP.Models {
         public BESearchRequest(BaseSearchRequest baseSource)
             : base(baseSource) {
             TheStatus = Status.New;
+            TheReceivedID = baseSource.ID;
             TwitterIdOldest = -1;
             TwitterIdNewest = -1;
+        }
+
+        public BaseSearchRequest GetReceivedSearchRequest() {
+            BaseSearchRequest receivedSReq = (BaseSearchRequest)this;
+            receivedSReq.ID = TheReceivedID;
+            return receivedSReq;
         }
 
     }

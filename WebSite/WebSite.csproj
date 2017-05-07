@@ -239,6 +239,10 @@
     <Compile Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.Designer.cs">
       <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.Designer.cs">
+      <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Migrations_FEMainDB\Configuration_FEMainDB.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\FEMainDBContext.cs" />
@@ -365,6 +369,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.resx">
       <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.resx">
+      <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

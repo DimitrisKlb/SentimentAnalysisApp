@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using System;
+using System.Fabric;
 
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Actors.Client;
@@ -11,9 +15,11 @@ using Tweetinvi;
 using Tweetinvi.Models;
 using Tweetinvi.Parameters;
 
+using SentimentAnalysisApp.SharedModels;
 using WSP.MinerActor.Interfaces;
 using WSP.Models;
 using WSP.MasterActor.Interfaces;
+using WSP.DBHandlerService.Interfaces;
 
 namespace WSP.MinerActor {
 
@@ -28,29 +34,36 @@ namespace WSP.MinerActor {
 
     /******************** The Actor ********************/
 
-    [StatePersistence(StatePersistence.Persisted)]
+    [StatePersistence( StatePersistence.Persisted )]
     internal class MinerActor: Actor, IMinerActor, IRemindable {
+        private ConfigurationPackage configSettings;
+        private IDBHandlerService dbHandlerService;
         private double rateLimitsResetTime;
 
         public MinerActor(ActorService actorService, ActorId actorId)
-            : base(actorService, actorId) {
+            : base( actorService, actorId ) {
 
         }
 
         protected override Task OnActivateAsync() {
-            ActorEventSource.Current.ActorMessage(this, "MinerActor {0} activated.", this.Id);
+            ActorEventSource.Current.ActorMessage( this, "MinerActor {0} activated.", this.Id );
 
-            return StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
+            configSettings = ActorService.Context.CodePackageActivationContext.GetConfigurationPackageObject( "Config" );
+            dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
+                new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
+                new ServicePartitionKey( 1 ) );
+
+            return StateManager.TryAddStateAsync<BESearchRequest>( StateNames.TheSearchRequest, null );
         }
 
         /******************** State Management Methods ********************/
 
         private Task<BESearchRequest> GetTheSearchRequest() {
-            return StateManager.GetStateAsync<BESearchRequest>(StateNames.TheSearchRequest);
+            return StateManager.GetStateAsync<BESearchRequest>( StateNames.TheSearchRequest );
         }
 
         private async Task SaveTheSearchRequest(BESearchRequest theSearchRequest) {
-            await StateManager.SetStateAsync(StateNames.TheSearchRequest, theSearchRequest);
+            await StateManager.SetStateAsync( StateNames.TheSearchRequest, theSearchRequest );
             await SaveStateAsync();
         }
 
@@ -59,12 +72,12 @@ namespace WSP.MinerActor {
         public async Task StartMiningAsync(BESearchRequest searchRequest) {
             // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time      
             if(await GetTheSearchRequest() == null) {
-                await SaveTheSearchRequest(searchRequest);
+                await SaveTheSearchRequest( searchRequest );
             }
 
             // Set the Reminder for the method that implements the core logic of the Actor (mainMineAsync)
             try {
-                await RegisterReminderAsync(ReminderNames.MineReminder, null, TimeSpan.FromSeconds(rateLimitsResetTime), TimeSpan.FromSeconds(10));
+                await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
             } catch(Exception) {
                 throw;
             }
@@ -76,20 +89,20 @@ namespace WSP.MinerActor {
             switch(reminderName) {
 
                 case ReminderNames.MineReminder:
-                    await UnregisterReminderAsync(this.GetReminder(ReminderNames.MineReminder));
+                    await UnregisterReminderAsync( this.GetReminder( ReminderNames.MineReminder ) );
                     bool done = await mainMineAsync();
 
                     if(done == true) {
-                        IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>(this.Id);
-                        await theMasterActor.UpdateSerchRequestStatus(Status.Mining_Done);
+                        IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( this.Id );
+                        await theMasterActor.UpdateSerchRequestStatus( Status.Mining_Done );
                     } else {
-                        await RegisterReminderAsync(ReminderNames.MineReminder, null, TimeSpan.FromSeconds(rateLimitsResetTime), TimeSpan.FromSeconds(10));
+                        await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
                     }
                     break;
 
                 default:
                     // This point should never be reached. 
-                    throw new InvalidOperationException("Unknown Reminder: " + reminderName);
+                    throw new InvalidOperationException( "Unknown Reminder: " + reminderName );
                     break;
             }
         }
@@ -118,7 +131,7 @@ namespace WSP.MinerActor {
 
             // Event handler executed before each TwitterAPI call
             TweetinviEvents.QueryBeforeExecute += (sender, args) => {
-                var queryRateLimits = RateLimit.GetQueryRateLimit(args.QueryURL);
+                var queryRateLimits = RateLimit.GetQueryRateLimit( args.QueryURL );
 
                 // Some methods are not RateLimited. Invoking such a method will result in the queryRateLimits to be null
                 if(queryRateLimits != null) {
@@ -143,19 +156,18 @@ namespace WSP.MinerActor {
             };
 
             // Set up your credentials
-            var configPackage = ActorService.Context.CodePackageActivationContext.
-                                GetConfigurationPackageObject("Config").Settings.Sections["TwitterCredentials"];
+            var twitterSettings = configSettings.Settings.Sections["TwitterCredentials"];
 
-            twitterConsumerKey = configPackage.Parameters["ConsumerKey"].Value;
-            twitterConsumerSecret = configPackage.Parameters["ConsumerSecret"].Value;
-            twitterAccessToken = configPackage.Parameters["AccessToken"].Value;
-            twitterAccessTokenSecret = configPackage.Parameters["AccessTokenSecret"].Value;
+            twitterConsumerKey = twitterSettings.Parameters["ConsumerKey"].Value;
+            twitterConsumerSecret = twitterSettings.Parameters["ConsumerSecret"].Value;
+            twitterAccessToken = twitterSettings.Parameters["AccessToken"].Value;
+            twitterAccessTokenSecret = twitterSettings.Parameters["AccessTokenSecret"].Value;
 
-            Auth.SetUserCredentials(twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret);
+            Auth.SetUserCredentials( twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret );
 
             // Basic Search Parameters 
             windowSize = 10;
-            searchParameters = new SearchTweetsParameters("\"" + theSearchRequest.TheSearchKeyword + "\"") {
+            searchParameters = new SearchTweetsParameters( "\"" + theSearchRequest.TheSearchKeyword + "\"" ) {
                 Lang = LanguageFilter.English,
                 SearchType = SearchResultType.Recent,
                 MaximumNumberOfResults = windowSize
@@ -177,30 +189,25 @@ namespace WSP.MinerActor {
             theTweets = null;
             do {
                 try {
-                    theTweets = Search.SearchTweets(searchParameters);
+                    theTweets = Search.SearchTweets( searchParameters );
                     if(theTweets == null) {
                         throw new Exception();
                     }
 
                     tweetsReturned = theTweets.Count();
                     if(tweetsReturned != 0) {
-                        /*
+
                         // Store tweets in the database
-                        using(var db = new MinedDataContext()) {
-                            foreach(var tweet in theTweets) {
-                                db.MinedTexts.Add(new MinedText() {
-                                    TheText = tweet.FullText,
-                                    TheSource = Source.Twitter,
-                                    SearchRequestID = searchRequestID,
-                                    TwitterID = tweet.Id
-                                });
-                            }
-                            db.SaveChanges();
-                        }
-                        */
+                        var minedTexts = from t in theTweets
+                                         select new BEMinedText() {
+                                             TheText = t.FullText,
+                                             TheSource = Source.Twitter,
+                                             SearchRequestID = theSearchRequest.ID
+                                         };
+                        await dbHandlerService.StoreMinedTexts( minedTexts );
+
 
                         // Update the searchRequest object with the oldest-newest mined tweets to indicate the additional job done
-
                         if(totalTweets == 0) {     // The first time tweets were mined                
                             theSearchRequest.TwitterIdNewest = theTweets.First().Id; // Save the id of the newest tweet
                         }
@@ -220,9 +227,9 @@ namespace WSP.MinerActor {
                             theSearchRequest.TwitterIdNewest = theTweets.First().Id;
                         }
 
-                        await SaveTheSearchRequest(theSearchRequest);
+                        await SaveTheSearchRequest( theSearchRequest );
                     }
-                } catch(Exception ex) {                    
+                } catch(Exception ex) {
                     return false;
                 }
             } while(tweetsReturned != 0);

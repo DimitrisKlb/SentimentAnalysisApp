@@ -67,26 +67,26 @@ namespace WSP.DBHandlerService {
             int clusterSize = 0;
             bool addMoreTexts;
 
-            while(true) { // while operationNeeded true??
+            while(true) {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 using(var tx = StateManager.CreateTransaction()) {
-                    IEnumerable<BEMinedText> allTexts;
+                    List<BEMinedText> allTexts;
 
                     var result = await theQueue.TryDequeueAsync( tx );
                     if(result.HasValue) {
-                        allTexts = result.Value;
+                        allTexts = result.Value.ToList();
                         clusterSize = allTexts.Count();
                         addMoreTexts = true;
-                        /*
+                        
                         while(addMoreTexts) {
                             result = await theQueue.TryPeekAsync( tx );
                             if(result.HasValue) {
                                 var texts = result.Value;
-                                if(clusterSize + texts.Count() < clusterSizeMax) {
-                                    var TEMP = await theQueue.TryDequeueAsync( tx );
+                                if(clusterSize + texts.Count() <= clusterSizeMax) {
+                                    await theQueue.TryDequeueAsync( tx );
                                     clusterSize += texts.Count();
-                                    allTexts.Concat( texts );
+                                    allTexts.AddRange( texts );
                                 } else {
                                     addMoreTexts = false;
                                 }
@@ -94,14 +94,14 @@ namespace WSP.DBHandlerService {
                                 addMoreTexts = false;
                             }
                         }
-                        */
-                        //await TheMinedTextsController.PostBEMinedTexts(allTexts);
+                        
+                        await TheMinedTextsController.PostBEMinedTexts(allTexts);
                     }   
 
                     await tx.CommitAsync();
                 }
 
-                await Task.Delay( TimeSpan.FromSeconds( 30 ), cancellationToken );
+                await Task.Delay( TimeSpan.FromSeconds( 60 ), cancellationToken );
             }
         }
     }

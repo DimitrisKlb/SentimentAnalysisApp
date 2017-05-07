@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.Fabric;
 
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
@@ -28,6 +29,7 @@ namespace WSP.MasterActor {
 
     [StatePersistence(StatePersistence.Persisted)]
     internal class MasterActor: Actor, IMasterActor, IRemindable {
+        private ConfigurationPackage configSettings;
         private HttpClient clientFEserver;
 
         public MasterActor(ActorService actorService, ActorId actorId)
@@ -37,10 +39,10 @@ namespace WSP.MasterActor {
         protected override Task OnActivateAsync() {
             ActorEventSource.Current.ActorMessage(this, "MasterActor {0} activated.", this.Id);
 
-            var configPackage = ActorService.Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            configSettings = ActorService.Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
             clientFEserver = new HttpClient {
-                BaseAddress = new System.Uri(
-                   configPackage.Settings.Sections["WebSiteInfo"].Parameters["WebSiteURI"].Value)
+                BaseAddress = new Uri(
+                   configSettings.Settings.Sections["WebSiteInfo"].Parameters["WebSiteURI"].Value)
             };
 
             return StateManager.TryAddStateAsync<BESearchRequest>(StateNames.TheSearchRequest, null);
@@ -150,8 +152,8 @@ namespace WSP.MasterActor {
 
         // Send the Results to the Website. Invoked by a Reminder (SendResultsReminder)
         private async Task sendResults() {
-            var theResults = (BaseSearchRequest)(await GetTheSearchRequest()); // Temporary Type
-            var response = await clientFEserver.PostAsJsonAsync("api/Results", theResults);
+            var theResults = (await GetTheSearchRequest()).GetReceivedSearchRequest(); // Temporary Result Type
+            var response = await clientFEserver.PostAsJsonAsync( "api/Results/Submit", theResults);
 
             // Upon successful transmission, delete the reminder. Else the sendResults method will be invoked again
             if(response.IsSuccessStatusCode) {

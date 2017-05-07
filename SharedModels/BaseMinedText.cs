@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace SentimentAnalysisApp.SharedModels {
     public enum Source {
@@ -7,19 +8,22 @@ namespace SentimentAnalysisApp.SharedModels {
         Other
     }
 
+    [DataContract]
     public class BaseMinedText {
+
         [Key]
+        [DataMember]
         public int ID { get; set; }
 
+        [DataMember]
         public string TheText { get; set; }
 
-        public Source TheSource { get; set; }
-
-        // The ID used by Twitter. Currently used for debugging
-        public long TwitterID { get; set; }
+        [DataMember]
+        public Source TheSource { get; set; }     
 
         [ForeignKey("SearchRequest")]
         [Required]
+        [DataMember]
         public int SearchRequestID { get; set; }
 
         // Navigation property
