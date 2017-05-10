@@ -1,5 +1,7 @@
 using System.Data.Entity;
 
+using SentimentAnalysisApp.SharedModels;
+
 namespace WSP.Models {
 
     public partial class BEMainDBContext: DbContext {
@@ -10,5 +12,7 @@ namespace WSP.Models {
         public DbSet<BESearchRequest> BESearchRequests { get; set; }
 
         public DbSet<BEMinedText> BEMinedTexts { get; set; }
+
+        public DbSet<MiningSource> MiningSources { get; set; }
     }
 }

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
+using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
 
 namespace WebSite.ViewModels {
@@ -15,7 +18,36 @@ namespace WebSite.ViewModels {
     }
 
     public class MyRequestsViewModel {
-        public IEnumerable<FESearchRequest> TheSearchRequests { get; set; }        
-        public MR_BannerMsg TheBannerMsg { get; set; }        
+        public IEnumerable<FESearchRequest> TheSearchRequests { get; set; }
+        public MR_BannerMsg TheBannerMsg { get; set; }
     }
+
+    public class CreateSReqViewModel {
+        public FESearchRequest TheSearchRequest { get; set; }
+
+        [Display( Name = "Sources: " )]
+        [CheckboxListNotEmpty( ErrorMessage = "You must select at least one option." )]
+        public List<SourceOption> SelectedSources { get; set; }
+
+        public CreateSReqViewModel() {
+            TheSearchRequest = new FESearchRequest();
+            SelectedSources = new List<SourceOption>();
+        }
+
+        public CreateSReqViewModel(string[] previousOptions) : this() {
+            foreach(var prevOption in previousOptions) {
+                var option = (SourceOption)Enum.Parse( typeof( SourceOption ), prevOption );
+                SelectedSources.Add( option );
+            }
+        }
+    }
+
+    [AttributeUsage( AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false )]
+    sealed public class CheckboxListNotEmptyAttribute: ValidationAttribute {
+        public override bool IsValid(object value) {
+            var theList = (List<SourceOption>)value;
+            return (theList.Count != 0) ? true : false;
+        }
+    }
+
 }

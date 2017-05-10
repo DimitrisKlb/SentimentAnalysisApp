@@ -3,11 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 namespace SentimentAnalysisApp.SharedModels {
-    public enum Source {
-        Twitter,
-        Other
-    }
-
+ 
     [DataContract]
     public class BaseMinedText {
 
@@ -19,15 +15,15 @@ namespace SentimentAnalysisApp.SharedModels {
         public string TheText { get; set; }
 
         [DataMember]
-        public Source TheSource { get; set; }     
+        public SourceOption TheSource { get; set; }     
 
-        [ForeignKey("SearchRequest")]
+        [ForeignKey("TheSearchRequest")]
         [Required]
         [DataMember]
         public int SearchRequestID { get; set; }
 
         // Navigation property
-        public virtual BaseSearchRequest SearchRequest { get; set; }
+        public virtual BaseSearchRequest TheSearchRequest { get; set; }
     }
 
 }

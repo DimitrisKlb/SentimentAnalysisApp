@@ -201,7 +201,7 @@ namespace WSP.MinerActor {
                         var minedTexts = from t in theTweets
                                          select new BEMinedText() {
                                              TheText = t.FullText,
-                                             TheSource = Source.Twitter,
+                                             TheSource = SourceOption.Twitter,
                                              SearchRequestID = theSearchRequest.ID
                                          };
                         await dbHandlerService.StoreMinedTexts( minedTexts );

@@ -33,7 +33,8 @@ namespace WSP.WebAPI.Controllers {
             // Store the new Search Request to the Database            
             try {
                 createdSearchRequest = await dbHandlerService.StoreBESearchRequest( newBESearchRequest );
-            } catch {
+                createdSearchRequest.TheStatus = Status.Mining_Done;
+            } catch(Exception ex) {
                 return InternalServerError();
             }
 
@@ -42,7 +43,7 @@ namespace WSP.WebAPI.Controllers {
                 await theMasterActor.FulfillSearchRequestAsync( createdSearchRequest );
             } catch(InvalidOperationException) {
                 return InternalServerError();
-            } catch(Exception ex) {
+            } catch() {
                 return InternalServerError();
             }
 

@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
 using WebSite.ViewModels;
+using System.Collections.Generic;
 
 namespace WebSite.Controllers {
 
@@ -24,8 +25,7 @@ namespace WebSite.Controllers {
         [HttpGet]
         public ActionResult Index() {
             MyRequestsViewModel theVM = new MyRequestsViewModel();
-            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
-
+            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );            
             theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
 
             return View( theVM );
@@ -35,20 +35,30 @@ namespace WebSite.Controllers {
         [ChildActionOnly]
         public PartialViewResult CreateSearchRequest() {
             if(ModelErrorHappened() == false) {
-                return PartialView( "_CreateSearchRequest", new FESearchRequest() );
+                return PartialView( "_CreateSearchRequest", new CreateSReqViewModel() );
             } else {
                 LoadModelState();
-                return PartialView( "_CreateSearchRequest" );
+
+                //Retrieve the previous CheckboxList selection 
+                var p = ModelState["SelectedSources"];
+                if(p != null && p.Value != null) {
+                    string[] previousOptions = (string[])p.Value.RawValue;
+                    return PartialView( "_CreateSearchRequest", new CreateSReqViewModel( previousOptions ) );
+                } else {
+                    return PartialView( "_CreateSearchRequest", new CreateSReqViewModel() );
+                }                
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateSearchRequest(FESearchRequest newSearchRequest) {
+        public async Task<ActionResult> CreateSearchRequest(CreateSReqViewModel theVM) {
             if(ModelState.IsValid) {
+                FESearchRequest newSearchRequest = theVM.TheSearchRequest;
 
                 newSearchRequest.TheStatus = Status.Pending;
                 newSearchRequest.TheUserID = User.Identity.GetUserId();
+                newSearchRequest.TheSelectedSources.SetSelectionFromList( theVM.SelectedSources );
 
                 var response = await TheSReqController.PostFESearchRequest( newSearchRequest );
                 if(response.GetType() == typeof( CreatedAtRouteNegotiatedContentResult<FESearchRequest> )) {
@@ -79,7 +89,7 @@ namespace WebSite.Controllers {
         private async Task<ActionResult> ExecuteSearchRequest(FESearchRequest searchRequest) {
 
             try {
-                var response =  await clientBEserver.PostAsJsonAsync(
+                var response = await clientBEserver.PostAsJsonAsync(
                                 WebConfigurationManager.AppSettings["WebApiProvider-SubmitRoute"],
                                 (BaseSearchRequest)searchRequest );
                 if(response.IsSuccessStatusCode) {

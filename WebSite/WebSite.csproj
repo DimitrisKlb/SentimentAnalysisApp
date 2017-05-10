@@ -77,6 +77,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcCheckBoxList, Version=1.4.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvcCheckBoxList.1.4.5\lib\net45\MvcCheckBoxList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -243,6 +247,10 @@
     <Compile Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.Designer.cs">
       <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.Designer.cs">
+      <DependentUpon>201705101943109_AddMiningSources.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Migrations_FEMainDB\Configuration_FEMainDB.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\FEMainDBContext.cs" />
@@ -372,6 +380,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.resx">
       <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.resx">
+      <DependentUpon>201705101943109_AddMiningSources.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

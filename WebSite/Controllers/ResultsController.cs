@@ -8,7 +8,7 @@ namespace WebSite.Controllers {
 
     public class ResultsController: ApiController {
         private FESearchRequestsController SReqController = new FESearchRequestsController();
-
+        
         [Route( "api/Results/Submit" )]
         [HttpPost]
         public async Task<IHttpActionResult> SubmitResults(BaseSearchRequest baseSearchRequest) {

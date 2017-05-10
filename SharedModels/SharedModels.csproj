@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BaseSearchRequest.cs" />
     <Compile Include="BaseMinedText.cs" />
+    <Compile Include="MiningSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
