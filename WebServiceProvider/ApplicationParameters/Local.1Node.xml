@@ -8,8 +8,8 @@
     <Parameter Name="MasterActorService_PartitionCount" Value="1" />
     <Parameter Name="MasterActorService_TargetReplicaSetSize" Value="1" />
     <Parameter Name="MasterActorService_MinReplicaSetSize" Value="1" />
-    <Parameter Name="MinerActorService_PartitionCount" Value="1" />
-    <Parameter Name="MinerActorService_TargetReplicaSetSize" Value="1" />
-    <Parameter Name="MinerActorService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterMinerActorService_PartitionCount" Value="1" />
+    <Parameter Name="TwitterMinerActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterMinerActorService_MinReplicaSetSize" Value="1" />
   </Parameters>
 </Application>

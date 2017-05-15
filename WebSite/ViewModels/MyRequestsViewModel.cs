@@ -25,7 +25,7 @@ namespace WebSite.ViewModels {
     public class CreateSReqViewModel {
         public FESearchRequest TheSearchRequest { get; set; }
 
-        [Display( Name = "Sources: " )]
+        [Display( Name = "Sources " )]
         [CheckboxListNotEmpty( ErrorMessage = "You must select at least one option." )]
         public List<SourceOption> SelectedSources { get; set; }
 

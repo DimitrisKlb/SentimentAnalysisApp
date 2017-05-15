@@ -7,8 +7,10 @@ using WSP.Models;
 namespace WSP.MinerActor.Interfaces {
 
     public interface IMinerActor: IActor {
-
         Task StartMiningAsync(BESearchRequest searchRequest);
-
     }
+
+    public interface ITwitterMinerActor: IMinerActor {        
+    }
+
 }

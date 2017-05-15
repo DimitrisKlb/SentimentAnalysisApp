@@ -8,19 +8,15 @@
     <Parameter Name="MasterActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="MasterActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="MasterActorService_TargetReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="MinerActorService_PartitionCount" DefaultValue="10" />
-    <Parameter Name="MinerActorService_MinReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="MinerActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TwitterMinerActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="TwitterMinerActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TwitterMinerActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.DBHandlerServicePkg" ServiceManifestVersion="1.0.0" />
-    <ConfigOverrides />
-  </ServiceManifestImport>
-  <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.MinerActorPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="WSP.TwitterMinerActorPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
@@ -30,6 +26,10 @@
         </Settings>
       </ConfigOverride>
     </ConfigOverrides>
+  </ServiceManifestImport>
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="WSP.DBHandlerServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
   </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WSP.MasterActorPkg" ServiceManifestVersion="1.0.0" />
@@ -79,9 +79,9 @@
         <UniformInt64Partition PartitionCount="[MasterActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
-    <Service Name="MinerActorService" GeneratedIdRef="37300fdc-7207-453d-85b0-54bcbebd1d63|Persisted">
-      <StatefulService ServiceTypeName="MinerActorServiceType" TargetReplicaSetSize="[MinerActorService_TargetReplicaSetSize]" MinReplicaSetSize="[MinerActorService_MinReplicaSetSize]">
-        <UniformInt64Partition PartitionCount="[MinerActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+    <Service Name="TwitterMinerActorService" GeneratedIdRef="074987fd-3ec8-414c-8049-4097dd235939|Persisted">
+      <StatefulService ServiceTypeName="TwitterMinerActorServiceType" TargetReplicaSetSize="[TwitterMinerActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TwitterMinerActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[TwitterMinerActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

@@ -8,9 +8,7 @@ namespace SentimentAnalysisApp.SharedModels {
 
     [Flags]
     public enum SourceOption: short {
-        Twitter = 1,
-        Facebook = 2,
-        Other = 4
+        Twitter = 1
     }
 
     [DataContract]
@@ -28,7 +26,18 @@ namespace SentimentAnalysisApp.SharedModels {
         [DataMember]
         public SourceOption TheSelection { get; set; }
 
-        public List<SourceOption> AsList() {
+        public MiningSource(SourceOption TheSelection = 0) {
+            this.TheSelection = TheSelection;
+        }
+        public MiningSource(MiningSource miningSource) {
+            this.TheSelection = miningSource.TheSelection;
+        }
+
+        public void CopyFrom(MiningSource source) {
+            this.TheSelection = source.TheSelection;
+        }
+
+        public List<SourceOption> GetAsList() {
             List<SourceOption> selectionAsList = new List<SourceOption>();
             foreach(var option in AllSources()) {
                 if(TheSelection.HasFlag( option )) {
@@ -38,19 +47,21 @@ namespace SentimentAnalysisApp.SharedModels {
             return selectionAsList;
         }
 
-        public void SetSelectionFromList(List<SourceOption> theList) {
+        public void SetFromList(List<SourceOption> theList) {
             TheSelection = 0;
             foreach(var option in theList) {
-                TheSelection = TheSelection | option;
+                TheSelection |= option;
             }
         }
 
-        public MiningSource(SourceOption TheSelection = 0) {
-            this.TheSelection = TheSelection;
+        public void RemoveSource(SourceOption option) {
+            TheSelection &= ~option;
         }
-        public MiningSource(MiningSource miningSource) {
-            this.TheSelection = miningSource.TheSelection;
+
+        public bool IsEmpty() {
+            return (TheSelection == 0) ? true : false;
         }
+       
 
     }
 }

@@ -17,13 +17,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MasterActor", "WSP.Mast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MasterActor.Interfaces", "WSP.MasterActor.Interfaces\WSP.MasterActor.Interfaces.csproj", "{A51C3622-FC6E-4846-8CB0-CC4C234814C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MinerActor", "WSP.MinerActor\WSP.MinerActor.csproj", "{B0AB2B72-6225-4348-A8F2-FED42C762F3A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MinerActor.Interfaces", "WSP.MinerActor.Interfaces\WSP.MinerActor.Interfaces.csproj", "{A8866396-8578-4518-BA47-6AF6A18344B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.DBHandlerService", "WSP.DBHandlerService\WSP.DBHandlerService.csproj", "{162ED859-9E23-41BC-B385-83F686371AE7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.DBHandlerService.Interfaces", "WSP.DBHandlerService.Interfaces\WSP.DBHandlerService.Interfaces.csproj", "{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.TwitterMinerActor", "WSP.TwitterMinerActor\WSP.TwitterMinerActor.csproj", "{EE27BE62-185F-4749-A97D-DE879E95A689}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MyActors", "WSP.MyActors\WSP.MyActors.csproj", "{EA4AD9DF-2393-4343-8055-00363A6EDA2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,12 +85,6 @@ Global
 		{A51C3622-FC6E-4846-8CB0-CC4C234814C1}.Release|Any CPU.ActiveCfg = Release|x64
 		{A51C3622-FC6E-4846-8CB0-CC4C234814C1}.Release|x64.ActiveCfg = Release|x64
 		{A51C3622-FC6E-4846-8CB0-CC4C234814C1}.Release|x64.Build.0 = Release|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Debug|x64.ActiveCfg = Debug|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Debug|x64.Build.0 = Debug|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Release|Any CPU.ActiveCfg = Release|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Release|x64.ActiveCfg = Release|x64
-		{B0AB2B72-6225-4348-A8F2-FED42C762F3A}.Release|x64.Build.0 = Release|x64
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Debug|x64.ActiveCfg = Debug|x64
 		{A8866396-8578-4518-BA47-6AF6A18344B9}.Debug|x64.Build.0 = Debug|x64
@@ -109,6 +105,20 @@ Global
 		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|x64.ActiveCfg = Release|Any CPU
 		{71BC7ACA-55DC-4A4A-BF4C-1FF907730541}.Release|x64.Build.0 = Release|Any CPU
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Debug|x64.ActiveCfg = Debug|x64
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Debug|x64.Build.0 = Debug|x64
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Release|Any CPU.ActiveCfg = Release|x64
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Release|x64.ActiveCfg = Release|x64
+		{EE27BE62-185F-4749-A97D-DE879E95A689}.Release|x64.Build.0 = Release|x64
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

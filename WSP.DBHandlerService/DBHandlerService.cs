@@ -25,8 +25,10 @@ namespace WSP.DBHandlerService {
     internal sealed class DBHandlerService: StatefulService, IDBHandlerService {
         BESearchRequestsController TheSReqController = new BESearchRequestsController();
         BEMinedTextsController TheMinedTextsController = new BEMinedTextsController();
-        private static int clusterSizeMax = 100;
-        
+        private const int clusterSizeMax = 100;
+        private const int waitTimeJobDone = 5;
+        private const int waitTimeQueueEmpty = 60;
+
 
         public DBHandlerService(StatefulServiceContext context)
             : base( context ) { }
@@ -64,6 +66,7 @@ namespace WSP.DBHandlerService {
 
         protected override async Task RunAsync(CancellationToken cancellationToken) {
             var theQueue = await GetTheTextsQueue();
+            int waitTime;
             int clusterSize = 0;
             bool addMoreTexts;
 
@@ -78,7 +81,7 @@ namespace WSP.DBHandlerService {
                         allTexts = result.Value.ToList();
                         clusterSize = allTexts.Count();
                         addMoreTexts = true;
-                        
+
                         while(addMoreTexts) {
                             result = await theQueue.TryPeekAsync( tx );
                             if(result.HasValue) {
@@ -94,14 +97,17 @@ namespace WSP.DBHandlerService {
                                 addMoreTexts = false;
                             }
                         }
-                        
-                        await TheMinedTextsController.PostBEMinedTexts(allTexts);
+                        waitTime = waitTimeJobDone;
+                        await TheMinedTextsController.PostBEMinedTexts( allTexts );
+
+                    } else {
+                        waitTime = waitTimeQueueEmpty;
                     }   
 
                     await tx.CommitAsync();
                 }
 
-                await Task.Delay( TimeSpan.FromSeconds( 60 ), cancellationToken );
+                await Task.Delay( TimeSpan.FromSeconds(waitTime), cancellationToken );
             }
         }
     }

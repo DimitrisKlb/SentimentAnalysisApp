@@ -14,8 +14,7 @@ using WSP.MasterActor.Interfaces;
 using WSP.DBHandlerService.Interfaces;
 
 namespace WSP.WebAPI.Controllers {
-    public class ServiceController: ApiController {
-        private BESearchRequestsController SReqController = new BESearchRequestsController();
+    public class ServiceController: ApiController {       
         private static IDBHandlerService dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
                 new Uri( "fabric:/WebServiceProvider/DBHandlerService" ),
                 new ServicePartitionKey( 1 ) );
@@ -33,8 +32,7 @@ namespace WSP.WebAPI.Controllers {
             // Store the new Search Request to the Database            
             try {
                 createdSearchRequest = await dbHandlerService.StoreBESearchRequest( newBESearchRequest );
-                createdSearchRequest.TheStatus = Status.Mining_Done;
-            } catch(Exception ex) {
+            } catch {
                 return InternalServerError();
             }
 
@@ -43,7 +41,7 @@ namespace WSP.WebAPI.Controllers {
                 await theMasterActor.FulfillSearchRequestAsync( createdSearchRequest );
             } catch(InvalidOperationException) {
                 return InternalServerError();
-            } catch() {
+            } catch {
                 return InternalServerError();
             }
 

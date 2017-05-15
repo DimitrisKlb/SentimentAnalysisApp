@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
-  <Section Name="MinerActorServiceReplicatorConfig">
-    <Parameter Name="ReplicatorEndpoint" Value="MinerActorServiceReplicatorEndpoint" />
-    <Parameter Name="BatchAcknowledgementInterval" Value="0.005" />
-  </Section>
-  <Section Name="MinerActorServiceReplicatorSecurityConfig">
-    <Parameter Name="CredentialType" Value="None" />
-  </Section>
   <Section Name="TwitterCredentials">
     <Parameter Name="ConsumerKey" Value="bQ05Y6TcsbrNIJKayFHHDeS5k" />
     <Parameter Name="ConsumerSecret" Value="OFtnT8a6rNs71k56z7IyqYqmnOJlbrk5nOMHTQrLzdRwVhecFq" />
     <Parameter Name="AccessToken" Value="790073232472862720-sMVIAUR3Nm0Ja3vy4NFdStOeNB52lLJ" />
     <Parameter Name="AccessTokenSecret" Value="RuxkMABK4UrmjSY27BqbTRCEjkvldkhps9gtgfwIiwKOV" />
+  </Section>
+  <Section Name="TwitterMinerActorServiceReplicatorConfig">
+    <Parameter Name="ReplicatorEndpoint" Value="TwitterMinerActorServiceReplicatorEndpoint" />
+    <Parameter Name="BatchAcknowledgementInterval" Value="0.005" />
+  </Section>
+  <Section Name="TwitterMinerActorServiceReplicatorSecurityConfig">
+    <Parameter Name="CredentialType" Value="None" />
   </Section>
   <Section Name="ApplicationServicesNames">
     <Parameter Name="DBHandlerName" Value="" />

@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors.Runtime;
 
-namespace WSP.MinerActor {
+using WSP.MyActors;
+
+namespace WSP.TwitterMinerActor {
     internal static class Program {
         /// <summary>
         /// This is the entry point of the service host process.
@@ -17,12 +19,12 @@ namespace WSP.MinerActor {
                 // are automatically populated when you build this project.
                 // For more information, see https://aka.ms/servicefabricactorsplatform
 
-                ActorRuntime.RegisterActorAsync<MinerActor>(
-                   (context, actorType) => new ActorService(context, actorType)).GetAwaiter().GetResult();
+                ActorRuntime.RegisterActorAsync<TwitterMinerActor>(
+                   (context, actorType) => new ActorService( context, actorType ) ).GetAwaiter().GetResult();
 
-                Thread.Sleep(Timeout.Infinite);
+                Thread.Sleep( Timeout.Infinite );
             } catch(Exception e) {
-                ActorEventSource.Current.ActorHostInitializationFailed(e.ToString());
+                ActorEventSource.Current.ActorHostInitializationFailed( e.ToString() );
                 throw;
             }
         }

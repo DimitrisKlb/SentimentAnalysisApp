@@ -7,15 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Actors.Runtime;
 
-namespace WSP.MinerActor {
-    [EventSource(Name = "MyCompany-WebServiceProvider-WSP.MinerActor")]
+namespace WSP.TwitterMinerActor {
+    [EventSource( Name = "MyCompany-WebServiceProvider-WSP.TwitterMinerActor" )]
     internal sealed class ActorEventSource: EventSource {
         public static readonly ActorEventSource Current = new ActorEventSource();
 
         static ActorEventSource() {
             // A workaround for the problem where ETW activities do not get tracked until Tasks infrastructure is initialized.
             // This problem will be fixed in .NET Framework 4.6.2.
-            Task.Run(() => { });
+            Task.Run( () => { } );
         }
 
         // Instance constructor is private to enforce singleton semantics
@@ -42,16 +42,16 @@ namespace WSP.MinerActor {
         [NonEvent]
         public void Message(string message, params object[] args) {
             if(this.IsEnabled()) {
-                string finalMessage = string.Format(message, args);
-                Message(finalMessage);
+                string finalMessage = string.Format( message, args );
+                Message( finalMessage );
             }
         }
 
         private const int MessageEventId = 1;
-        [Event(MessageEventId, Level = EventLevel.Informational, Message = "{0}")]
+        [Event( MessageEventId, Level = EventLevel.Informational, Message = "{0}" )]
         public void Message(string message) {
             if(this.IsEnabled()) {
-                WriteEvent(MessageEventId, message);
+                WriteEvent( MessageEventId, message );
             }
         }
 
@@ -62,7 +62,7 @@ namespace WSP.MinerActor {
                 && actor.ActorService != null
                 && actor.ActorService.Context != null
                 && actor.ActorService.Context.CodePackageActivationContext != null) {
-                string finalMessage = string.Format(message, args);
+                string finalMessage = string.Format( message, args );
                 ActorMessage(
                     actor.GetType().ToString(),
                     actor.Id.ToString(),
@@ -73,7 +73,7 @@ namespace WSP.MinerActor {
                     actor.ActorService.Context.PartitionId,
                     actor.ActorService.Context.ReplicaId,
                     actor.ActorService.Context.NodeContext.NodeName,
-                    finalMessage);
+                    finalMessage );
             }
         }
 
@@ -81,7 +81,7 @@ namespace WSP.MinerActor {
         // This results in more efficient parameter handling, but requires explicit allocation of EventData structure and unsafe code.
         // To enable this code path, define UNSAFE conditional compilation symbol and turn on unsafe code support in project properties.
         private const int ActorMessageEventId = 2;
-        [Event(ActorMessageEventId, Level = EventLevel.Informational, Message = "{9}")]
+        [Event( ActorMessageEventId, Level = EventLevel.Informational, Message = "{9}" )]
         private
 #if UNSAFE
             unsafe
@@ -109,7 +109,7 @@ namespace WSP.MinerActor {
                     partitionId,
                     replicaOrInstanceId,
                     nodeName,
-                    message);
+                    message );
 #else
                 const int numArgs = 10;
                 fixed (char* pActorType = actorType, pActorId = actorId, pApplicationTypeName = applicationTypeName, pApplicationName = applicationName, pServiceTypeName = serviceTypeName, pServiceName = serviceName, pNodeName = nodeName, pMessage = message)
@@ -132,9 +132,9 @@ namespace WSP.MinerActor {
         }
 
         private const int ActorHostInitializationFailedEventId = 3;
-        [Event(ActorHostInitializationFailedEventId, Level = EventLevel.Error, Message = "Actor host initialization failed", Keywords = Keywords.HostInitialization)]
+        [Event( ActorHostInitializationFailedEventId, Level = EventLevel.Error, Message = "Actor host initialization failed", Keywords = Keywords.HostInitialization )]
         public void ActorHostInitializationFailed(string exception) {
-            WriteEvent(ActorHostInitializationFailedEventId, exception);
+            WriteEvent( ActorHostInitializationFailedEventId, exception );
         }
         #endregion
 

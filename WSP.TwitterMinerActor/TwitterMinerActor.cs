@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Fabric;
 
-using Microsoft.ServiceFabric.Services.Client;
-using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
-using Microsoft.ServiceFabric.Actors.Client;
 
 using Tweetinvi;
 using Tweetinvi.Models;
@@ -18,99 +13,44 @@ using Tweetinvi.Parameters;
 using SentimentAnalysisApp.SharedModels;
 using WSP.MinerActor.Interfaces;
 using WSP.Models;
-using WSP.MasterActor.Interfaces;
+using WSP.MyActors;
 using WSP.DBHandlerService.Interfaces;
 
-namespace WSP.MinerActor {
+namespace WSP.TwitterMinerActor {
 
-    /******************** Helper Classes for String definitions ********************/
-
-    static internal class StateNames {
-        public const string TheSearchRequest = "theSearchRequest";
-    }
-    static internal class ReminderNames {
-        public const string MineReminder = "Mine";
-    }
-
-    /******************** The Actor ********************/
-
+    [ActorService( Name = "TwitterMinerActorService" )]
     [StatePersistence( StatePersistence.Persisted )]
-    internal class MinerActor: Actor, IMinerActor, IRemindable {
-        private ConfigurationPackage configSettings;
-        private IDBHandlerService dbHandlerService;
+    internal class TwitterMinerActor: BaseMinerActor, ITwitterMinerActor {
+
+        /******************** Fields and Core Methods ********************/
+        protected override SourceOption MinerSourceID {
+            get {
+                return SourceOption.Twitter;
+            }
+        }
         private double rateLimitsResetTime;
 
-        public MinerActor(ActorService actorService, ActorId actorId)
+        public TwitterMinerActor(ActorService actorService, ActorId actorId)
             : base( actorService, actorId ) {
-
+            rateLimitsResetTime = 0;
         }
 
-        protected override Task OnActivateAsync() {
-            ActorEventSource.Current.ActorMessage( this, "MinerActor {0} activated.", this.Id );
-
-            configSettings = ActorService.Context.CodePackageActivationContext.GetConfigurationPackageObject( "Config" );
-            dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
-                new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
-                new ServicePartitionKey( 1 ) );
-
-            return StateManager.TryAddStateAsync<BESearchRequest>( StateNames.TheSearchRequest, null );
-        }
-
-        /******************** State Management Methods ********************/
-
-        private Task<BESearchRequest> GetTheSearchRequest() {
-            return StateManager.GetStateAsync<BESearchRequest>( StateNames.TheSearchRequest );
-        }
-
-        private async Task SaveTheSearchRequest(BESearchRequest theSearchRequest) {
-            await StateManager.SetStateAsync( StateNames.TheSearchRequest, theSearchRequest );
-            await SaveStateAsync();
-        }
-
-        /******************** Actor Interface Methods ********************/
-
-        public async Task StartMiningAsync(BESearchRequest searchRequest) {
-            // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time      
-            if(await GetTheSearchRequest() == null) {
-                await SaveTheSearchRequest( searchRequest );
-            }
-
-            // Set the Reminder for the method that implements the core logic of the Actor (mainMineAsync)
-            try {
-                await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
-            } catch(Exception) {
-                throw;
-            }
-        }
-
-        /******************** Remider Management Method ********************/
-
-        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period) {
-            switch(reminderName) {
-
-                case ReminderNames.MineReminder:
-                    await UnregisterReminderAsync( this.GetReminder( ReminderNames.MineReminder ) );
-                    bool done = await mainMineAsync();
-
-                    if(done == true) {
-                        IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( this.Id );
-                        await theMasterActor.UpdateSerchRequestStatus( Status.Mining_Done );
-                    } else {
-                        await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
-                    }
-                    break;
-
-                default:
-                    // This point should never be reached. 
-                    throw new InvalidOperationException( "Unknown Reminder: " + reminderName );
-                    break;
-            }
+        protected override async Task OnActivateAsync() {
+            await base.OnActivateAsync();
+            ActorEventSource.Current.ActorMessage( this, "TwitterMinerActor {0} activated.", this.Id );
         }
 
         /******************** Actor Logic Implementation Methods ********************/
 
+
+        // Register a reminder to rerun mainMineAsync after the rateLimits of Twitter are reset, if that was the reason
+        // it failed, or after a  certain ammount of time in any other case
+        protected override async Task OnMineFailAsync() {
+            await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
+        }
+
         // Basic Twitter miner, to get tweets that contain a certain keyword. Invoked by a Reminder (MineReminder)
-        private async Task<bool> mainMineAsync() {
+        protected override async Task<bool> mainMineAsync() {
             BESearchRequest theSearchRequest;
             bool miningToOlder;
 
@@ -201,7 +141,7 @@ namespace WSP.MinerActor {
                         var minedTexts = from t in theTweets
                                          select new BEMinedText() {
                                              TheText = t.FullText,
-                                             TheSource = SourceOption.Twitter,
+                                             TheSource = MinerSourceID,
                                              SearchRequestID = theSearchRequest.ID
                                          };
                         await dbHandlerService.StoreMinedTexts( minedTexts );
@@ -229,12 +169,14 @@ namespace WSP.MinerActor {
 
                         await SaveTheSearchRequest( theSearchRequest );
                     }
-                } catch(Exception ex) {
+                } catch(Exception) {
                     return false;
                 }
             } while(tweetsReturned != 0);
 
             return true;
         }
+
     }
+
 }

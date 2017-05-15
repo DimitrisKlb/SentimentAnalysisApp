@@ -58,7 +58,7 @@ namespace WebSite.Controllers {
 
                 newSearchRequest.TheStatus = Status.Pending;
                 newSearchRequest.TheUserID = User.Identity.GetUserId();
-                newSearchRequest.TheSelectedSources.SetSelectionFromList( theVM.SelectedSources );
+                newSearchRequest.TheSelectedSources.SetFromList( theVM.SelectedSources );
 
                 var response = await TheSReqController.PostFESearchRequest( newSearchRequest );
                 if(response.GetType() == typeof( CreatedAtRouteNegotiatedContentResult<FESearchRequest> )) {
