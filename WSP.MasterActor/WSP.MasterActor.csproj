@@ -126,6 +126,10 @@
       <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
       <Name>SharedModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WSP.DBHandlerService.Interfaces\WSP.DBHandlerService.Interfaces.csproj">
+      <Project>{71bc7aca-55dc-4a4a-bf4c-1ff907730541}</Project>
+      <Name>WSP.DBHandlerService.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WSP.MasterActor.Interfaces\WSP.MasterActor.Interfaces.csproj">
       <Project>{A51C3622-FC6E-4846-8CB0-CC4C234814C1}</Project>
       <Name>WSP.MasterActor.Interfaces</Name>

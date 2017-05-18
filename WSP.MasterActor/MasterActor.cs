@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Actors.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Client;
 
 using SentimentAnalysisApp.SharedModels;
 using WSP.MasterActor.Interfaces;
 using WSP.Models;
 using WSP.MyActors;
 using WSP.MinerActor.Interfaces;
+using WSP.DBHandlerService.Interfaces;
 
 namespace WSP.MasterActor {
 
@@ -34,6 +37,7 @@ namespace WSP.MasterActor {
         /******************** Fields and Core Methods ********************/
 
         private HttpClient clientFEserver;
+        private IDBHandlerService dbHandlerService;
 
         public MasterActor(ActorService actorService, ActorId actorId)
             : base( actorService, actorId ) {
@@ -47,6 +51,11 @@ namespace WSP.MasterActor {
                 BaseAddress = new Uri(
                    configSettings.Settings.Sections["WebSiteInfo"].Parameters["WebSiteURI"].Value )
             };
+
+            dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
+                new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
+                new ServicePartitionKey( 1 ) );
+
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToCreate, null );
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToFinish, null );
         }
@@ -144,7 +153,7 @@ namespace WSP.MasterActor {
             switch(theStatus) {
                 case Status.New:
                     //Call the Miners
-                    MiningSource desiredSources = await GetTheMinersLeft( NewStateNames.TheMinersToCreate);
+                    MiningSource desiredSources = await GetTheMinersLeft( NewStateNames.TheMinersToCreate );
                     Exception exOnMinerCall = null;
 
                     foreach(var selectedSource in desiredSources.GetAsList()) {
@@ -156,13 +165,13 @@ namespace WSP.MasterActor {
                             await DecreaseTheMinersLeft( NewStateNames.TheMinersToCreate, selectedSource );
                         } catch(Exception ex) {
                             exOnMinerCall = ex;
-                        }                        
+                        }
                     }
                     if(exOnMinerCall != null) { //A Miner failed
                         throw exOnMinerCall;
                     }
                     // All Miners were created successfully
-                    await SetTheSerchRequestStatus( Status.Mining );                   
+                    await SetTheSerchRequestStatus( Status.Mining );
 
                     break;
 
@@ -171,12 +180,16 @@ namespace WSP.MasterActor {
                     break;
 
                 case Status.Mining_Done:
+                    // Update the Fulfilled SearchRequest's DB Entry
+                    await dbHandlerService.UpdateBESearchRequest( await GetTheSearchRequest() );
+
                     // Set a Reminder to Send the Results to the Website
                     try {
                         await RegisterReminderAsync( ReminderNames.SendResultsReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
                     } catch(Exception) {
                         throw;
                     }
+
                     break;
             }
         }

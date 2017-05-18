@@ -46,7 +46,7 @@ namespace WSP.MyActors {
 
         /******************** Actor Interface Methods ********************/
 
-        public async Task StartMiningAsync(BESearchRequest searchRequest) {
+        public virtual async Task StartMiningAsync(BESearchRequest searchRequest) {
             // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time      
             if(await GetTheSearchRequest() == null) {
                 await SaveTheSearchRequest( searchRequest );

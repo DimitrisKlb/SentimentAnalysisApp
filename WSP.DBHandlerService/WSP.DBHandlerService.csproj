@@ -101,8 +101,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BEMinedTextsController.cs" />
-    <Compile Include="BESearchRequestsController.cs" />
+    <Compile Include="Controllers\BEMinedTextsController.cs" />
+    <Compile Include="Controllers\TwitterDataController.cs" />
+    <Compile Include="Controllers\BESearchRequestsController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DBHandlerService.cs" />
     <Compile Include="Program.cs" />

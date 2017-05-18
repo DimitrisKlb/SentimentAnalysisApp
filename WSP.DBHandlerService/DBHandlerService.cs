@@ -23,8 +23,10 @@ namespace WSP.DBHandlerService {
     /******************** The Service ********************/
 
     internal sealed class DBHandlerService: StatefulService, IDBHandlerService {
-        BESearchRequestsController TheSReqController = new BESearchRequestsController();
-        BEMinedTextsController TheMinedTextsController = new BEMinedTextsController();
+        BESearchRequestsController TheSReqContr = new BESearchRequestsController();
+        BEMinedTextsController TheMinedTextsContr = new BEMinedTextsController();
+        TwitterDataController TheTwitterDataContr = new TwitterDataController();
+
         private const int clusterSizeMax = 100;
         private const int waitTimeJobDone = 5;
         private const int waitTimeQueueEmpty = 60;
@@ -49,7 +51,10 @@ namespace WSP.DBHandlerService {
         /******************** Service Interface Methods ********************/
 
         public async Task<BESearchRequest> StoreBESearchRequest(BESearchRequest newBESearchRequest) {
-            return await TheSReqController.PostBESearchRequest( newBESearchRequest );
+            return await TheSReqContr.PostBESearchRequest( newBESearchRequest );
+        }
+        public async Task UpdateBESearchRequest(BESearchRequest updatedBESearchRequest) {
+            await TheSReqContr.PutBESearchRequest( updatedBESearchRequest );
         }
 
         public async Task StoreMinedTexts(IEnumerable<BEMinedText> newBEMinedTexts) {
@@ -60,6 +65,11 @@ namespace WSP.DBHandlerService {
 
                 await tx.CommitAsync();
             }
+        }
+
+        public async Task StoreTwitterData(TwitterData newTwitterData) {
+            await TheTwitterDataContr.PostTwitterData(newTwitterData);
+
         }
 
         /******************** Service Main Run Method ********************/
@@ -98,7 +108,7 @@ namespace WSP.DBHandlerService {
                             }
                         }
                         waitTime = waitTimeJobDone;
-                        await TheMinedTextsController.PostBEMinedTexts( allTexts );
+                        await TheMinedTextsContr.PostBEMinedTexts( allTexts );
 
                     } else {
                         waitTime = waitTimeQueueEmpty;

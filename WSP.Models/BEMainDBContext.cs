@@ -14,5 +14,7 @@ namespace WSP.Models {
         public DbSet<BEMinedText> BEMinedTexts { get; set; }
 
         public DbSet<MiningSource> MiningSources { get; set; }
+
+        public DbSet<TwitterData> TwitterData { get; set; }
     }
 }
