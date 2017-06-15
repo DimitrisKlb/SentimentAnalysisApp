@@ -15,22 +15,14 @@ namespace SentimentAnalysisApp.SharedModels {
         [Required]
         [StringLength( 20, MinimumLength = 3 )]
         [DataMember]
-        public string TheSearchKeyword { get; set; }
+        public string TheSearchKeyword { get; set; }      
 
-        
-        [ForeignKey( "TheSelectedSources" )]
-        [Required]
-        [DataMember]
-        public int MiningSourceID { get; set; }
-
-        [DataMember]
-        // Navigation property (one-to-one)
+        [DataMember]        
         public MiningSource TheSelectedSources { get; set; } // The desired sources from which to mine texts        
 
-
         // Navigation property (one-to-many)
-        [DataMember]
-        public virtual ICollection<BaseMinedText> MinedTexts { get; set; }
+        public virtual ICollection<BaseExecution> TheExecutions { get; set; } // The desired sources from which to mine texts        
+
 
         public BaseSearchRequest() {
             TheSearchKeyword = "";

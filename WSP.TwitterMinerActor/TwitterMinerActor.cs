@@ -22,6 +22,12 @@ namespace WSP.TwitterMinerActor {
     [StatePersistence( StatePersistence.Persisted )]
     internal class TwitterMinerActor: BaseMinerActor, ITwitterMinerActor {
 
+        /************* Helper Classes for String definitions *************/
+
+        protected abstract class NewStateNames {
+            public const string TheTwitterData = "theTwitterData";
+        }
+
         /******************** Fields and Core Methods ********************/
         protected override SourceOption MinerSourceID {
             get {
@@ -40,11 +46,22 @@ namespace WSP.TwitterMinerActor {
             ActorEventSource.Current.ActorMessage( this, "TwitterMinerActor {0} activated.", this.Id );
         }
 
+        /******************** State Management Methods ********************/
+
+        protected Task<TwitterData> GetTheTwitterData() {
+            return StateManager.GetStateAsync<TwitterData>( NewStateNames.TheTwitterData );
+        }
+
+        protected async Task SaveTheTwitterData(TwitterData theTwitterData) {
+            await StateManager.SetStateAsync( NewStateNames.TheTwitterData, theTwitterData );
+            await SaveStateAsync();
+        }
+
         /******************** Actor Interface Methods ********************/
 
         // Initialize the TwitterData object and thenc all the inhereted StartMiningAsync method
         public override async Task StartMiningAsync(BESearchRequest searchRequest) {
-            searchRequest.TheTwitterData = new TwitterData(searchRequest.ID);
+            await SaveTheTwitterData( new TwitterData(searchRequest.LastExecutionID) );
             await base.StartMiningAsync( searchRequest );
         }
 
@@ -61,6 +78,7 @@ namespace WSP.TwitterMinerActor {
         protected override async Task<bool> mainMineAsync() {
             
             BESearchRequest theSearchRequest;
+            TwitterData theTwitterData;
             bool miningToOlder;
 
             string twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret;
@@ -71,7 +89,8 @@ namespace WSP.TwitterMinerActor {
             
             // Get the SearchRequest saved in the Stage Manager to show the job needed to be done
             theSearchRequest = await GetTheSearchRequest();
-            
+            theTwitterData = await GetTheTwitterData();
+
             // Disable the exception swallowing to allow exception to be thrown by Tweetinvi
             ExceptionHandler.SwallowWebExceptions = false;
 
@@ -122,14 +141,14 @@ namespace WSP.TwitterMinerActor {
                 MaximumNumberOfResults = windowSize
             };
 
-            if(theSearchRequest.TheTwitterData.TheIdOldest == -1 && theSearchRequest.TheTwitterData.TheIdNewest == -1) {
+            if(theTwitterData.TheIdOldest == -1 && theTwitterData.TheIdNewest == -1) {
                 miningToOlder = true;
-            } else if(theSearchRequest.TheTwitterData.TheIdOldest != -1) {
+            } else if(theTwitterData.TheIdOldest != -1) {
                 miningToOlder = true;
-                searchParameters.MaxId = theSearchRequest.TheTwitterData.TheIdOldest - 1;
+                searchParameters.MaxId = theTwitterData.TheIdOldest - 1;
             } else {
                 miningToOlder = false;
-                searchParameters.SinceId = theSearchRequest.TheTwitterData.TheIdNewest;
+                searchParameters.SinceId = theTwitterData.TheIdNewest;
             }
 
             // Find relevant tweets iteratively, in windows of a certains size (windowSize)
@@ -158,25 +177,26 @@ namespace WSP.TwitterMinerActor {
 
                         // Update the the TwitterData with the oldest-newest mined tweets to indicate the additional job done
                         if(totalTweets == 0) {     // The first time tweets were mined                
-                            theSearchRequest.TheTwitterData.TheIdNewest = theTweets.First().Id; // Save the id of the newest tweet
+                            theTwitterData.TheIdNewest = theTweets.First().Id; // Save the id of the newest tweet
                         }
                         totalTweets += tweetsReturned;
 
                         // Determine whether the mining should be done newer to older or inverse
                         if(miningToOlder == true) {
                             searchParameters.MaxId = theTweets.Last().Id - 1;
-                            theSearchRequest.TheTwitterData.TheIdOldest = theTweets.Last().Id;
+                            theTwitterData.TheIdOldest = theTweets.Last().Id;
                             if(tweetsReturned < windowSize) {
                                 miningToOlder = false;
                                 searchParameters.MaxId = -1;
-                                searchParameters.SinceId = theSearchRequest.TheTwitterData.TheIdNewest;
+                                searchParameters.SinceId = theTwitterData.TheIdNewest;
                             }
                         } else {
                             searchParameters.SinceId = theTweets.First().Id;
-                            theSearchRequest.TheTwitterData.TheIdNewest = theTweets.First().Id;
+                            theTwitterData.TheIdNewest = theTweets.First().Id;
                         }
 
                         await SaveTheSearchRequest( theSearchRequest );
+                        await SaveTheTwitterData( theTwitterData );
                     }
                 } catch {
                     return false;
@@ -184,7 +204,7 @@ namespace WSP.TwitterMinerActor {
             } while(tweetsReturned != 0);
             
             // Store the TwitterData in the db
-            await dbHandlerService.StoreTwitterData( theSearchRequest.TheTwitterData );
+            await dbHandlerService.StoreTwitterData( theTwitterData );
             return true;
         }
 

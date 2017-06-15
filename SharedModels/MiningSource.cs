@@ -18,23 +18,21 @@ namespace SentimentAnalysisApp.SharedModels {
             return Enum.GetValues( typeof( SourceOption ) ).Cast<SourceOption>().ToList();
         }
 
-        [Key]
-        [DataMember]
-        public int ID { get; set; }
-
-        [Required]
         [DataMember]
         public SourceOption TheSelection { get; set; }
 
-        public MiningSource(SourceOption TheSelection = 0) {
-            this.TheSelection = TheSelection;
+        public MiningSource() {
+            TheSelection = 0;
+        }
+        public MiningSource(SourceOption theSelection = 0) {
+            TheSelection = theSelection;
         }
         public MiningSource(MiningSource miningSource) {
-            this.TheSelection = miningSource.TheSelection;
+            TheSelection = miningSource.TheSelection;
         }
 
         public void CopyFrom(MiningSource source) {
-            this.TheSelection = source.TheSelection;
+            TheSelection = source.TheSelection;
         }
 
         public List<SourceOption> GetAsList() {

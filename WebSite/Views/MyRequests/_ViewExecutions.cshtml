@@ -1,0 +1,54 @@
+﻿@model IEnumerable<WebSite.Models.FEExecution>
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Executions:</h2>
+        </div>
+
+        <div class="panel-body">
+            <div class="list-unstyled">
+                <div class="row">
+                    <div class="col-md-1">IN</div>
+                    <div class="col-md-1">ID</div>
+                    <div class="col-md-2">Started On</div>
+                    <div class="col-md-2">Finished On</div>
+                    <div class="col-md-2">Score +</div>
+                    <div class="col-md-2">Score -</div>
+                </div>
+                <br />
+
+                @{
+                    int i = 1;
+                }
+                @foreach(var item in Model) {
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            @i
+                        </div>
+                        <div class="col-md-1">
+                            @Html.DisplayFor( modelItem => item.ID )
+                        </div>
+                        <div class="col-md-2">
+                            @Html.DisplayFor( modelItem => item.StartedOn )
+                        </div>
+                        <div class="col-md-2">
+                            @Html.DisplayFor( modelItem => item.FinishedOn )
+                        </div>
+                        <div class="col-md-2">
+                            @Html.DisplayFor( modelItem => item.TheResults.ThePositiveScore )
+                        </div>
+                        <div class="col-md-2">
+                            @Html.DisplayFor( modelItem => item.TheResults.TheNegativeScore )
+                        </div>
+                    </div>
+                    <br />
+
+                    i++;
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

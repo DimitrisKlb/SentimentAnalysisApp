@@ -31,7 +31,6 @@ namespace WSP.DBHandlerService {
         private const int waitTimeJobDone = 5;
         private const int waitTimeQueueEmpty = 60;
 
-
         public DBHandlerService(StatefulServiceContext context)
             : base( context ) { }
 

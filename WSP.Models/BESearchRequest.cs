@@ -25,19 +25,19 @@ namespace WSP.Models {
         // that was received by whoever called the API and submited it
         [Required]
         [DataMember]        
-        public int TheReceivedID { get; set; } 
+        public int TheReceivedID { get; set; }
 
-        // Navigation property (one-to-oneOrZero)       
-        public virtual TwitterData TheTwitterData { get; set; }
-
+        // The ID of the last execution
+        [DataMember]
+        public int LastExecutionID { get; set; }
+                
         public BESearchRequest() {
         }
 
         public BESearchRequest(BaseSearchRequest baseSource)
             : base(baseSource) {
             TheStatus = Status.New;
-            TheReceivedID = baseSource.ID;
-            TheTwitterData = null;
+            TheReceivedID = baseSource.ID;            
         }
 
         public BaseSearchRequest GetReceivedSearchRequest() {

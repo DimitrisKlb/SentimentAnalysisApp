@@ -8,9 +8,10 @@ using WebSite.Models;
 namespace WebSite.ViewModels {
 
     public class MR_BannerMsg: BannerMsg {
-        public static readonly MR_BannerMsg CreateOk = new MR_BannerMsg( "Your Search Request was successfully created", "alert-success" );
+        public static readonly MR_BannerMsg CreateOk = new MR_BannerMsg( "Your Search Request was successfully created.", "alert-success" );
         public static readonly MR_BannerMsg ErrorNotCreated = new MR_BannerMsg( "Unfortunately, your Search Request could not be created. Please try again later.", "alert-danger" );
         public static readonly MR_BannerMsg ErrorNotExecuted = new MR_BannerMsg( "Unfortunately, your Search Request could not be be programmed for execution right now, and was saved to your Drafts. Please try again later.", "alert-danger" );
+        public static readonly MR_BannerMsg ErrorAlreadyExecuting = new MR_BannerMsg( "This Search Request is already under execution.", "alert-danger" );
 
         private MR_BannerMsg(string Text, string AlertType)
             : base( Text, AlertType ) {

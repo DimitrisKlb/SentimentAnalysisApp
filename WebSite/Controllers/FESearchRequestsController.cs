@@ -9,7 +9,7 @@ using System.Web.Http.Description;
 using WebSite.Models;
 
 namespace WebSite.Controllers {
-    
+
     public class FESearchRequestsController: ApiController {
         private FEMainDBContext db = new FEMainDBContext();
 
@@ -38,11 +38,10 @@ namespace WebSite.Controllers {
 
         [NonAction]
         [ResponseType( typeof( void ) )]
-        public async Task<IHttpActionResult> PutFESearchRequest(int id, FESearchRequest fESearchRequest) {
+        public async Task<IHttpActionResult> UpdateFESearchRequest(int id, FESearchRequest fESearchRequest) {
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }
-
             if(id != fESearchRequest.ID) {
                 return BadRequest();
             }
@@ -58,20 +57,19 @@ namespace WebSite.Controllers {
                     throw;
                 }
             }
-
             return StatusCode( HttpStatusCode.NoContent );
         }
 
         [NonAction]
         [ResponseType( typeof( void ) )]
-        public async Task<IHttpActionResult> UpdateSearchRequestStatus(int id, Status newStatus) {
+        public async Task<IHttpActionResult> UpdateFESearchRequestStatus(int id, Status newStatus) {
             FESearchRequest oldSearchRequest = await db.FESearchRequests.FindAsync( id );
             if(oldSearchRequest == null) {
                 return NotFound();
             }
 
             oldSearchRequest.TheStatus = newStatus;
-            return await PutFESearchRequest( id, oldSearchRequest );
+            return await UpdateFESearchRequest( id, oldSearchRequest );
         }
 
         [NonAction]

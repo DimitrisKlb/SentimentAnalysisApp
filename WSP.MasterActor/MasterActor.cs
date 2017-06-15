@@ -134,7 +134,7 @@ namespace WSP.MasterActor {
                     break;
 
                 case ReminderNames.SendResultsReminder:
-                    await sendResults();
+                    await submitResults();
                     break;
 
                 default:
@@ -181,7 +181,7 @@ namespace WSP.MasterActor {
 
                 case Status.Mining_Done:
                     // Update the Fulfilled SearchRequest's DB Entry
-                    await dbHandlerService.UpdateBESearchRequest( await GetTheSearchRequest() );
+                    //await dbHandlerService.UpdateBESearchRequest( await GetTheSearchRequest() );
 
                     // Set a Reminder to Send the Results to the Website
                     try {
@@ -194,14 +194,24 @@ namespace WSP.MasterActor {
             }
         }
 
-        // Send the Results to the Website. Invoked by a Reminder (SendResultsReminder)
-        private async Task sendResults() {
-            var theResults = (await GetTheSearchRequest()).GetReceivedSearchRequest(); // Temporary Result Type
+        // Sumbit the Results to the DB and send them to the Website. Invoked by a Reminder (SendResultsReminder)
+        private async Task submitResults() {
+            await UnregisterReminderAsync( this.GetReminder( ReminderNames.SendResultsReminder ) );
+
+            var receivedSReqID = (await GetTheSearchRequest()).TheReceivedID; // Temporary Result Type
+
+            float negScore = (float)(new System.Random()).NextDouble() * 100.0f;
+            Results theResults = new Results( negScore, -negScore ); //Random Results for now
+
+            // Create the Execution object concerning the execution that was just completed, with the calculated Results
+
+            // Send the Results to the WebSite
+            theResults.ID = receivedSReqID;
             var response = await clientFEserver.PostAsJsonAsync( "api/Results/Submit", theResults );
 
-            // Upon successful transmission, delete the reminder. Else the sendResults method will be invoked again
-            if(response.IsSuccessStatusCode) {
-                await UnregisterReminderAsync( this.GetReminder( ReminderNames.SendResultsReminder ) );
+            // Upon unsuccessful transmission, retry to send the results
+            if(response.IsSuccessStatusCode != true) {
+                await RegisterReminderAsync( ReminderNames.SendResultsReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
             }
 
         }

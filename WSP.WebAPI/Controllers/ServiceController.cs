@@ -28,10 +28,12 @@ namespace WSP.WebAPI.Controllers {
             }
             BESearchRequest createdSearchRequest;
             BESearchRequest newBESearchRequest = new BESearchRequest( baseSearchRequest );
+            newBESearchRequest.TheStatus = Status.Mining_Done;
 
             // Store the new Search Request to the Database            
             try {
-                createdSearchRequest = await dbHandlerService.StoreBESearchRequest( newBESearchRequest );
+                //createdSearchRequest = await dbHandlerService.StoreBESearchRequest( newBESearchRequest );
+                createdSearchRequest = newBESearchRequest;
             } catch {
                 return InternalServerError();
             }

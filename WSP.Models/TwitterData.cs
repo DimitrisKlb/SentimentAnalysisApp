@@ -9,7 +9,7 @@ namespace WSP.Models {
     [DataContract]
     public class TwitterData {
 
-        [Key, ForeignKey( "TheBESearchRequest" )]
+        [Key, ForeignKey( "TheBEExecution" )]
         [DataMember]
         public int ID { get; set; }
 
@@ -22,13 +22,13 @@ namespace WSP.Models {
         public long TheIdNewest { get; set; }
 
         // Navigation property (one-to-oneOrZero) 
-        public virtual BESearchRequest TheBESearchRequest { get; set; }
+        public virtual BEExecution TheBEExecution { get; set; }
 
-        public TwitterData(int theBESReqID) {
-            ID = theBESReqID;
+        public TwitterData(int theBEExecID) {
+            ID = theBEExecID;
             TheIdOldest = -1;
             TheIdNewest = -1;
-            TheBESearchRequest = null;
+            TheBEExecution = null;
         }
 
     }

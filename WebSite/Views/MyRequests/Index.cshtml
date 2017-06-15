@@ -10,6 +10,10 @@
     <link href="@Url.Content("~/Content/FluentDisplay.css")" rel="stylesheet" type="text/css" />
 }
 
+@section Scripts{
+    <script src="@Url.Content("~/scripts/myRequests.js")"></script>
+}
+
 @if(@Model.TheBannerMsg != null) {
     <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -33,7 +37,7 @@
                 <ul class="list-unstyled">
 
                     @foreach(var item in Model.TheSearchRequests) {
-                        if(item.TheStatus == Status.Open) {
+                        if(item.TheStatus == Status.New) {
                             <li>
                                 <span>
                                     @Html.DisplayFor( modelItem => item.TheSearchKeyword )
@@ -58,7 +62,7 @@
                 <ul class="list-unstyled">
 
                     @foreach(var item in Model.TheSearchRequests) {
-                        if(item.TheStatus == Status.Pending) {
+                        if(item.TheStatus == Status.Executing) {
                             <li>
                                 <span>
                                     @Html.DisplayFor( modelItem => item.TheSearchKeyword )
@@ -84,9 +88,15 @@
                     @foreach(var item in Model.TheSearchRequests) {
                         if(item.TheStatus == Status.Fulfilled) {
                             <li>
-                                <span>
+                                <div>
                                     @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                                </span>
+                                    <a href="#" class="viewExecutions">
+                                        <small>Results</small>
+                                        <div class="sRequestID hidden">@item.ID</div>
+                                    </a>
+                                    |
+                                    <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
+                                </div>
                             </li>
                         }
                     }
@@ -99,5 +109,5 @@
 
 @Html.Action( "CreateSearchRequest" )
 
-<div class="row" id="textResults">
+<div class="row" id="executions">
 </div>

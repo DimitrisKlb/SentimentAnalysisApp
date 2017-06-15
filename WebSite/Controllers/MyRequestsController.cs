@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Http.Results;
 using System.Net.Http;
@@ -9,7 +11,6 @@ using Microsoft.AspNet.Identity;
 using SentimentAnalysisApp.SharedModels;
 using WebSite.Models;
 using WebSite.ViewModels;
-using System.Collections.Generic;
 
 namespace WebSite.Controllers {
 
@@ -17,6 +18,7 @@ namespace WebSite.Controllers {
     public class MyRequestsController: FluentDisplayController {
 
         private FESearchRequestsController TheSReqController = new FESearchRequestsController();
+        private FEExecutionsController TheExecsController = new FEExecutionsController();
         private static HttpClient clientBEserver = new HttpClient {
             BaseAddress = new System.Uri( WebConfigurationManager.AppSettings["WebApiProvider-URI"] )
         };
@@ -25,7 +27,7 @@ namespace WebSite.Controllers {
         [HttpGet]
         public ActionResult Index() {
             MyRequestsViewModel theVM = new MyRequestsViewModel();
-            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );            
+            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
             theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
 
             return View( theVM );
@@ -46,7 +48,7 @@ namespace WebSite.Controllers {
                     return PartialView( "_CreateSearchRequest", new CreateSReqViewModel( previousOptions ) );
                 } else {
                     return PartialView( "_CreateSearchRequest", new CreateSReqViewModel() );
-                }                
+                }
             }
         }
 
@@ -56,7 +58,7 @@ namespace WebSite.Controllers {
             if(ModelState.IsValid) {
                 FESearchRequest newSearchRequest = theVM.TheSearchRequest;
 
-                newSearchRequest.TheStatus = Status.Pending;
+                newSearchRequest.TheStatus = Status.New;
                 newSearchRequest.TheUserID = User.Identity.GetUserId();
                 newSearchRequest.TheSelectedSources.SetFromList( theVM.SelectedSources );
 
@@ -80,7 +82,6 @@ namespace WebSite.Controllers {
                 FESearchRequest searchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
                 return await ExecuteSearchRequest( searchRequest );
             } else {
-                await TheSReqController.UpdateSearchRequestStatus( searchRequestID, Status.Open );
                 return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
             }
 
@@ -88,22 +89,39 @@ namespace WebSite.Controllers {
 
         private async Task<ActionResult> ExecuteSearchRequest(FESearchRequest searchRequest) {
 
+            Status previousStatus = searchRequest.TheStatus;
+            if(previousStatus == Status.Executing) {
+                return RedirectToIndex( MR_BannerMsg.ErrorAlreadyExecuting );
+            }
+            await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, Status.Executing );
+
+            // Send the Search Request to the BE Server for execution
             try {
+
                 var response = await clientBEserver.PostAsJsonAsync(
                                 WebConfigurationManager.AppSettings["WebApiProvider-SubmitRoute"],
                                 (BaseSearchRequest)searchRequest );
+
                 if(response.IsSuccessStatusCode) {
-                    await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Pending );
+                    searchRequest.LastExecutionCreatedOn = DateTime.Now;
+                    await TheSReqController.UpdateFESearchRequest( searchRequest.ID, searchRequest );
                     return RedirectToIndex( MR_BannerMsg.CreateOk );
                 } else {
-                    await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
+                    await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, previousStatus );
                     return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
                 }
             } catch {
-                await TheSReqController.UpdateSearchRequestStatus( searchRequest.ID, Status.Open );
+                await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, previousStatus );
                 return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
             }
         }
+
+        public PartialViewResult ViewExecutions(int searchRequestID) {
+            var theExecutions = TheExecsController.GetFEExecutions( searchRequestID );
+            return PartialView( "_ViewExecutions", theExecutions );
+        }
+
+
 
     }
 }

@@ -10,9 +10,9 @@ namespace WebSite.Models {
 
         public DbSet<FESearchRequest> FESearchRequests { get; set; }
 
-        public DbSet<BaseMinedText> MinedTexts { get; set; }
+        public DbSet<FEExecution> FEExecutions { get; set; }
 
-        public DbSet<MiningSource> MiningSources { get; set; }
+        public DbSet<Results> Results { get; set; }
 
     }
 }
