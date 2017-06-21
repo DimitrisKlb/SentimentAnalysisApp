@@ -6,7 +6,8 @@ using SentimentAnalysisApp.SharedModels;
 
 namespace WSP.Models {
 
-    [Table("BEMinedTexts")]
+    [Table( "BEMinedTexts" )]
+    [DataContract]
     public class BEMinedText: BaseMinedText {
 
         [ForeignKey( "TheExecution" )]
@@ -17,6 +18,10 @@ namespace WSP.Models {
 
         // Navigation property (one-to-one)
         public virtual BEExecution TheExecution { get; set; }
+
+        public BEMinedText()
+            : base() {
+        }
 
     }
 }

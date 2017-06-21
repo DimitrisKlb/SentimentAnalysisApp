@@ -90,6 +90,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharedModels\SharedModels.csproj">
+      <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
+      <Name>SharedModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WSP.Models\WSP.Models.csproj">
       <Project>{a048cc25-9a11-45f5-bdb7-08016dd34a77}</Project>
       <Name>WSP.Models</Name>

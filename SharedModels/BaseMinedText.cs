@@ -15,15 +15,13 @@ namespace SentimentAnalysisApp.SharedModels {
         public string TheText { get; set; }
 
         [DataMember]
-        public SourceOption TheSource { get; set; }     
+        public SourceOption TheSource { get; set; } 
 
-        [ForeignKey("TheSearchRequest")]
-        [Required]
-        [DataMember]
-        public int SearchRequestID { get; set; }
 
-        // Navigation property
-        public virtual BaseSearchRequest TheSearchRequest { get; set; }
+        public BaseMinedText() {
+            ID = 0;
+        }
+
     }
 
 }

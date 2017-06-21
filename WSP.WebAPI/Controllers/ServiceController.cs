@@ -26,23 +26,13 @@ namespace WSP.WebAPI.Controllers {
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }
-            BESearchRequest createdSearchRequest;
+            BESearchRequest theSearchRequest;
             BESearchRequest newBESearchRequest = new BESearchRequest( baseSearchRequest );
-            newBESearchRequest.TheStatus = Status.Mining_Done;
-
-            // Store the new Search Request to the Database            
+                   
             try {
-                //createdSearchRequest = await dbHandlerService.StoreBESearchRequest( newBESearchRequest );
-                createdSearchRequest = newBESearchRequest;
-            } catch {
-                return InternalServerError();
-            }
-
-            IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( new ActorId( createdSearchRequest.ID ) );
-            try {
-                await theMasterActor.FulfillSearchRequestAsync( createdSearchRequest );
-            } catch(InvalidOperationException) {
-                return InternalServerError();
+                theSearchRequest = await dbHandlerService.StoreOrUpdateSearchRequest( newBESearchRequest);
+                IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( new ActorId( theSearchRequest.ID ) );
+                await theMasterActor.FulfillSearchRequestAsync( theSearchRequest );
             } catch {
                 return InternalServerError();
             }

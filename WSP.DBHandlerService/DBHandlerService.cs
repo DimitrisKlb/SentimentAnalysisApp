@@ -11,6 +11,7 @@ using Microsoft.ServiceFabric.Services.Remoting.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 
 using WSP.DBHandlerService.Interfaces;
+using SentimentAnalysisApp.SharedModels;
 using WSP.Models;
 
 namespace WSP.DBHandlerService {
@@ -23,7 +24,8 @@ namespace WSP.DBHandlerService {
     /******************** The Service ********************/
 
     internal sealed class DBHandlerService: StatefulService, IDBHandlerService {
-        BESearchRequestsController TheSReqContr = new BESearchRequestsController();
+        BESearchRequestsController TheSReqsContr = new BESearchRequestsController();
+        BEExecutionsController TheExecsContr = new BEExecutionsController();
         BEMinedTextsController TheMinedTextsContr = new BEMinedTextsController();
         TwitterDataController TheTwitterDataContr = new TwitterDataController();
 
@@ -49,26 +51,52 @@ namespace WSP.DBHandlerService {
 
         /******************** Service Interface Methods ********************/
 
-        public async Task<BESearchRequest> StoreBESearchRequest(BESearchRequest newBESearchRequest) {
-            return await TheSReqContr.PostBESearchRequest( newBESearchRequest );
+        public async Task<BESearchRequest> StoreOrUpdateSearchRequest(BESearchRequest newBESearchRequest){
+            // Check if this SearchRequest has been received again
+            BESearchRequest theSearchRequest = TheSReqsContr.GetBESearchRequestByReceived( newBESearchRequest.TheReceivedID );
+
+            if(theSearchRequest == null) { // If not, create a new SearchRequest
+                theSearchRequest = await TheSReqsContr.PostBESearchRequest( newBESearchRequest );
+
+            } else { // If it has, update its Status to new, since it will be executed again
+                theSearchRequest.TheStatus = Status.New; 
+                await TheSReqsContr.UpdateBESearchRequest( theSearchRequest );
+            }
+            return theSearchRequest;
         }
-        public async Task UpdateBESearchRequest(BESearchRequest updatedBESearchRequest) {
-            await TheSReqContr.PutBESearchRequest( updatedBESearchRequest );
+
+        public async Task UpdateSearchRequestFulfilled(int searchRequestID, int executionID, Results theResults) {
+            BESearchRequest theSReq = await TheSReqsContr.GetBESearchRequest( searchRequestID );
+            theSReq.TheStatus = Status.Fulfilled;
+            await TheSReqsContr.UpdateBESearchRequest( theSReq );
+
+            BEExecution theExec = await TheExecsContr.GetBEExecution( executionID );
+            theExec.FinishedOn = DateTime.Now;
+            theExec.TheResults = theResults;
+            await TheExecsContr.UpdateBEExecution( theExec );
+
         }
+
+        public async Task<BEExecution> StoreExecution(BEExecution newBEExecution) {
+            return await TheExecsContr.PostBEExecution( newBEExecution );
+        }
+
 
         public async Task StoreMinedTexts(IEnumerable<BEMinedText> newBEMinedTexts) {
             var theQueue = await GetTheTextsQueue();
-
             using(var tx = StateManager.CreateTransaction()) {
                 await theQueue.EnqueueAsync( tx, newBEMinedTexts );
-
                 await tx.CommitAsync();
             }
         }
 
-        public async Task StoreTwitterData(TwitterData newTwitterData) {
-            await TheTwitterDataContr.PostTwitterData(newTwitterData);
 
+        public async Task StoreTwitterData(TwitterData newTwitterData) {
+            await TheTwitterDataContr.PostTwitterData( newTwitterData );
+        }
+
+        public async Task<TwitterData> GetLatestTwitterData(int searchRequestID) {
+            return await TheTwitterDataContr.GetLatestTwitterData( searchRequestID );
         }
 
         /******************** Service Main Run Method ********************/
@@ -111,13 +139,17 @@ namespace WSP.DBHandlerService {
 
                     } else {
                         waitTime = waitTimeQueueEmpty;
-                    }   
+                    }
 
                     await tx.CommitAsync();
                 }
 
-                await Task.Delay( TimeSpan.FromSeconds(waitTime), cancellationToken );
+                await Task.Delay( TimeSpan.FromSeconds( waitTime ), cancellationToken );
             }
         }
+
+
+
+
     }
 }

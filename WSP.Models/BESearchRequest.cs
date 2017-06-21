@@ -28,22 +28,29 @@ namespace WSP.Models {
         public int TheReceivedID { get; set; }
 
         // The ID of the last execution
+        [NotMapped]
         [DataMember]
-        public int LastExecutionID { get; set; }
+        public int ActiveExecutionID { get; set; }
                 
         public BESearchRequest() {
+            ActiveExecutionID = -1;
         }
 
         public BESearchRequest(BaseSearchRequest baseSource)
             : base(baseSource) {
             TheStatus = Status.New;
-            TheReceivedID = baseSource.ID;            
+            TheReceivedID = baseSource.ID;
+            ActiveExecutionID = -1;
         }
 
         public BaseSearchRequest GetReceivedSearchRequest() {
             BaseSearchRequest receivedSReq = (BaseSearchRequest)this;
             receivedSReq.ID = TheReceivedID;
             return receivedSReq;
+        }
+
+        public bool hasCreatedLastExecution() {
+            return ActiveExecutionID == -1 ? false : true;
         }
 
     }

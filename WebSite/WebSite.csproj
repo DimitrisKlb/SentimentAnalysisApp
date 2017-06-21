@@ -232,38 +232,18 @@
       <DependentUpon>201704151222433_Initial_AppUserDB.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Migrations_AppUserDB\Configuration_AppUserDB.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.Designer.cs">
-      <DependentUpon>201704151223346_Initial_FEMainDB.cs</DependentUpon>
+    <Compile Include="Migrations\Migrations_FEMainDB\201706201229458_Initial_FEMainDB.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201706201229458_Initial_FEMainDB.Designer.cs">
+      <DependentUpon>201706201229458_Initial_FEMainDB.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.Designer.cs">
-      <DependentUpon>201704161417148_ConnectToUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.Designer.cs">
-      <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.Designer.cs">
-      <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.Designer.cs">
-      <DependentUpon>201705101943109_AddMiningSources.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201706130021217_AddExecutions.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201706130021217_AddExecutions.Designer.cs">
-      <DependentUpon>201706130021217_AddExecutions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Migrations_FEMainDB\201706142354044_UpdateMiningSources.cs" />
-    <Compile Include="Migrations\Migrations_FEMainDB\201706142354044_UpdateMiningSources.Designer.cs">
-      <DependentUpon>201706142354044_UpdateMiningSources.cs</DependentUpon>
+    <Compile Include="Migrations\Migrations_FEMainDB\201706201231123_AddExecutions.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201706201231123_AddExecutions.Designer.cs">
+      <DependentUpon>201706201231123_AddExecutions.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Migrations_FEMainDB\Configuration_FEMainDB.cs" />
     <Compile Include="Models\FEExecution.cs" />
-    <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\FEMainDBContext.cs" />
+    <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\BannerMsg.cs" />
     <Compile Include="ViewModels\UserRolesViewModel.cs" />
     <Compile Include="ViewModels\MyRequestsViewModel.cs" />
@@ -381,26 +361,11 @@
     <EmbeddedResource Include="Migrations\Migrations_AppUserDB\201704151222433_Initial_AppUserDB.resx">
       <DependentUpon>201704151222433_Initial_AppUserDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704151223346_Initial_FEMainDB.resx">
-      <DependentUpon>201704151223346_Initial_FEMainDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201706201229458_Initial_FEMainDB.resx">
+      <DependentUpon>201706201229458_Initial_FEMainDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704161417148_ConnectToUser.resx">
-      <DependentUpon>201704161417148_ConnectToUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201704161714149_UpdateUserIdField.resx">
-      <DependentUpon>201704161714149_UpdateUserIdField.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201705052005169_UpdateMinedText.resx">
-      <DependentUpon>201705052005169_UpdateMinedText.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201705101943109_AddMiningSources.resx">
-      <DependentUpon>201705101943109_AddMiningSources.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201706130021217_AddExecutions.resx">
-      <DependentUpon>201706130021217_AddExecutions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201706142354044_UpdateMiningSources.resx">
-      <DependentUpon>201706142354044_UpdateMiningSources.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201706201231123_AddExecutions.resx">
+      <DependentUpon>201706201231123_AddExecutions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

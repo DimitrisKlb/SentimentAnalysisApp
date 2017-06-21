@@ -20,13 +20,14 @@ namespace WebSite.Controllers {
             var executionsOfSReq = db.FEExecutions
                                         .Where( exec => exec.SearchRequestID == searchRequestID )
                                         .Include( exec => exec.TheResults )
-                                        .ToList();
+                                        .OrderBy(exec=> exec.StartedOn)
+                                        .ToList();                                        
             return executionsOfSReq;
         }
 
         [NonAction]
         [ResponseType( typeof( FESearchRequest ) )]
-        public async Task<IHttpActionResult> PostFEExecution(FEExecution fEExecution) {
+        public async Task<IHttpActionResult> PostFEExecution(FEExecution fEExecution) {           
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }

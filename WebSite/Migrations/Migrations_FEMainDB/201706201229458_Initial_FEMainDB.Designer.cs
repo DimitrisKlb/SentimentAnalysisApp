@@ -7,13 +7,13 @@ namespace WebSite.Migrations.Migrations_FEMainDB
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class UpdateMiningSources : IMigrationMetadata
+    public sealed partial class Initial_FEMainDB : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateMiningSources));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial_FEMainDB));
         
         string IMigrationMetadata.Id
         {
-            get { return "201706142354044_UpdateMiningSources"; }
+            get { return "201706201229458_Initial_FEMainDB"; }
         }
         
         string IMigrationMetadata.Source

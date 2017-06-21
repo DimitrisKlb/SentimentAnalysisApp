@@ -14,7 +14,7 @@ namespace WebSite.Controllers {
 
         [Route( "api/Results/Submit" )]
         [HttpPost]
-        public async Task<IHttpActionResult> SubmitResults(Results theResults) {   
+        public async Task<IHttpActionResult> SubmitResults(Results theResults){   
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }

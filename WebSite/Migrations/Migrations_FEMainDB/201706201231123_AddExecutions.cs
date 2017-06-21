@@ -7,8 +7,6 @@ namespace WebSite.Migrations.Migrations_FEMainDB
     {
         public override void Up()
         {
-            DropForeignKey("dbo.BaseMinedTexts", "SearchRequestID", "dbo.BaseSearchRequests");
-            DropIndex("dbo.BaseMinedTexts", new[] { "SearchRequestID" });
             CreateTable(
                 "dbo.BaseExecutions",
                 c => new
@@ -35,32 +33,43 @@ namespace WebSite.Migrations.Migrations_FEMainDB
                 .ForeignKey("dbo.BaseExecutions", t => t.ID)
                 .Index(t => t.ID);
             
-            AddColumn("dbo.FESearchRequests", "LastExecutionCreatedOn", c => c.DateTime());
-            DropTable("dbo.BaseMinedTexts");
+            CreateTable(
+                "dbo.BaseSearchRequests",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        TheSearchKeyword = c.String(nullable: false, maxLength: 20),
+                        TheSelectedSources_TheSelection = c.Short(nullable: false),
+                    })
+                .PrimaryKey(t => t.ID);
+            
+            CreateTable(
+                "dbo.FESearchRequests",
+                c => new
+                    {
+                        ID = c.Int(nullable: false),
+                        TheStatus = c.Int(nullable: false),
+                        TheUserID = c.String(),
+                        LastExecutionCreatedOn = c.DateTime(),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.BaseSearchRequests", t => t.ID)
+                .Index(t => t.ID);
+            
         }
         
         public override void Down()
         {
-            CreateTable(
-                "dbo.BaseMinedTexts",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        TheText = c.String(),
-                        TheSource = c.Short(nullable: false),
-                        SearchRequestID = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.ID);
-            
+            DropForeignKey("dbo.FESearchRequests", "ID", "dbo.BaseSearchRequests");
             DropForeignKey("dbo.Results", "ID", "dbo.BaseExecutions");
             DropForeignKey("dbo.BaseExecutions", "SearchRequestID", "dbo.BaseSearchRequests");
+            DropIndex("dbo.FESearchRequests", new[] { "ID" });
             DropIndex("dbo.Results", new[] { "ID" });
             DropIndex("dbo.BaseExecutions", new[] { "SearchRequestID" });
-            DropColumn("dbo.FESearchRequests", "LastExecutionCreatedOn");
+            DropTable("dbo.FESearchRequests");
+            DropTable("dbo.BaseSearchRequests");
             DropTable("dbo.Results");
             DropTable("dbo.BaseExecutions");
-            CreateIndex("dbo.BaseMinedTexts", "SearchRequestID");
-            AddForeignKey("dbo.BaseMinedTexts", "SearchRequestID", "dbo.BaseSearchRequests", "ID", cascadeDelete: true);
         }
     }
 }

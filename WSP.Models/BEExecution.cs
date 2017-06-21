@@ -21,11 +21,20 @@ namespace WSP.Models {
         // Navigation property (one-to-oneOrZero)       
         public virtual TwitterData TheTwitterData { get; set; }
 
+        public BEExecution() 
+            :base(){
+            StartedOn = null;
+            FinishedOn = null;
+            TheTwitterData = null;
+            TheMinedTexts = null;
+        }
+
         public BEExecution(int searchRequestID, DateTime? startedOn, DateTime? finishedOn)
             : base( searchRequestID ) {
             FinishedOn = finishedOn;
             StartedOn = startedOn;
             TheTwitterData = null;
+            TheMinedTexts = null;
         }
 
     }

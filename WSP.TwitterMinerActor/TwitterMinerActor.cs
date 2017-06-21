@@ -34,6 +34,9 @@ namespace WSP.TwitterMinerActor {
                 return SourceOption.Twitter;
             }
         }
+
+        // The minimum number of texts that must be mined before successful return
+        private const int minMinedTextsNum = 1000;
         private double rateLimitsResetTime;
 
         public TwitterMinerActor(ActorService actorService, ActorId actorId)
@@ -59,24 +62,45 @@ namespace WSP.TwitterMinerActor {
 
         /******************** Actor Interface Methods ********************/
 
-        // Initialize the TwitterData object and thenc all the inhereted StartMiningAsync method
+        // Initialize the TwitterData object and then call the inherited StartMiningAsync method
         public override async Task StartMiningAsync(BESearchRequest searchRequest) {
-            await SaveTheTwitterData( new TwitterData(searchRequest.LastExecutionID) );
             await base.StartMiningAsync( searchRequest );
         }
 
         /******************** Actor Logic Implementation Methods ********************/
 
-
+        // Called before the Miner starts its job (mainMineAsync)
+        protected override async Task onMineBeginAsync() {
+            // Initialize the TwitterData for this Execution, starting from where the previous execution finished
+            BESearchRequest theSearchRequest = await GetTheSearchRequest();
+            int searchRequestID = theSearchRequest.ID;
+            TwitterData theTwitterData = await dbHandlerService.GetLatestTwitterData( searchRequestID );
+            if(theTwitterData == null) {
+                theTwitterData = new TwitterData( theSearchRequest.ActiveExecutionID );
+            }
+            await SaveTheTwitterData( theTwitterData );
+        }
+        
         // Register a reminder to rerun mainMineAsync after the rateLimits of Twitter are reset, if that was the reason
-        // it failed, or after a  certain ammount of time in any other case
-        protected override async Task OnMineFailAsync() {
-            await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( rateLimitsResetTime ), TimeSpan.FromSeconds( 10 ) );
+        // it failed, or after a certain ammount of time in any other case
+        protected override async Task onMineEndAsync() {
+            int minedTextsNum = (await GetTheTwitterData()).TheTextsNum;
+            
+            if(minedTextsNum > minMinedTextsNum) { // If the necessary number of texts has been mined
+                await RegisterReminderAsync(ReminderNames.MineCompleteReminder);
+            } else {    // Else continue the mining of texts
+                await RegisterReminderAsync( ReminderNames.MineReminder);
+            }
+        }
+
+        // Called after the Miner sucesfully finished its job
+        protected override async Task onMineCompleteAsync() {
+            // Store the TwitterData in the DB
+            await dbHandlerService.StoreTwitterData( await GetTheTwitterData() );
         }
 
         // Basic Twitter miner, to get tweets that contain a certain keyword. Invoked by a Reminder (MineReminder)
         protected override async Task<bool> mainMineAsync() {
-            
             BESearchRequest theSearchRequest;
             TwitterData theTwitterData;
             bool miningToOlder;
@@ -85,8 +109,8 @@ namespace WSP.TwitterMinerActor {
             SearchTweetsParameters searchParameters;
             IEnumerable<ITweet> theTweets;
             ushort windowSize;
-            int tweetsReturned, totalTweets;
-            
+            int tweetsReturned;
+
             // Get the SearchRequest saved in the Stage Manager to show the job needed to be done
             theSearchRequest = await GetTheSearchRequest();
             theTwitterData = await GetTheTwitterData();
@@ -152,7 +176,6 @@ namespace WSP.TwitterMinerActor {
             }
 
             // Find relevant tweets iteratively, in windows of a certains size (windowSize)
-            totalTweets = 0;
             tweetsReturned = windowSize;
             theTweets = null;
             do {
@@ -170,16 +193,16 @@ namespace WSP.TwitterMinerActor {
                                          select new BEMinedText() {
                                              TheText = t.FullText,
                                              TheSource = MinerSourceID,
-                                             SearchRequestID = theSearchRequest.ID
+                                             ExecutionID = theSearchRequest.ActiveExecutionID
                                          };
                         await dbHandlerService.StoreMinedTexts( minedTexts );
 
 
                         // Update the the TwitterData with the oldest-newest mined tweets to indicate the additional job done
-                        if(totalTweets == 0) {     // The first time tweets were mined                
+                        if(theTwitterData.TheTextsNum == 0) {     // The first time tweets were mined                
                             theTwitterData.TheIdNewest = theTweets.First().Id; // Save the id of the newest tweet
                         }
-                        totalTweets += tweetsReturned;
+                        theTwitterData.IncreaseTextsNum( tweetsReturned );
 
                         // Determine whether the mining should be done newer to older or inverse
                         if(miningToOlder == true) {
@@ -202,11 +225,12 @@ namespace WSP.TwitterMinerActor {
                     return false;
                 }
             } while(tweetsReturned != 0);
-            
-            // Store the TwitterData in the db
-            await dbHandlerService.StoreTwitterData( theTwitterData );
+
             return true;
         }
+
+
+
 
     }
 

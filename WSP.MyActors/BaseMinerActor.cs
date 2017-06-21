@@ -21,7 +21,9 @@ namespace WSP.MyActors {
         /************* Helper Classes for String definitions *************/
 
         protected abstract class ReminderNames {
+            public const string MineBeginReminder = "MineBegin";
             public const string MineReminder = "Mine";
+            public const string MineCompleteReminder = "MineComplete";
         }
 
         /******************** Fields and Core Methods ********************/
@@ -29,7 +31,7 @@ namespace WSP.MyActors {
         protected abstract SourceOption MinerSourceID { get; }
 
         protected IDBHandlerService dbHandlerService;
-        
+
 
         public BaseMinerActor(ActorService actorService, ActorId actorId)
             : base( actorService, actorId ) {
@@ -47,39 +49,54 @@ namespace WSP.MyActors {
         /******************** Actor Interface Methods ********************/
 
         public virtual async Task StartMiningAsync(BESearchRequest searchRequest) {
-            // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time      
-            if(await GetTheSearchRequest() == null) {
-                await SaveTheSearchRequest( searchRequest );
-            }
+            // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time 
+            await SaveTheSearchRequest( searchRequest );
 
-            // Set the Reminder for the method that implements the core logic of the Actor (mainMineAsync)
-            try {
-                await RegisterReminderAsync( ReminderNames.MineReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
-            } catch(Exception) {
-                throw;
-            }
+            // Set the Reminder for the method to begin Mining
+            await RegisterReminderAsync( ReminderNames.MineBeginReminder);
         }
 
         /******************** Remider Management Method ********************/
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period) {
+            // Unregister the Received Reminder
+            await UnregisterReminderAsync( GetReminder( reminderName ) );
+
             switch(reminderName) {
+                case ReminderNames.MineBeginReminder:
+                    try {
+                        await onMineBeginAsync();
+                        // Set the Reminder for the method that implements the core logic of the Actor (mainMineAsync)
+                        await RegisterReminderAsync( ReminderNames.MineReminder);
+                    } catch {
+                        await RegisterReminderAsync( ReminderNames.MineBeginReminder);
+                    }
+                    break;
 
                 case ReminderNames.MineReminder:
-                    await UnregisterReminderAsync( this.GetReminder( ReminderNames.MineReminder ) );
-                    bool done = await mainMineAsync();
+                    try {
+                        bool g = await mainMineAsync();
+                        await onMineEndAsync();
+                    } catch {
+                        await RegisterReminderAsync( ReminderNames.MineReminder);
+                    }
+                    break;
 
-                    if(done == true) {
+                case ReminderNames.MineCompleteReminder:
+                    try {
+                        // Notify the MasterActor that the job was done
                         IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( this.Id );
-                        await theMasterActor.UpdateSerchRequestStatus( Status.Mining_Done, MinerSourceID );
-                    } else {
-                        await OnMineFailAsync();
+                        await theMasterActor.UpdateSearchRequestStatus( Status.Mining_Done, MinerSourceID );
+                        
+                        await onMineCompleteAsync();
+                    } catch {
+                        await RegisterReminderAsync( ReminderNames.MineCompleteReminder );
                     }
                     break;
 
                 default:
                     // This point should never be reached. 
-                    throw new InvalidOperationException( "Unknown Reminder: " + reminderName );                   
+                    throw new InvalidOperationException( "Unknown Reminder: " + reminderName );
             }
         }
 
@@ -89,7 +106,15 @@ namespace WSP.MyActors {
         // from each individual source. Invoked by a Reminder (MineReminder). 
         protected abstract Task<bool> mainMineAsync();
 
-        // Define the strategy that will be followed if mainMineAsync() method "failed" (returned false).
-        protected abstract Task OnMineFailAsync();
+        // Called before the Miner starts its job (mainMineAsync)
+        protected abstract Task onMineBeginAsync();
+
+        // Define the strategy that will be followed when mainMineAsync() ended 
+        // (Both in case of problematic exit or correct return)
+        protected abstract Task onMineEndAsync();
+
+        // Called after the Miner sucesfully finished its job (mainMineAsync)
+        protected abstract Task onMineCompleteAsync();
+        
     }
 }

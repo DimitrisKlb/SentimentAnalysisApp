@@ -27,6 +27,7 @@ namespace WSP.MasterActor {
         protected abstract class NewStateNames: StateNames {
             public const string TheMinersToCreate = "theMinersToCreate";
             public const string TheMinersToFinish = "theMinersToFinish";
+            public const string TheResults = "theResults";
         }
 
         protected abstract class ReminderNames {
@@ -56,13 +57,16 @@ namespace WSP.MasterActor {
                 new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
                 new ServicePartitionKey( 1 ) );
 
+            // Flags to track wich Miners are left to be Created or Finish
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToCreate, null );
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToFinish, null );
+            // The Results that will be calculated in order to Fulfill the SearchRequest
+            await StateManager.TryAddStateAsync<Results>( NewStateNames.TheResults, null );
         }
 
         /******************** State Management Methods ********************/
 
-        private async Task SetTheSerchRequestStatus(Status newStatus) {
+        private async Task SetTheSearchRequestStatus(Status newStatus) {
             BESearchRequest newSearchRequest = await GetTheSearchRequest();
             newSearchRequest.TheStatus = newStatus;
             await SaveTheSearchRequest( newSearchRequest );
@@ -72,7 +76,7 @@ namespace WSP.MasterActor {
             return StateManager.GetStateAsync<MiningSource>( TheMinerLeftJob );
         }
 
-        protected async Task SaveTheMinersLeft(string TheMinerLeftJob, MiningSource minersLeft) {
+        private async Task SaveTheMinersLeft(string TheMinerLeftJob, MiningSource minersLeft) {
             await StateManager.SetStateAsync( TheMinerLeftJob, new MiningSource( minersLeft ) );
             await SaveStateAsync();
         }
@@ -84,39 +88,44 @@ namespace WSP.MasterActor {
             return minersLeft;
         }
 
+        private Task<Results> GetTheResults() {
+            return StateManager.GetStateAsync<Results>( NewStateNames.TheResults );
+        }
+
+        private async Task SaveTheResults(Results theResults) {
+            await StateManager.SetStateAsync( NewStateNames.TheResults, theResults );
+            await SaveStateAsync();
+        }
+
         /******************** Actor Interface Methods ********************/
 
         public async Task FulfillSearchRequestAsync(BESearchRequest searchRequest) {
-            // Initialize the SearchRequest in the state manager if this MasterActor is called for the first time      
-            if(await GetTheSearchRequest() == null) {
-                await SaveTheSearchRequest( searchRequest );
-                await SaveTheMinersLeft( NewStateNames.TheMinersToCreate, searchRequest.TheSelectedSources );
-                await SaveTheMinersLeft( NewStateNames.TheMinersToFinish, searchRequest.TheSelectedSources );
-            }
+            // Initialize the values stored in the State Manager
+            await SaveTheSearchRequest( searchRequest );
+            await SaveTheMinersLeft( NewStateNames.TheMinersToCreate, searchRequest.TheSelectedSources );
+            await SaveTheMinersLeft( NewStateNames.TheMinersToFinish, searchRequest.TheSelectedSources );
 
             // Set the Reminder for the method that implements the core logic of the Actor (mainFulfillSearchRequestAsync)
-            try {
-                await RegisterReminderAsync( ReminderNames.FulfillSReqReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
-            } catch(Exception) {
-                throw;
-            }
-
+            await RegisterReminderAsync( ReminderNames.FulfillSReqReminder );
         }
 
-        public async Task UpdateSerchRequestStatus(Status newStatus, SourceOption finishedMinerID) {
+        public async Task UpdateSearchRequestStatus(Status newStatus, SourceOption finishedMinerID) {
+            Status currentStatus = (await GetTheSearchRequest()).TheStatus;
+            // Avoid going backwards
+            if(newStatus <= currentStatus) { 
+                return;
+            }
+
+            // In the case that the Miners are being awaited, progress when all of them have finished
             if(newStatus == Status.Mining_Done) { // If a miner finished
                 MiningSource minersLeft = await DecreaseTheMinersLeft( NewStateNames.TheMinersToFinish, finishedMinerID );
                 if(minersLeft.IsEmpty() != true) { // If there are miners that haven't finished yet
                     return;
                 }
             }
-            await SetTheSerchRequestStatus( newStatus );
 
-            try {
-                await RegisterReminderAsync( ReminderNames.FulfillSReqReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
-            } catch(Exception) {
-                throw;
-            }
+            await SetTheSearchRequestStatus( newStatus );
+            await RegisterReminderAsync( ReminderNames.FulfillSReqReminder );
         }
 
         /******************** Remider Management Method ********************/
@@ -126,15 +135,20 @@ namespace WSP.MasterActor {
 
                 case ReminderNames.FulfillSReqReminder:
                     try {
-                        await UnregisterReminderAsync( this.GetReminder( ReminderNames.FulfillSReqReminder ) );
+                        await UnregisterReminderAsync( GetReminder( ReminderNames.FulfillSReqReminder ) );
                         await mainFulfillSearchRequestAsync();
                     } catch {
-                        await RegisterReminderAsync( ReminderNames.FulfillSReqReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
+                        await RegisterReminderAsync( ReminderNames.FulfillSReqReminder );
                     }
                     break;
 
                 case ReminderNames.SendResultsReminder:
-                    await submitResults();
+                    try {
+                        await UnregisterReminderAsync( GetReminder( ReminderNames.SendResultsReminder ) );
+                        await submitResults();
+                    } catch {
+                        await RegisterReminderAsync( ReminderNames.SendResultsReminder );
+                    }
                     break;
 
                 default:
@@ -152,69 +166,85 @@ namespace WSP.MasterActor {
             Status theStatus = theSearchRequest.TheStatus;
             switch(theStatus) {
                 case Status.New:
-                    //Call the Miners
-                    MiningSource desiredSources = await GetTheMinersLeft( NewStateNames.TheMinersToCreate );
-                    Exception exOnMinerCall = null;
-
-                    foreach(var selectedSource in desiredSources.GetAsList()) {
-                        var minerUri = MinerActorsFactory.GetMinerUri( selectedSource );
-                        IMinerActor theMiner = ActorProxy.Create<IMinerActor>( new ActorId( theSearchRequest.ID ), minerUri );
-
-                        try {
-                            await theMiner.StartMiningAsync( theSearchRequest );
-                            await DecreaseTheMinersLeft( NewStateNames.TheMinersToCreate, selectedSource );
-                        } catch(Exception ex) {
-                            exOnMinerCall = ex;
-                        }
-                    }
-                    if(exOnMinerCall != null) { //A Miner failed
-                        throw exOnMinerCall;
-                    }
-                    // All Miners were created successfully
-                    await SetTheSerchRequestStatus( Status.Mining );
-
+                    await initExecution( theSearchRequest );
+                    await activateMiners( theSearchRequest );
                     break;
 
                 case Status.Mining:
-
                     break;
 
                 case Status.Mining_Done:
-                    // Update the Fulfilled SearchRequest's DB Entry
-                    //await dbHandlerService.UpdateBESearchRequest( await GetTheSearchRequest() );
+                    // Create temporary random Results
+                    float negScore = (float)(new System.Random()).NextDouble() * 100.0f;
+                    await SaveTheResults( new Results( negScore, -negScore ) );
+                    await UpdateSearchRequestStatus( Status.Fulfilled, 0 );
+                    break;
 
+                case Status.Fulfilled:
+                    await updateDBEntries();
                     // Set a Reminder to Send the Results to the Website
-                    try {
-                        await RegisterReminderAsync( ReminderNames.SendResultsReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
-                    } catch(Exception) {
-                        throw;
-                    }
-
+                    await RegisterReminderAsync( ReminderNames.SendResultsReminder );
                     break;
             }
         }
 
-        // Sumbit the Results to the DB and send them to the Website. Invoked by a Reminder (SendResultsReminder)
+        /************************* Internal  Methods *************************/
+
+        // Creates the BEExecution, in a Reliable way (if it hasn't already been created)
+        private async Task initExecution(BESearchRequest theSearchRequest) {
+            if(theSearchRequest.hasCreatedLastExecution() == false) {
+                BEExecution createdBEExecution = await dbHandlerService.StoreExecution(
+                    new BEExecution( theSearchRequest.ID, DateTime.Now, null ) );
+                theSearchRequest.ActiveExecutionID = createdBEExecution.ID;
+                await SaveTheSearchRequest( theSearchRequest );
+            }
+        }
+
+        // Creates and Activate all the MinerActors, in a Reliable way. 
+        // Throws exception in case a Miner failed to activate, so that is can be retried.
+        private async Task activateMiners(BESearchRequest theSearchRequest) {
+            MiningSource desiredSources = await GetTheMinersLeft( NewStateNames.TheMinersToCreate );
+            Exception exOnMinerCall = null;
+
+            foreach(var selectedSource in desiredSources.GetAsList()) {
+                var minerUri = MinerActorsFactory.GetMinerUri( selectedSource );
+                IMinerActor theMiner = ActorProxy.Create<IMinerActor>( new ActorId( theSearchRequest.ID ), minerUri );
+
+                try {
+                    await theMiner.StartMiningAsync( theSearchRequest );
+                    await DecreaseTheMinersLeft( NewStateNames.TheMinersToCreate, selectedSource );
+                } catch(Exception ex) {
+                    exOnMinerCall = ex;
+                }
+            }
+            if(exOnMinerCall != null) { //A Miner failed
+                throw exOnMinerCall;
+            }
+            // All Miners were created successfully
+            await SetTheSearchRequestStatus( Status.Mining );
+        }
+
+        // Updates all the necessary DB Entries when the SearchRequest is successfully fulfilled
+        private async Task updateDBEntries() {
+            BESearchRequest theSearchRequest = await GetTheSearchRequest();
+            Results theResults = await GetTheResults();
+            await dbHandlerService.UpdateSearchRequestFulfilled( theSearchRequest.ID, theSearchRequest.ActiveExecutionID, theResults );
+        }
+
+        // Sumbits the Results to the DB and send them to the Website. Invoked by a Reminder (SendResultsReminder)
         private async Task submitResults() {
-            await UnregisterReminderAsync( this.GetReminder( ReminderNames.SendResultsReminder ) );
-
-            var receivedSReqID = (await GetTheSearchRequest()).TheReceivedID; // Temporary Result Type
-
-            float negScore = (float)(new System.Random()).NextDouble() * 100.0f;
-            Results theResults = new Results( negScore, -negScore ); //Random Results for now
-
-            // Create the Execution object concerning the execution that was just completed, with the calculated Results
-
+            var receivedSReqID = (await GetTheSearchRequest()).TheReceivedID;
             // Send the Results to the WebSite
+            Results theResults = await GetTheResults();
             theResults.ID = receivedSReqID;
             var response = await clientFEserver.PostAsJsonAsync( "api/Results/Submit", theResults );
 
-            // Upon unsuccessful transmission, retry to send the results
+            // Upon unsuccessful transmission, throw exception so that it will be attempted again
             if(response.IsSuccessStatusCode != true) {
-                await RegisterReminderAsync( ReminderNames.SendResultsReminder, null, TimeSpan.FromSeconds( 10 ), TimeSpan.FromSeconds( 10 ) );
+                throw new Exception();
             }
-
         }
+
 
 
     }
