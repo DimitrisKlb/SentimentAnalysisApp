@@ -1,8 +1,8 @@
 ﻿#bannerMsg {
-    margin-top: 10px;
+    font-size: 18px;
 }
 
-submit_button {
+#submit_button {
     margin-top: 5px;
 }
 

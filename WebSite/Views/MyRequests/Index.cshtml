@@ -3,111 +3,115 @@
 @model MyRequestsViewModel
 
 @{
-    ViewBag.Title = "<SentimentAnalysis App's name pending...>";
+    ViewBag.TitleTail = "MyRequests";
 }
 
 @section Styles {
-    <link href="@Url.Content("~/Content/FluentDisplay.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Content/myRequests.cc")"></script>
+    <link href="@Url.Content("~/Content/fluentDisplay.css")" rel="stylesheet" type="text/css" />
 }
 
 @section Scripts{
     <script src="@Url.Content("~/scripts/myRequests.js")"></script>
 }
 
-@if(@Model.TheBannerMsg != null) {
-    <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        @Model.TheBannerMsg.Text
-    </div>
-}
+<section class="container-fluid">
 
-<div class="page-header">
+    @if(@Model.TheBannerMsg != null) {
+        <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @Model.TheBannerMsg.Text
+        </div>
+    }
+
     <h1>My Requests</h1>
-</div>
+    <br/>
 
-<div class="row">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Open</h2>
+                </div>
 
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Open</h2>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+
+                        @foreach(var item in Model.TheSearchRequests) {
+                            if(item.TheStatus == Status.New) {
+                        <li>
+                            <span>
+                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
+                            </span>
+                            <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
+                        </li>
+                            }
+                        }
+
+                    </ul>
+                </div>
             </div>
+        </div>
 
-            <div class="panel-body">
-                <ul class="list-unstyled">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Pending</h2>
+                </div>
 
-                    @foreach(var item in Model.TheSearchRequests) {
-                        if(item.TheStatus == Status.New) {
-                            <li>
-                                <span>
-                                    @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                                </span>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+
+                        @foreach(var item in Model.TheSearchRequests) {
+                            if(item.TheStatus == Status.Executing) {
+                        <li>
+                            <span>
+                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
+                            </span>
+                        </li>
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Fulfilled</h2>
+                </div>
+
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+
+                        @foreach(var item in Model.TheSearchRequests) {
+                            if(item.TheStatus == Status.Fulfilled) {
+                        <li>
+                            <div>
+                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
+                                <a href="#" class="viewExecutions">
+                                    <small>Results</small>
+                                    <div class="sRequestID hidden">@item.ID</div>
+                                </a>
+                                |
                                 <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
-                            </li>
+                            </div>
+                        </li>
+                            }
                         }
-                    }
 
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Pending</h2>
-            </div>
+    @Html.Action( "CreateSearchRequest" )
+</section>
 
-            <div class="panel-body">
-                <ul class="list-unstyled">
 
-                    @foreach(var item in Model.TheSearchRequests) {
-                        if(item.TheStatus == Status.Executing) {
-                            <li>
-                                <span>
-                                    @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                                </span>
-                            </li>
-                        }
-                    }
-
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2 class="panel-title">Fulfilled</h2>
-            </div>
-
-            <div class="panel-body">
-                <ul class="list-unstyled">
-
-                    @foreach(var item in Model.TheSearchRequests) {
-                        if(item.TheStatus == Status.Fulfilled) {
-                            <li>
-                                <div>
-                                    @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                                    <a href="#" class="viewExecutions">
-                                        <small>Results</small>
-                                        <div class="sRequestID hidden">@item.ID</div>
-                                    </a>
-                                    |
-                                    <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
-                                </div>
-                            </li>
-                        }
-                    }
-
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-@Html.Action( "CreateSearchRequest" )
 
 <div class="row" id="executions">
 </div>

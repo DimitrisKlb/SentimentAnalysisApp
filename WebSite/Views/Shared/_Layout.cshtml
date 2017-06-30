@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>SentiMeter - @ViewBag.TitleTail</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700|Roboto:400,500&amp;subset=greek,greek-ext,latin-ext" rel="stylesheet">
     @Styles.Render( "~/Content/css" )
+    <link href="@Url.Content( "~/Content/general.css" )" rel="stylesheet" type="text/css" />
     @RenderSection( "Styles", required: false )
 
     @Scripts.Render( "~/bundles/jquery" )
@@ -13,40 +16,104 @@
     @Scripts.Render( "~/bundles/modernizr" )
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink( "No name yet", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" } )
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    @if(Request.IsAuthenticated) {
-                        <li>
-                            @Html.ActionLink( "My Requests", "Index", "MyRequests", routeValues: null, htmlAttributes: new { title = "MyRequests" } )
-                        </li>
-                        if(User.IsInRole( "Admin" )) {
+    @{
+        var navbarDropdownClass = "";
+        if(ViewContext.RouteData.Values["controller"].ToString() == "MyRequests") {
+            navbarDropdownClass = "open";
+        }
+    }
+    <!-- Wrapper -->
+    <div id="wrapper" class="toggled">
+        <div class="overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="@Url.Action( "Index", "Home", routeValues: null )">SentiMeter</a>
+                </li>
+                <li class="homeNavLink">
+                    <a href="@String.Format( "{0}#intro", Url.Action( "Index", "Home", routeValues: null ) )"><i class="fa fa-fw fa-home nav-icon"></i><span class="nav-text">Home</span></a>
+                </li>
+                <li class="homeNavLink">
+                    <a href="@String.Format( "{0}#about", Url.Action( "Index", "Home", routeValues: null ) )"><i class="fa fa-fw fa-question-circle nav-icon"></i><span class="nav-text">About</span></a>
+                </li>
+                <li class="homeNavLink">
+                    <a href="@String.Format( "{0}#contact", Url.Action( "Index", "Home", routeValues: null ) )"><i class="fa fa-fw fa-phone-square nav-icon"></i><span class="nav-text">Contact</span></a>
+                </li>
+
+                @if(Request.IsAuthenticated) {
+                    <li id="myRequestsNavLink" class="dropdown keep-open @navbarDropdownClass">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-search nav-icon"></i><span class="nav-text">My Requests</span><span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">Categories</li>
                             <li>
-                                @Html.ActionLink( "Dashboard", "Index", "UserRoles", routeValues: null, htmlAttributes: new { title = "UserRoles" } )
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">All</a>
                             </li>
-                        }
+                            <li>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Pending</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Fulfilled</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Drafts</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    if(User.IsInRole( "Admin" )) {
+                        <li id="dashboardNavLink">
+                            <a href="@Url.Action( "Index", "UserRoles", routeValues: null )"><i class="fa fa-fw fa-columns nav-icon"></i><span class="nav-text">Dashboard</span></a>
+                        </li>
                     }
-                </ul>
-                @Html.Partial( "_LoginPartial" )
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; Nop... All yours </p>
-        </footer>
-    </div>
+
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-user nav-icon"></i><span class="nav-text">Account</span><span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">Categories</li>
+                            <li>
+                                <a href="@Url.Action( "Index", "Manage", routeValues: null )"><i class="fa fa-fw fa-cogs nav-icon"></i><span class="nav-text">Settings</span></a>
+                            </li>
+
+                            @using(Html.BeginForm( "LogOff", "Account", FormMethod.Post, new { id = "logoutForm" } )) {
+                                @Html.AntiForgeryToken()
+                                <li>
+                                    <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-fw fa-sign-out nav-icon"></i><span class="nav-text">Log Out</span></a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                } else {
+                    <li>
+                        <a href="@Url.Action( "Register", "Account", routeValues: null )"><i class="fa fa-fw fa-user-plus nav-icon"></i><span class="nav-text">Register</span></a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action( "Login", "Account", routeValues: null )"><i class="fa fa-fw fa-sign-in nav-icon"></i><span class="nav-text">Log In</span></a>
+                    </li>
+                }
+
+            </ul>
+
+        </nav><!-- Sidebar End -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <button type="button" class="hamburger is-open" data-toggle="offcanvas">
+                <span class="hamb-top"></span>
+                <span class="hamb-middle"></span>
+                <span class="hamb-bottom"></span>
+            </button>
+
+            @RenderBody()
+
+            <!-- Footer -->
+            <footer class="container-fluid">
+                &copy; Nop... All yours
+            </footer><!-- Footer End -->
+
+        </div><!-- Page Content End -->
+
+    </div><!-- Wrapper End -->
 
     @RenderSection( "Scripts", required: false )
 </body>

@@ -1,7 +1,43 @@
 ﻿@{
-    ViewBag.Title = "<SentimentAnalysis App's name pending...>";
+    ViewBag.TitleTail = "Home";
 }
 
-<div class="page-header">
-    <h1>Presentation</h1>
-</div>
+@section Styles {
+    <link href="@Url.Content("~/Content/home.css")" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts{
+    <script src="@Url.Content("~/scripts/home.js")"></script>
+}
+
+<section id="intro" class="container-fluid">
+    <div id="logo_description">
+        <h1>SentiMeter</h1>
+        <h3>A Sentiment Analysis miner tool</h3>
+    </div>
+</section>
+
+<section id="about" class="container-fluid text-justify">
+    <h1 class="text-left">About SentiMeter</h1>
+    <h2 class="text-left">What it is and why it exists.</h2>
+    <br />
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque id felis ut risus tempus tempus eget nec nibh. Integer ultricies sit amet risus sit amet sagittis. Donec dignissim mollis lectus. Sed imperdiet efficitur luctus. Suspendisse potenti. In sed nibh quis mi tristique dignissim. In tincidunt vitae urna sit amet mattis. Suspendisse nec tristique dolor. Etiam et suscipit turpis. Quisque in elit ac nulla molestie tristique. Aenean non turpis ac nulla egestas scelerisque in at massa. Cras a blandit velit, quis auctor risus. Suspendisse non lobortis sem, in congue sapien. Nulla eu velit dui. Proin id risus a diam vestibulum maximus. Curabitur mattis facilisis dui, nec varius nisl bibendum in.
+    </p>
+    <p>
+        Etiam imperdiet risus at erat pretium cursus. Etiam pulvinar tempor nisi, euismod convallis arcu hendrerit quis. Mauris suscipit velit sit amet luctus volutpat. Suspendisse viverra enim sed dolor sodales, a tempus odio rutrum. Morbi sit amet condimentum erat. Proin tincidunt, odio eget feugiat fringilla, purus ipsum porttitor mauris, non varius velit tortor id est. Vivamus facilisis finibus mauris ut mollis.
+    </p>
+    <p>
+        Curabitur dapibus faucibus pharetra. Curabitur porttitor vulputate elit, sed porttitor ipsum bibendum ornare. Sed non arcu eget dolor rutrum ornare sit amet ut tellus. Vestibulum cursus sollicitudin sem in sodales. Aliquam at nisl commodo, ullamcorper velit ut, tempor ipsum. Praesent varius semper nibh nec aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla in dolor quam. Donec dapibus mi non nulla ornare pretium.
+    </p>
+</section>
+
+<section id="contact" class="container-fluid">
+    <div class="text-justify">
+        <h1 class="text-center">Contact</h1>
+        <br />
+        <p>
+            Interested in learning more about blabla? Then, contact me in porttitor mauris, non varius velit tortor id est. Vivamus facilisis finibus mauris ut mollis.
+        </p>
+    </div>
+</section>

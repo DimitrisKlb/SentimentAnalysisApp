@@ -1,0 +1,46 @@
+﻿@section-max-width: 1024px;
+
+.fully_centered {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/******************** Intro ********************/
+
+#intro {
+    background: rgb(0, 179, 60) url(Images/intro.jpg) no-repeat center top fixed;
+    background-size: cover;
+    background-clip: content-box;
+    height: 100vh;
+    padding: 0;
+    .fully_centered;
+}
+
+#logo_description {
+    background-color: rgba(0, 179, 60, 0.7);
+    width: 100%;
+    height: 100%;
+    .fully_centered;
+}
+
+/******************** About ********************/
+
+#about {
+    background-color: white;
+    max-width: @section-max-width;
+}
+
+
+/******************** Contact ********************/
+
+#contact {
+    background-color: rgb(243, 243, 241);    
+    height: 100vh;
+    .fully_centered;}
+
+#contact > div {
+    max-width: @section-max-width;
+}
