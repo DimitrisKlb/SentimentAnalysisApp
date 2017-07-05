@@ -42,7 +42,7 @@ namespace WebSite.Models {
 
     public class LoginViewModel {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "Email Address")]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -58,7 +58,7 @@ namespace WebSite.Models {
     public class RegisterViewModel {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email Address")]
         public string Email { get; set; }
 
         [Required]
@@ -69,14 +69,14 @@ namespace WebSite.Models {
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The 2 passwords are not the same." )]
         public string ConfirmPassword { get; set; }
     }
 
     public class ResetPasswordViewModel {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email Address")]
         public string Email { get; set; }
 
         [Required]
@@ -87,7 +87,7 @@ namespace WebSite.Models {
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The 2 passwords are not the same." )]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
@@ -96,7 +96,7 @@ namespace WebSite.Models {
     public class ForgotPasswordViewModel {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Email Address")]
         public string Email { get; set; }
     }
 }

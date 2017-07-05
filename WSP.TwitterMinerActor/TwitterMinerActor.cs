@@ -89,7 +89,7 @@ namespace WSP.TwitterMinerActor {
             if(minedTextsNum > minMinedTextsNum) { // If the necessary number of texts has been mined
                 await RegisterReminderAsync(ReminderNames.MineCompleteReminder);
             } else {    // Else continue the mining of texts
-                await RegisterReminderAsync( ReminderNames.MineReminder);
+                await RegisterReminderAsync( ReminderNames.MineReminder);              
             }
         }
 

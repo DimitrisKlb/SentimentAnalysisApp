@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
+@using WebSite.ViewModels
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,21 +44,24 @@
                 </li>
 
                 @if(Request.IsAuthenticated) {
+                    <li id="newRequestNavLink">
+                        <a href="@Url.Action( "Create", "MyRequests", routeValues: null )"><i class="fa fa-fw fa-plus nav-icon"></i><span class="nav-text">New Request</span></a>
+                    </li>
                     <li id="myRequestsNavLink" class="dropdown keep-open @navbarDropdownClass">
                         <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-search nav-icon"></i><span class="nav-text">My Requests</span><span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li class="dropdown-header">Categories</li>
                             <li>
-                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">All</a>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: new { category=Category.All} )">All</a>
                             </li>
                             <li>
-                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Pending</a>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: new { category=Category.Pending} )">Pending</a>
                             </li>
                             <li>
-                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Fulfilled</a>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: new { category=Category.Completed} )">Completed</a>
                             </li>
                             <li>
-                                <a href="@Url.Action( "Index", "MyRequests", routeValues: null )">Drafts</a>
+                                <a href="@Url.Action( "Index", "MyRequests", routeValues: new { category=Category.Drafts} )">Drafts</a>
                             </li>
                         </ul>
                     </li>
@@ -106,12 +110,10 @@
 
             @RenderBody()
 
-            <!-- Footer -->
             <footer class="container-fluid">
-                &copy; Nop... All yours
-            </footer><!-- Footer End -->
-
-        </div><!-- Page Content End -->
+                &copy;2017 SentiMeter. All Rights Reserved.
+            </footer>
+        </div><!-- Page Content End -->  
 
     </div><!-- Wrapper End -->
 

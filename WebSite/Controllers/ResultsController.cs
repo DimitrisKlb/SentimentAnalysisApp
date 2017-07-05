@@ -14,7 +14,7 @@ namespace WebSite.Controllers {
 
         [Route( "api/Results/Submit" )]
         [HttpPost]
-        public async Task<IHttpActionResult> SubmitResults(Results theResults){   
+        public async Task<IHttpActionResult> SubmitResults(Results theResults) {
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }
@@ -25,17 +25,25 @@ namespace WebSite.Controllers {
             if(response.GetType() == typeof( OkNegotiatedContentResult<FESearchRequest> )) {
                 FESearchRequest searchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
 
-                await TheSReqController.UpdateFESearchRequestStatus( baseSearchRequestID, Status.Fulfilled );
-
                 // Create the Execution object concerning the execution that was just completed, with the returned Results
                 FEExecution newExecution = new FEExecution( baseSearchRequestID, searchRequest.LastExecutionCreatedOn, DateTime.Now );
                 newExecution.TheResults = theResults;
-                await TheExecsController.PostFEExecution( newExecution );
+                response = await TheExecsController.PostFEExecution( newExecution );
+                if(response.GetType() == typeof( CreatedAtRouteNegotiatedContentResult<FEExecution> )) {
+                    FEExecution createdExecution = ((CreatedAtRouteNegotiatedContentResult<FEExecution>)response).Content;
 
-                return Ok();
+                    // Update the Search Request
+                    searchRequest.TheStatus = Status.Fulfilled;
+                    searchRequest.LatestExecutionID = createdExecution.ID;
+                    await TheSReqController.UpdateFESearchRequest( searchRequest.ID, searchRequest );
+
+                    return Ok();
+                } else {
+                    return InternalServerError();
+                }                
             } else {
                 return InternalServerError();
-            }              
+            }
         }
 
 

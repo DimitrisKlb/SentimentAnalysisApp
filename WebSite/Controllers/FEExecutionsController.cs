@@ -20,7 +20,7 @@ namespace WebSite.Controllers {
             var executionsOfSReq = db.FEExecutions
                                         .Where( exec => exec.SearchRequestID == searchRequestID )
                                         .Include( exec => exec.TheResults )
-                                        .OrderBy(exec=> exec.StartedOn)
+                                        .OrderByDescending(exec=> exec.FinishedOn)
                                         .ToList();                                        
             return executionsOfSReq;
         }

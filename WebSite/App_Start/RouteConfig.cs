@@ -4,7 +4,13 @@ using System.Web.Routing;
 namespace WebSite {
     public class RouteConfig {
         public static void RegisterRoutes(RouteCollection routes) {
-            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute( "{resource}.axd/{*pathInfo}" );
+
+            routes.MapRoute(
+                name: "RequestsByStatus",
+                url: "MyRequests/Index/{category}",
+                defaults: new { controller = "MyRequests", action = "Index", category = "All" }
+            );
 
             routes.MapRoute(
                 name: "Default",

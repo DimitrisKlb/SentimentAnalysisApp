@@ -1,42 +1,58 @@
-﻿@model WebSite.Models.RegisterViewModel
+﻿@using WebSite.Models
+@model RegisterViewModel
 @{
     ViewBag.TitleTail = "Register";
 }
 
-<section class="container-fluid">
-    <h1>Register</h1>
+@section Styles {
+    <link href="@Url.Content( "~/Content/customForms.css" )" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content( "~/Content/fluentDisplay.css" )" rel="stylesheet" type="text/css" />
+}
 
-    @using(Html.BeginForm( "Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" } )) {
-        @Html.AntiForgeryToken()
-        <h4>Create a new account.</h4>
-        <hr />
-        @Html.ValidationSummary( "", new { @class = "text-danger" } )
-        <div class="form-group">
-            @Html.LabelFor( m => m.Email, new { @class = "col-md-2 control-label" } )
-            <div class="col-md-10">
-                @Html.TextBoxFor( m => m.Email, new { @class = "form-control" } )
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor( m => m.Password, new { @class = "col-md-2 control-label" } )
-            <div class="col-md-10">
-                @Html.PasswordFor( m => m.Password, new { @class = "form-control" } )
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor( m => m.ConfirmPassword, new { @class = "col-md-2 control-label" } )
-            <div class="col-md-10">
-                @Html.PasswordFor( m => m.ConfirmPassword, new { @class = "form-control" } )
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" class="btn btn-default" value="Register" />
-            </div>
-        </div>
-    }
-</section>
-
-@section Scripts {
+@section Scripts{
+    <script src="@Url.Content( "~/scripts/customForms.js" )"></script>
     @Scripts.Render( "~/bundles/jqueryval" )
 }
+
+@if(!ViewData.ModelState.IsValid) {
+    <div id="bannerMsg" class="alert alert-dismissable alert-danger">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        This Email Address belong to another user. Please choose again.
+    </div>
+}
+
+<section class="container-fluid form-section">
+    <h1>Register</h1>
+    <br />
+
+    @using(Html.BeginForm( "Register", "Account", FormMethod.Post, new { @class = "theForm", role = "form" } )) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group float-label-control">
+            @Html.LabelFor( m => m.Email, new { @class = "" } )
+            @Html.TextBoxFor( m => m.Email, new { @class = "form-control", placeholder = "What's your email address?", spellcheck = "false" } )
+        </div>
+        <div class="validation-msg">
+            @Html.ValidationMessageFor( m => m.Email, "" )
+        </div>
+
+        <div class="form-group float-label-control">
+            @Html.LabelFor( m => m.Password, new { @class = "" } )
+            @Html.PasswordFor( m => m.Password, new { @class = "form-control", placeholder = "Choose a password" } )
+        </div>
+        <div class="validation-msg">
+            @Html.ValidationMessageFor( m => m.Password, "" )
+        </div>
+
+        <div class="form-group float-label-control">
+            @Html.LabelFor( m => m.ConfirmPassword, new { @class = "" } )
+            @Html.PasswordFor( m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Retype the password" } )
+        </div>
+        <div class="validation-msg">
+            @Html.ValidationMessageFor( m => m.ConfirmPassword, "" )
+        </div>
+
+        <button type="submit" class="btn btn-default basic">Register</button>
+    }
+
+</section>

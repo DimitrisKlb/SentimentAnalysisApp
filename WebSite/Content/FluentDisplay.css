@@ -1,12 +1,1 @@
-﻿#bannerMsg {
-    font-size: 18px;
-}
-
-#submit_button {
-    margin-top: 5px;
-}
-
-#loadingBanner {
-    font-size: 25px;
-}
-
+#bannerMsg{font-size:17px;margin:10px 20px 0px 45px}#bannerMsg.alert+section.container-fluid{padding-top:0px}#submit_button{margin-top:5px}#loadingBanner{font-size:25px}

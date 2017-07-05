@@ -1,4 +1,5 @@
-﻿@using WebSite.Models
+﻿@using System
+@using WebSite.Models
 @using WebSite.ViewModels
 @model MyRequestsViewModel
 
@@ -7,111 +8,146 @@
 }
 
 @section Styles {
-<script src="@Url.Content("~/Content/myRequests.cc")"></script>
-    <link href="@Url.Content("~/Content/fluentDisplay.css")" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content( "~/Content/myRequests.css" )" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content( "~/Content/fluentDisplay.css" )" rel="stylesheet" type="text/css" />
 }
 
 @section Scripts{
-    <script src="@Url.Content("~/scripts/myRequests.js")"></script>
+    <script type="text/javascript" src="@Url.Content( "~/scripts/myRequestsIndex.js" )"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+}
+
+@if(@Model.TheBannerMsg != null) {
+    <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @Model.TheBannerMsg.Text
+    </div>
 }
 
 <section class="container-fluid">
+    @{ string title = Model.TheCategory.ToString();
+        title += Model.TheCategory != Category.Drafts ? " Requests" : "";
 
-    @if(@Model.TheBannerMsg != null) {
-        <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            @Model.TheBannerMsg.Text
-        </div>
+        int rowNum = 0;
+        string sourcesHideClass = "";
+        string inspectButHideClass = "";
+        string dateCreatedHideClass = "";
+        string dateStartedHideClass = "";
+
+        var category = Model.TheCategory;
+        if(category == Category.All) {
+            sourcesHideClass = "hidden-md hidden-sm hidden-xs";
+            inspectButHideClass = "";
+            dateCreatedHideClass = "hidden-xs";
+            dateStartedHideClass = "hidden-xs";
+        } else if(category == Category.Pending || category == Category.Completed) {
+            sourcesHideClass = "hidden-sm hidden-xs";
+            inspectButHideClass = "";
+        }
+
     }
 
-    <h1>My Requests</h1>
-    <br/>
+    <h1>@title</h1>
+    <br />
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Open</h2>
-                </div>
+    @if(Model.TheSearchRequests == null || Model.TheSearchRequests.Count() == 0) {
+        var reqs = Model.TheCategory == Category.All ? "requests" : @title.ToLower();
+        <p>There are no @reqs at the moment.</p>
+    } else {
+        <table class="table text-center sortableTable">
+            <thead>
+                <tr>
+                    <th>Word of Interest</th>
+                    <th class="@sourcesHideClass">Selected Sources</th>
+                    <th class="@dateCreatedHideClass">Date Created</th>
+                    @{
+                        if(category == Category.Drafts || category == Category.All) {
 
-                <div class="panel-body">
-                    <ul class="list-unstyled">
-
-                        @foreach(var item in Model.TheSearchRequests) {
-                            if(item.TheStatus == Status.New) {
-                        <li>
-                            <span>
-                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                            </span>
-                            <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
-                        </li>
-                            }
+                        }
+                        if(category == Category.Pending || category == Category.All) {
+                            <th class="@dateStartedHideClass">Date Exec Started</th>
+                        }
+                        if(category == Category.Completed || category == Category.All) {
+                            <th>Date Exec Completed</th>
+                        }
+                        if(category == Category.Pending || category == Category.Completed || category == Category.All) {
+                            <th class="noSort">Latest Results</th>
+                        }
+                        if(category == Category.All) {
+                            <th>Status</th>
                         }
 
-                    </ul>
-                </div>
-            </div>
-        </div>
+                    }
+                    <th class="noSort @inspectButHideClass"></th>
+                </tr>
+            </thead>
+            <tbody>
 
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Pending</h2>
-                </div>
+                @foreach(var item in Model.TheSearchRequests) {
+                    rowNum++;
+                    <tr class="clickable-row" data-href="@Url.Action( "Inspect", "MyRequests", routeValues: new { id = item.ID } )">
+                        <td>@item.TheSearchKeyword</td>
+                        <td class="@sourcesHideClass">@item.TheSelectedSources.TheSelection.ToString()</td>
+                        <td class="@dateCreatedHideClass">@item.CreatedOn.Value.ToString( "dd MMMM yy" )</td>
 
-                <div class="panel-body">
-                    <ul class="list-unstyled">
+                        @{
+                            if(category == Category.Drafts || category == Category.All) {
 
-                        @foreach(var item in Model.TheSearchRequests) {
-                            if(item.TheStatus == Status.Executing) {
-                        <li>
-                            <span>
-                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                            </span>
-                        </li>
                             }
+                            if(category == Category.Pending || category == Category.All) {
+                                if(item.LastExecutionCreatedOn != null) {
+                                    <td class="@dateStartedHideClass">@item.LastExecutionCreatedOn.Value.ToString( "dd MMMM yy" )</td>
+                                } else {
+                                    <td class="@dateStartedHideClass"></td>
+                                }
+                            }
+                            if(category == Category.Completed || category == Category.All) {
+                                if(item.TheLatestExecution != null && item.TheLatestExecution.FinishedOn != null) {
+                                    <td>@item.TheLatestExecution.FinishedOn.Value.ToString( "dd MMMM yy" )</td>
+                                } else {
+                                    <td></td>
+                                }
+                            }
+                            if(category == Category.Pending || category == Category.Completed || category == Category.All) {
+                                if(item.TheLatestExecution != null) {
+                                    var posScore = item.TheLatestExecution.TheResults.ThePositiveScore.ToString( "0.0" );
+                                    var negScore = item.TheLatestExecution.TheResults.TheNegativeScore.ToString( "0.0" );
+                                    <td>
+                                        <p class="posScore">@posScore%<i class="fa fa-thumbs-up"></i></p>
+                                        <p class="negScore">@negScore%<i class="fa fa-thumbs-down"></i></p>
+                                    </td>
+                                } else {
+                                    <td></td>
+                                }
+                            }
+                            if(category == Category.All) {
+                                string labelType = "label-default";
+                                switch(item.TheStatus) {
+                                    case Status.New:
+                                        labelType = "label-primary";
+                                        break;
+                                    case Status.Executing:
+                                        labelType = "label-warning";
+                                        break;
+                                    case Status.Fulfilled:
+                                        labelType = "label-success";
+                                        break;
+                                }
+                                <td><span class="label @labelType">@item.TheStatus.ToString()</span></td>
+                            }
+
                         }
 
-                    </ul>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Fulfilled</h2>
-                </div>
-
-                <div class="panel-body">
-                    <ul class="list-unstyled">
-
-                        @foreach(var item in Model.TheSearchRequests) {
-                            if(item.TheStatus == Status.Fulfilled) {
-                        <li>
-                            <div>
-                                @Html.DisplayFor( modelItem => item.TheSearchKeyword )
-                                <a href="#" class="viewExecutions">
-                                    <small>Results</small>
-                                    <div class="sRequestID hidden">@item.ID</div>
-                                </a>
-                                |
-                                <small><a href="@Url.Action("ExecuteSearchRequest", new { searchRequestID = item.ID})">Execute</a></small>
-                            </div>
-                        </li>
+                        <td class="inspect-button @inspectButHideClass">
+                            <a href="@Url.Action( "Inspect", "MyRequests", routeValues: new { id = item.ID } )"><i class="fa fa-eye"></i></a>
+                        </td>
+                    </tr>
                             }
-                        }
 
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+            </tbody>
+        </table>
+                            }
 
-    @Html.Action( "CreateSearchRequest" )
 </section>
-
-
-
-<div class="row" id="executions">
-</div>

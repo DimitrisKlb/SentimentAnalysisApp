@@ -1,54 +1,61 @@
 ﻿@model IEnumerable<WebSite.Models.FEExecution>
 
-<div class="col-md-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h2 class="panel-title">Executions:</h2>
-        </div>
+<section class="inspect container-fluid">
+    <h3>Executions</h3>
+    <br />
 
-        <div class="panel-body">
-            <div class="list-unstyled">
-                <div class="row">
-                    <div class="col-md-1">IN</div>
-                    <div class="col-md-1">ID</div>
-                    <div class="col-md-2">Started On</div>
-                    <div class="col-md-2">Finished On</div>
-                    <div class="col-md-2">Score +</div>
-                    <div class="col-md-2">Score -</div>
-                </div>
+    @if(Model == null || Model.Count() == 0) {
+        <p>There are no executions data available at the moment.</p>
+    } else {
+        <div class="row">
+
+            <div class="col-lg-6">
+                <h4>Details:</h4>
                 <br />
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date Started</th>
+                            <th>Date Completed</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var exec in Model) {
 
-                @{
-                    int i = 1;
-                }
-                @foreach(var item in Model) {
+                            <tr class="update-chart-basic">
+                                <td>@exec.StartedOn.Value.ToString( "dd MMMM yy" )</td>
+                                <td>@exec.FinishedOn.Value.ToString( "dd MMMM yy" )</td>
 
-                    <div class="row">
-                        <div class="col-md-1">
-                            @i
-                        </div>
-                        <div class="col-md-1">
-                            @Html.DisplayFor( modelItem => item.ID )
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor( modelItem => item.StartedOn )
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor( modelItem => item.FinishedOn )
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor( modelItem => item.TheResults.ThePositiveScore )
-                        </div>
-                        <div class="col-md-2">
-                            @Html.DisplayFor( modelItem => item.TheResults.TheNegativeScore )
-                        </div>
-                    </div>
-                    <br />
+                                <td class="theDate" style="display:none" >@exec.FinishedOn.Value.ToString( "yyyy MM dd")</td>
+                                <td class="posScore" style="display:none">@exec.TheResults.ThePositiveScore</td>
+                                <td class="negScore" style="display:none">@exec.TheResults.TheNegativeScore</td>
+                                <td class="inspect-button">
+                                    <a><i class="fa fa-pie-chart "></i></a>
+                                </td>
+                            </tr>
+                        }
 
-                    i++;
-                }
+                    </tbody>
+                </table>
+            </div>
 
+            <div id="chart-basic-container" class="col-lg-6">
+                <h4>Results:</h4>
+                <div id="chart-basic"></div>
             </div>
         </div>
+    }
+
+</section>
+
+<section class="inspect container-fluid">
+    <h3>Sentiment over time</h3>
+    <p>Observe how the overall sentiment (user opinions) develops over different points (executions) in time.</p>
+    <br />
+
+    <div id="chart-graph-container">
+        <div id="chart-graph"></div>
     </div>
-</div>
+
+</section>

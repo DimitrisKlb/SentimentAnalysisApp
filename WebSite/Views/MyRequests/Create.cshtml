@@ -1,0 +1,64 @@
+﻿@using System
+@using MvcCheckBoxList.Model
+@using SentimentAnalysisApp.SharedModels
+@using WebSite.ViewModels
+@model CreateSReqViewModel
+
+@{
+    ViewBag.TitleTail = "Create Request";
+}
+
+@section Styles {
+    <link href="@Url.Content( "~/Content/customForms.css" )" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content( "~/Content/myRequests.css" )" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts{
+    <script src="@Url.Content( "~/scripts/customForms.js" )"></script>
+    <script src="@Url.Content( "~/scripts/myRequestsCreate.js" )"></script>
+}
+
+<section class="container-fluid form-section">
+    <h1>New Request</h1>
+    <h3>Search what the users of the social media and other sources you desire, <span class="visible-md visible-lg"></span> feel about something.</h3>
+    <br />
+
+    @using(Html.BeginForm( "Create", "MyRequests", FormMethod.Post, new { @class = "theForm", role = "form" } )) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group float-label-control">
+            <h3>Word of Interest</h3>
+            <p>Select the word or phrase you are interested in.</p>
+            <br/>
+
+            @Html.LabelFor( m => m.TheSearchRequest.TheSearchKeyword, new { @class = "" } )
+            @Html.TextBoxFor( m => m.TheSearchRequest.TheSearchKeyword, new { @class = "form-control", placeholder = "coca cola cherry", spellcheck = "false" } )
+        </div>
+        <div class="validation-msg">
+            @Html.ValidationMessageFor( m => m.TheSearchRequest.TheSearchKeyword, "" )
+        </div>
+
+        <div class="form-group">
+            <h3>Available Sources</h3>
+            <p>Where do you want the data to be gathered from?</p>
+            <br />
+
+            <div class="theCheckboxList">
+                @Html.CheckBoxListFor( model => model.SelectedSources,
+                                model => MiningSource.AllSources(),
+                                option => option,
+                                option => Enum.GetName( typeof( SourceOption ), option ),
+                                model => model.SelectedSources,
+                                Position.Vertical
+                                )
+            </div>
+        </div>
+        <div class="validation-msg">
+            @Html.ValidationMessageFor( m => m.SelectedSources, "" )
+        </div>
+
+        <button type="submit" class="btn btn-default basic">Create</button>
+    }
+
+</section>
+

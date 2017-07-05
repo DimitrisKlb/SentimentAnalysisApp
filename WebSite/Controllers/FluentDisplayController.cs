@@ -11,7 +11,7 @@ namespace WebSite.Controllers {
     // Form validation for multiple embedded creation forms (display using Partial Views)
     public abstract class FluentDisplayController: Controller {
 
-        protected System.Web.Mvc.RedirectToRouteResult RedirectToIndex(BannerMsg bannerMsg = null) {
+        protected System.Web.Mvc.RedirectToRouteResult RedirectTo(string actionName, BannerMsg bannerMsg = null, object routeValues = null) {
             if(!ModelState.IsValid) {
                 SaveModelState();
             }
@@ -20,12 +20,12 @@ namespace WebSite.Controllers {
                 SaveBannerMsg( bannerMsg );
             }
 
-            return RedirectToAction( "Index" );
+            return RedirectToAction( actionName, routeValues );
         }
 
         private void SaveModelState() {
             TempData["modelKeys"] = ModelState.Keys.ToList();
-            
+
             TempData["modelValues"] = (from v in ModelState.Values
                                        select v.Value).ToList();
 
@@ -33,14 +33,14 @@ namespace WebSite.Controllers {
                           select v.Errors.FirstOrDefault()).ToList();
 
             string[] errorMessages = new string[errors.Count];
-            for(int i=0; i<errors.Count; i++) {
-                if(errors.ElementAt(i) != null) {
+            for(int i = 0; i < errors.Count; i++) {
+                if(errors.ElementAt( i ) != null) {
                     errorMessages[i] = errors.ElementAt( i ).ErrorMessage;
                 } else {
                     errorMessages[i] = null;
                 }
             }
-            TempData["modelErrors"] = errorMessages;                             
+            TempData["modelErrors"] = errorMessages;
         }
 
         protected void LoadModelState() {

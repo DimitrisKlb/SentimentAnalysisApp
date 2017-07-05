@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -19,17 +21,39 @@ namespace WebSite.Controllers {
         }
 
         [NonAction]
-        public IQueryable<FESearchRequest> GetFESearchRequests(string userID) {
-            var searchRequestsByUser = from searchRequests in db.FESearchRequests
-                                       where searchRequests.TheUserID == userID
-                                       select searchRequests;
-            return searchRequestsByUser;
+        public IEnumerable<FESearchRequest> GetFESearchRequests(string userID) {
+            try {
+                var searchRequestsByUser = db.FESearchRequests
+                                            .Where( sReq => sReq.TheUserID == userID )
+                                            .Include( sReq => sReq.TheLatestExecution.TheResults )
+                                            .ToList();
+                return searchRequestsByUser;
+            } catch(Exception e) {
+                return null;
+            }
+        }
+
+        [NonAction]
+        public IEnumerable<FESearchRequest> GetFESearchRequests(string userID, Status status) {
+            try {
+                var g = GetFESearchRequests(userID );
+                var searchRequestsByUser = g
+                                            .Where( sReq => sReq.TheStatus == status )
+                                            .ToList();
+
+                return searchRequestsByUser;
+            } catch(Exception e) {
+                return null;
+            }
         }
 
         [NonAction]
         [ResponseType( typeof( FESearchRequest ) )]
         public async Task<IHttpActionResult> GetFESearchRequest(int id) {
-            FESearchRequest fESearchRequest = await db.FESearchRequests.FindAsync( id );
+            FESearchRequest fESearchRequest = db.FESearchRequests
+                                                .Where( sReq => sReq.ID == id )
+                                                .Include( sReq => sReq.TheLatestExecution.TheResults )
+                                                .First();
             if(fESearchRequest == null) {
                 return NotFound();
             }

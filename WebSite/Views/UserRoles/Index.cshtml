@@ -13,15 +13,14 @@
     <script src="@Url.Content("~/scripts/userRoles.js")"></script>
 }
 
+@if(@Model.TheBannerMsg != null) {
+    <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @Model.TheBannerMsg.Text
+    </div>
+}
+
 <section class="container-fluid">
-
-    @if(@Model.TheBannerMsg != null) {
-        <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            @Model.TheBannerMsg.Text
-        </div>
-    }
-
     <h1>Manage User Roles</h1>
     <br />
 

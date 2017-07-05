@@ -244,6 +244,10 @@
     <Compile Include="Migrations\Migrations_FEMainDB\201706201231123_AddExecutions.Designer.cs">
       <DependentUpon>201706201231123_AddExecutions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\Migrations_FEMainDB\201707022134084_UpdateFESearchRequest.cs" />
+    <Compile Include="Migrations\Migrations_FEMainDB\201707022134084_UpdateFESearchRequest.Designer.cs">
+      <DependentUpon>201707022134084_UpdateFESearchRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Migrations_FEMainDB\Configuration_FEMainDB.cs" />
     <Compile Include="Models\FEExecution.cs" />
     <Compile Include="Models\FEMainDBContext.cs" />
@@ -264,7 +268,6 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\fluentDisplay.css" />
     <Content Include="Content\home.less" />
     <Content Include="Content\myRequests.less" />
     <None Include="Content\general.less" />
@@ -291,7 +294,13 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fluentDisplay.less" />
+    <Content Include="Content\customForms.less" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\customForms.js" />
+    <Content Include="Scripts\myRequestsIndex.js" />
+    <Content Include="Scripts\myRequestsCreate.js" />
+    <Content Include="Scripts\myRequestsInspect.js" />
     <Content Include="Scripts\userRoles.js" />
     <Content Include="Scripts\general.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
@@ -305,7 +314,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\home.js" />
-    <Content Include="Scripts\myRequests.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
@@ -344,13 +352,14 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\MyRequests\_CreateSearchRequest.cshtml" />
+    <Content Include="Views\MyRequests\Create.cshtml" />
     <Content Include="Views\MyRequests\Index.cshtml" />
     <Content Include="Views\UserRoles\Index.cshtml" />
     <Content Include="Views\UserRoles\EditRole.cshtml" />
     <Content Include="Views\UserRoles\_CreateRole.cshtml" />
     <Content Include="Views\MyRequests\_ViewExecutions.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\MyRequests\Inspect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -376,6 +385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201706201231123_AddExecutions.resx">
       <DependentUpon>201706201231123_AddExecutions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Migrations_FEMainDB\201707022134084_UpdateFESearchRequest.resx">
+      <DependentUpon>201707022134084_UpdateFESearchRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

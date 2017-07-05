@@ -58,9 +58,9 @@ namespace WebSite.Controllers {
                 } );
 
                 userDb.SaveChanges();
-                return RedirectToIndex( UR_BannerMsg.RoleCreated );
+                return RedirectTo( "Index", UR_BannerMsg.RoleCreated );
             } else {
-                return RedirectToIndex();
+                return RedirectTo( "Index" );
             }
         }
 
@@ -73,9 +73,9 @@ namespace WebSite.Controllers {
             if(theRole != null) {
                 userDb.Roles.Remove( theRole.FirstOrDefault() );
                 userDb.SaveChanges();
-                return RedirectToIndex( UR_BannerMsg.RoleDeleted );
+                return RedirectTo( "Index", UR_BannerMsg.RoleDeleted );
             } else {
-                return RedirectToIndex();
+                return RedirectTo( "Index" );
             }
 
         }
@@ -93,7 +93,7 @@ namespace WebSite.Controllers {
             if(theRole != null) {
                 return View( theRoleInfo );
             } else {
-                return RedirectToIndex();
+                return RedirectTo( "Index" );
             }
         }
 
@@ -110,11 +110,11 @@ namespace WebSite.Controllers {
                     theRole.Name = userRoleInfo.roleName;
                     userDb.Entry( theRole ).State = EntityState.Modified;
                     userDb.SaveChanges();
-                    return RedirectToIndex( UR_BannerMsg.RoleEdited );
+                    return RedirectTo( "Index", UR_BannerMsg.RoleEdited );
                 } else {
-                    return RedirectToIndex( UR_BannerMsg.RoleNotEdited );
-                }                               
-               
+                    return RedirectTo( "Index", UR_BannerMsg.RoleNotEdited );
+                }
+
             } else {
                 return View( userRoleInfo );
             }
@@ -132,8 +132,8 @@ namespace WebSite.Controllers {
                 TempData["theUserID"] = userID;
             }
 
-            return RedirectToIndex();
-        }   
+            return RedirectTo( "Index" );
+        }
 
         // Delete a Role from a User
         public ActionResult DeleteRoleFromUser(string userID, string roleName) {
@@ -142,12 +142,12 @@ namespace WebSite.Controllers {
 
                 if(userManager.IsInRole( userID, roleName )) {
                     userManager.RemoveFromRole( userID, roleName );
-                    return RedirectToIndex( UR_BannerMsg.RoleRemovedUser );
+                    return RedirectTo( "Index", UR_BannerMsg.RoleRemovedUser );
                 } else {
-                    return RedirectToIndex( UR_BannerMsg.RoleNotRemovedUser );
+                    return RedirectTo( "Index", UR_BannerMsg.RoleNotRemovedUser );
                 }
             }
-            return RedirectToIndex( UR_BannerMsg.RoleNotRemovedUser );
+            return RedirectTo( "Index", UR_BannerMsg.RoleNotRemovedUser );
         }
 
         // Add a Role to a User
@@ -161,9 +161,9 @@ namespace WebSite.Controllers {
             if(roleName != null) {
                 var userManager = new UserManager<ApplicationUser>( new UserStore<ApplicationUser>( userDb ) );
                 userManager.AddToRole( userID, roleName.FirstOrDefault() );
-                return RedirectToIndex( UR_BannerMsg.RoleAddedUser );
+                return RedirectTo( "Index", UR_BannerMsg.RoleAddedUser );
             } else {
-                return RedirectToIndex( UR_BannerMsg.RoleNotAddedUser );
+                return RedirectTo( "Index", UR_BannerMsg.RoleNotAddedUser );
             }
         }
 

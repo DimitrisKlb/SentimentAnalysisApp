@@ -1,50 +1,39 @@
-﻿/******************** Colors ********************/
-
-@bg-color: white;
-
-@sidebar-bgcolor: black;
-@sidebar-dropdown-bgcolor: #222222;
-@sidebar-color-0: rgb(0, 179, 60);
-
-@sidebar-color-1: darken(@sidebar-color-2, 5%);
-@sidebar-color-2: darken(@sidebar-color-3, 5%);
-@sidebar-color-3: darken(@sidebar-color-4, 5%);
-@sidebar-color-4: darken(@sidebar-color-5, 5%);
-@sidebar-color-5: @sidebar-color-0;
-@sidebar-color-6: lighten(@sidebar-color-5, 5%);
-@sidebar-color-7: lighten(@sidebar-color-6, 5%);
-@sidebar-color-8: lighten(@sidebar-color-7, 5%);
-@sidebar-color-9: lighten(@sidebar-color-8, 5%);
-@sidebar-color-10: lighten(@sidebar-color-9, 5%);
-
-@sidebar-text-color: #dddddd;
-
-@drawer-color: black;
-@drawer-closed-color: black;
-
-/******************** Basic Dimensions ********************/
-
-@sidebar-width: 220px;
-@sidebar-small-limit: 650px;
-@drawer-width: 100px;
-@drawer-dims: 32px;
-@drawer-top-offset: 20px;
+﻿@bg-color-1: white;
+@main-color: rgb(0, 179, 60);
 
 body,
 html {
-    background-color: @bg-color;
-    height: 100%;
+    background-color: @bg-color-1;    
+    width: 100%;
     margin: 0;
     padding: 0;
 }
 
 body {
+    height: 100%;    
     position: relative;
     overflow-x: hidden;
 }
 
-
 /******************** Wrappers ********************/
+@sidebar-bgcolor: black;
+@sidebar-dropdown-bgcolor: #222222;
+@sidebar-color-0: @main-color;
+
+@sidebar-color-1: darken(@sidebar-color-2, 3%);
+@sidebar-color-2: darken(@sidebar-color-3, 3%);
+@sidebar-color-3: darken(@sidebar-color-4, 3%);
+@sidebar-color-4: darken(@sidebar-color-5, 3%);
+@sidebar-color-5: darken(@sidebar-color-6, 3%);
+@sidebar-color-6: @sidebar-color-0;
+@sidebar-color-7: lighten(@sidebar-color-6, 3%);
+@sidebar-color-8: lighten(@sidebar-color-7, 3%);
+@sidebar-color-9: lighten(@sidebar-color-8, 3%);
+@sidebar-color-10: lighten(@sidebar-color-9, 3%);
+@sidebar-text-color: #dddddd;
+
+@sidebar-width: 220px;
+@sidebar-small-limit: 650px;
 
 #wrapper {
     height: 100%;
@@ -286,6 +275,12 @@ body {
 }
 
 /******************** Drawer Button ********************/
+@drawer-color: black;
+@drawer-closed-color: black;
+
+@drawer-width: 100px;
+@drawer-dims: 32px;
+@drawer-top-offset: 20px;
 
 .hamburger {
     z-index: 999;
@@ -326,7 +321,7 @@ body {
 
     .hamb-top {
         background-color: @drawer-closed-color;
-        top: 4px;
+        top: 3px;
         -webkit-transition: all .35s ease-in-out;
     }
 
@@ -338,7 +333,7 @@ body {
 
     .hamb-bottom {
         background-color: @drawer-closed-color;
-        bottom: 4px;
+        bottom: 2px;
         -webkit-transition: all .35s ease-in-out;
     }
 
@@ -464,6 +459,56 @@ p, ul {
     font-size: 16px;
 }
 
+@media(max-width: 700px) {
+    h1 {
+        font-size: 30px;
+    }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+
+    h4 {
+        font-size: 17px;
+    }
+}
+
+/******************** Basic Buttons ********************/
+@basic-button-color: @main-color;
+
+.btn.basic {
+    background-color: @basic-button-color;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    border-radius: 0px;
+    border: 2px solid @basic-button-color;
+    transition: all 0.2s ease 0s;
+}
+
+.btn.basic:hover {
+    background-color: rgb(255, 255, 255);
+    color: @basic-button-color;
+    transition: all 0.2s ease 0s;
+}
+
+button, button:active, button:focus, button:hover,
+.btn, .btn:active, .btn:focus, .btn:hover,
+input, input:active, input:focus, input:hover {
+    outline: none !important;
+}
+
+a.simple,
+a.simple:hover {
+    color: @basic-button-color;
+}
+
+a.simple:hover {
+    text-decoration: underline;
+}
 
 /******************** General Divs ********************/
 
@@ -482,5 +527,5 @@ footer {
 }
 
 section.container-fluid {
-    padding: 60px 20px 150px 20px;
+    padding: 50px 45px 150px 45px;
 }

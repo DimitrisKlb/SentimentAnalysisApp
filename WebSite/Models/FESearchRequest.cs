@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -11,7 +12,7 @@ namespace WebSite.Models {
         Fulfilled
     }
 
-    [Table("FESearchRequests")]
+    [Table( "FESearchRequests" )]
     [DataContract]
     public class FESearchRequest: BaseSearchRequest {
 
@@ -23,6 +24,22 @@ namespace WebSite.Models {
         public string TheUserID { get; set; }
 
         [DataMember]
+        public DateTime? CreatedOn { get; set; }
+        
+        [DataMember]
         public DateTime? LastExecutionCreatedOn { get; set; }
+
+        [ForeignKey( "TheLatestExecution" )]
+        [DataMember]
+        public int? LatestExecutionID { get; set; }
+
+        public virtual FEExecution TheLatestExecution { get; set; }
+
+        public FESearchRequest() : base() {
+            CreatedOn = DateTime.Now;
+            LatestExecutionID = null;
+        }
     }
+
+
 }

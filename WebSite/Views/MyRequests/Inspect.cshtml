@@ -1,0 +1,125 @@
+﻿@using System
+@using WebSite.Models
+@using WebSite.ViewModels
+@model InspectSReqsViewModel
+
+@{
+    ViewBag.TitleTail = "Inspect Request";
+}
+
+@section Styles {
+    <link href="@Url.Content( "~/Content/myRequests.css" )" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content( "~/Content/fluentDisplay.css" )" rel="stylesheet" type="text/css" />
+}
+
+@section Scripts{
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="@Url.Content( "~/scripts/myRequestsInspect.js" )"></script>
+}
+
+@if(@Model.TheBannerMsg != null) {
+    <div id="bannerMsg" class="alert alert-dismissable @Model.TheBannerMsg.AlertType">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @Model.TheBannerMsg.Text
+    </div>
+}
+
+@{
+    string labelType = "label-default";
+    switch(Model.TheSearchRequest.TheStatus) {
+        case Status.New:
+            labelType = "label-primary";
+            break;
+        case Status.Executing:
+            labelType = "label-warning";
+            break;
+        case Status.Fulfilled:
+            labelType = "label-success";
+            break;
+    }
+    string headerColType = "header";
+    string valueColType = "";
+
+}
+
+<section class="inspect container-fluid ">
+    <h2>Inspect Request</h2>
+    <br />
+
+    <h3>Basic Info</h3>
+
+    <div class="view-text">
+        <div class="@headerColType">
+            <h4>Word of Interest:</h4>
+        </div>
+        <div class="@valueColType">
+            @Model.TheSearchRequest.TheSearchKeyword
+        </div>
+    </div>
+
+    <div class="view-text">
+        <div class="@headerColType">
+            <h4>Status:</h4>
+        </div>
+        <div class="@valueColType">
+            <div>
+                <span class="label @labelType">@Model.TheSearchRequest.TheStatus.ToString()</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="view-text">
+        <div class="@headerColType">
+            <h4>Initial Creation Date:</h4>
+        </div>
+        <div class="@valueColType">
+            <div>
+                @Model.TheSearchRequest.CreatedOn.Value.ToString( "dd MMMM yy, hh:mm" )
+            </div>
+        </div>
+    </div>
+
+    <div class="view-text">
+        <div class="@headerColType">
+            <h4>Selected Sources:</h4>
+        </div>
+        <div class="@valueColType">
+            <div>
+                @Model.TheSearchRequest.TheSelectedSources.TheSelection.ToString()
+            </div>
+        </div>
+    </div>
+
+    @if(Model.TheSearchRequest.TheLatestExecution != null) {
+        <div class="view-text">
+            <div class="@headerColType">
+                <h4>Latest Results:</h4>
+            </div>
+            <div class="@valueColType">
+                <div class="scores">
+                    <p class="posScore">@Model.TheSearchRequest.TheLatestExecution.TheResults.ThePositiveScore.ToString( "0.0" )%<i class="fa fa-thumbs-up"></i></p>
+                    <p class="negScore">@Model.TheSearchRequest.TheLatestExecution.TheResults.TheNegativeScore.ToString( "0.0" )%<i class="fa fa-thumbs-down"></i></p>
+                </div>
+            </div>
+        </div>
+    }
+
+</section>
+
+@if(Model.TheSearchRequest.TheStatus != Status.Executing) {
+    <section class="inspect container-fluid ">
+        <h3>Execute the Request</h3>
+
+        @if(Model.TheSearchRequest.TheStatus == Status.New) {
+            <p>See what the users feel, by executing this Request.</p>
+        } else if(Model.TheSearchRequest.TheStatus == Status.Fulfilled) {
+            <p>Get updated results about this Request by executing it again.</p>
+        }
+
+        <a class="btn btn-default basic" href="@Url.Action( "Execute", "MyRequests", routeValues: new { searchRequestID = Model.TheSearchRequest.ID } )" role="button">EXECUTE</a>
+    </section>
+}
+
+@if(Model.TheSearchRequest.TheStatus != Status.New) {
+    @Html.Action( "ViewExecutions", routeValues: new { searchRequestID = Model.TheSearchRequest.ID } )
+}

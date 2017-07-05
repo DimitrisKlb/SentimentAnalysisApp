@@ -25,19 +25,66 @@ namespace WebSite.Controllers {
 
 
         [HttpGet]
-        public ActionResult Index() {
+        public ActionResult Index(string category) {
             MyRequestsViewModel theVM = new MyRequestsViewModel();
-            theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
+            Status theStatus;
+
+            try {
+                theVM.TheCategory = (Category)Enum.Parse( typeof( Category ), category );
+                switch(theVM.TheCategory) {
+                    case Category.Drafts:
+                        theStatus = Status.New;
+                        break;
+                    case Category.Pending:
+                        theStatus = Status.Executing;
+                        break;
+                    case Category.Completed:
+                        theStatus = Status.Fulfilled;
+                        break;
+                    default:
+                        throw new Exception();
+                }
+
+                theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId(), theStatus );
+            } catch {
+                theVM.TheCategory = Category.All;
+                theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
+            }
             theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
 
             return View( theVM );
         }
 
+
+        [HttpGet]
+        public async Task<ActionResult> Inspect(int id = -1) {
+            if(id == -1) {
+                return RedirectTo( "Index" );
+            }
+            InspectSReqsViewModel theVM = new InspectSReqsViewModel();
+
+            var response = await TheSReqController.GetFESearchRequest( id );
+            if(response.GetType() == typeof( OkNegotiatedContentResult<FESearchRequest> )) {
+                theVM.TheSearchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
+                theVM.TheBannerMsg = theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
+
+                return View( "Inspect", theVM );
+            } else {
+                return RedirectTo( "Index", MR_BannerMsg.ErrorCannotInspect );
+            }
+        }
+
         [HttpGet]
         [ChildActionOnly]
-        public PartialViewResult CreateSearchRequest() {
+        public PartialViewResult ViewExecutions(int searchRequestID) {
+            var theExecutions = TheExecsController.GetFEExecutions( searchRequestID );
+            return PartialView( "_ViewExecutions", theExecutions );
+        }
+
+        [HttpGet]
+        public ActionResult Create() {
             if(ModelErrorHappened() == false) {
-                return PartialView( "_CreateSearchRequest", new CreateSReqViewModel() );
+                return View( new CreateSReqViewModel() );
             } else {
                 LoadModelState();
 
@@ -45,16 +92,16 @@ namespace WebSite.Controllers {
                 var p = ModelState["SelectedSources"];
                 if(p != null && p.Value != null) {
                     string[] previousOptions = (string[])p.Value.RawValue;
-                    return PartialView( "_CreateSearchRequest", new CreateSReqViewModel( previousOptions ) );
+                    return View( new CreateSReqViewModel( previousOptions ) );
                 } else {
-                    return PartialView( "_CreateSearchRequest", new CreateSReqViewModel() );
+                    return View( new CreateSReqViewModel() );
                 }
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateSearchRequest(CreateSReqViewModel theVM) {
+        public async Task<ActionResult> Create(CreateSReqViewModel theVM) {
             if(ModelState.IsValid) {
                 FESearchRequest newSearchRequest = theVM.TheSearchRequest;
 
@@ -65,33 +112,33 @@ namespace WebSite.Controllers {
                 var response = await TheSReqController.PostFESearchRequest( newSearchRequest );
                 if(response.GetType() == typeof( CreatedAtRouteNegotiatedContentResult<FESearchRequest> )) {
                     FESearchRequest createdSearchRequest = ((CreatedAtRouteNegotiatedContentResult<FESearchRequest>)response).Content;
-                    return await ExecuteSearchRequest( createdSearchRequest );
+                    return await Execute( createdSearchRequest );
                 } else {
-                    return RedirectToIndex( MR_BannerMsg.ErrorNotCreated );
+                    return RedirectTo( "Index", MR_BannerMsg.ErrorNotCreated );
                 }
 
             } else {
-                return RedirectToIndex();
+                return RedirectTo( "Create" );
             }
         }
 
-        public async Task<ActionResult> ExecuteSearchRequest(int searchRequestID) {
+        public async Task<ActionResult> Execute(int searchRequestID) {
 
             var response = await TheSReqController.GetFESearchRequest( searchRequestID );
             if(response.GetType() == typeof( OkNegotiatedContentResult<FESearchRequest> )) {
                 FESearchRequest searchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
-                return await ExecuteSearchRequest( searchRequest );
+                return await Execute( searchRequest );
             } else {
-                return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
+                return RedirectTo( "Inspect", MR_BannerMsg.ErrorNotExecuted, routeValues: new { id = searchRequestID } );
             }
 
         }
 
-        private async Task<ActionResult> ExecuteSearchRequest(FESearchRequest searchRequest) {
+        private async Task<ActionResult> Execute(FESearchRequest searchRequest) {
 
             Status previousStatus = searchRequest.TheStatus;
             if(previousStatus == Status.Executing) {
-                return RedirectToIndex( MR_BannerMsg.ErrorAlreadyExecuting );
+                return RedirectTo( "Inspect", MR_BannerMsg.ErrorAlreadyExecuting, routeValues: new { id = searchRequest.ID } );
             }
             await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, Status.Executing );
 
@@ -105,22 +152,16 @@ namespace WebSite.Controllers {
                 if(response.IsSuccessStatusCode) {
                     searchRequest.LastExecutionCreatedOn = DateTime.Now;
                     await TheSReqController.UpdateFESearchRequest( searchRequest.ID, searchRequest );
-                    return RedirectToIndex( MR_BannerMsg.CreateOk );
+                    return RedirectTo( "Inspect", MR_BannerMsg.CreateOk, routeValues: new { id = searchRequest.ID } );
                 } else {
                     await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, previousStatus );
-                    return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
+                    return RedirectTo( "Inspect", MR_BannerMsg.ErrorNotExecuted, routeValues: new { id = searchRequest.ID } );
                 }
             } catch {
                 await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, previousStatus );
-                return RedirectToIndex( MR_BannerMsg.ErrorNotExecuted );
+                return RedirectTo( "Inspect", MR_BannerMsg.ErrorNotExecuted, routeValues: new { id = searchRequest.ID } );
             }
         }
-
-        public PartialViewResult ViewExecutions(int searchRequestID) {
-            var theExecutions = TheExecsController.GetFEExecutions( searchRequestID );
-            return PartialView( "_ViewExecutions", theExecutions );
-        }
-
 
 
     }

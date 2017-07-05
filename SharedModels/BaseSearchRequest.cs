@@ -12,6 +12,7 @@ namespace SentimentAnalysisApp.SharedModels {
         [DataMember]
         public int ID { get; set; }
 
+        [Display( Name = "Word of Interest" )]
         [Required]
         [StringLength( 20, MinimumLength = 3 )]
         [DataMember]
