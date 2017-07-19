@@ -57,6 +57,7 @@
     <Compile Include="BEMainDBContext.cs" />
     <Compile Include="BEMinedText.cs" />
     <Compile Include="BESearchRequest.cs" />
+    <Compile Include="MinerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwitterData.cs" />
   </ItemGroup>

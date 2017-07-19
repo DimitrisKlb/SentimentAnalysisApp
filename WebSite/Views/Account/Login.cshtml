@@ -25,7 +25,7 @@
     <h1>Log In</h1>
     <br />
 
-    @using(Html.BeginForm( "Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "theForm", role = "form" } )) {
+    @using(Html.BeginForm( "Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "theForm post-form", role = "form" } )) {
         @Html.AntiForgeryToken()
 
         <div class="form-group float-label-control">
@@ -45,6 +45,7 @@
         </div>
 
         <button type="submit" class="btn btn-default basic">Log In</button>
+        <i class="loading-banner fa fa-spinner fa-pulse fa-3x fa-fw" style="display: none"></i>
     }
 
 </section>

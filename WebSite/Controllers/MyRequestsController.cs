@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -50,6 +51,7 @@ namespace WebSite.Controllers {
                 theVM.TheCategory = Category.All;
                 theVM.TheSearchRequests = TheSReqController.GetFESearchRequests( User.Identity.GetUserId() );
             }
+            theVM.TheSearchRequests.OrderByDescending( sReq => sReq.TheLatestExecution.StartedOn );
             theVM.TheBannerMsg = (MR_BannerMsg)LoadBannerMsg();
 
             return View( theVM );
@@ -140,6 +142,7 @@ namespace WebSite.Controllers {
             if(previousStatus == Status.Executing) {
                 return RedirectTo( "Inspect", MR_BannerMsg.ErrorAlreadyExecuting, routeValues: new { id = searchRequest.ID } );
             }
+            searchRequest.TheStatus = Status.Executing;
             await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, Status.Executing );
 
             // Send the Search Request to the BE Server for execution

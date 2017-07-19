@@ -18,14 +18,14 @@ namespace WSP.Models {
         // Navigation property (one-to-many)
         public virtual ICollection<BEMinedText> TheMinedTexts { get; set; }
 
-        // Navigation property (one-to-oneOrZero)       
-        public virtual TwitterData TheTwitterData { get; set; }
+        // Navigation property (one-to-many)       
+        public virtual ICollection<MinerData> TheMinerData { get; set; }
 
         public BEExecution() 
             :base(){
             StartedOn = null;
             FinishedOn = null;
-            TheTwitterData = null;
+            TheMinerData = null;
             TheMinedTexts = null;
         }
 
@@ -33,7 +33,7 @@ namespace WSP.Models {
             : base( searchRequestID ) {
             FinishedOn = finishedOn;
             StartedOn = startedOn;
-            TheTwitterData = null;
+            TheMinerData = null;
             TheMinedTexts = null;
         }
 

@@ -24,6 +24,9 @@ namespace WebSite.Controllers {
             var response = await TheSReqController.GetFESearchRequest( baseSearchRequestID );
             if(response.GetType() == typeof( OkNegotiatedContentResult<FESearchRequest> )) {
                 FESearchRequest searchRequest = ((OkNegotiatedContentResult<FESearchRequest>)response).Content;
+                if(searchRequest.TheStatus != Status.Executing) {
+                    return Ok();
+                }
 
                 // Create the Execution object concerning the execution that was just completed, with the returned Results
                 FEExecution newExecution = new FEExecution( baseSearchRequestID, searchRequest.LastExecutionCreatedOn, DateTime.Now );
@@ -40,7 +43,7 @@ namespace WebSite.Controllers {
                     return Ok();
                 } else {
                     return InternalServerError();
-                }                
+                }
             } else {
                 return InternalServerError();
             }

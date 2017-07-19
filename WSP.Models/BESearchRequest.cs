@@ -11,6 +11,8 @@ namespace WSP.Models {
         New,
         Mining,
         Mining_Done,
+        Analysing,
+        Analysing_Done,
         Fulfilled
     }
 

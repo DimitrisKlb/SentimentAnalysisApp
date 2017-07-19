@@ -28,14 +28,12 @@ namespace WSP.MyActors {
 
         /******************** Fields and Core Methods ********************/
 
-        protected abstract SourceOption MinerSourceID { get; }
-
         protected IDBHandlerService dbHandlerService;
+        protected abstract SourceOption TheSourceID { get; }        
 
 
         public BaseMinerActor(ActorService actorService, ActorId actorId)
             : base( actorService, actorId ) {
-
         }
 
         protected override async Task OnActivateAsync() {
@@ -56,9 +54,9 @@ namespace WSP.MyActors {
             await RegisterReminderAsync( ReminderNames.MineBeginReminder);
         }
 
-        /******************** Remider Management Method ********************/
+        /******************** Reminder Management Method ********************/
 
-        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period) {
+        public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period){
             // Unregister the Received Reminder
             await UnregisterReminderAsync( GetReminder( reminderName ) );
 
@@ -75,7 +73,7 @@ namespace WSP.MyActors {
 
                 case ReminderNames.MineReminder:
                     try {
-                        bool g = await mainMineAsync();
+                        bool result = await mainMineAsync();
                         await onMineEndAsync();
                     } catch {
                         await RegisterReminderAsync( ReminderNames.MineReminder);
@@ -86,7 +84,7 @@ namespace WSP.MyActors {
                     try {
                         // Notify the MasterActor that the job was done
                         IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( this.Id );
-                        await theMasterActor.UpdateSearchRequestStatus( Status.Mining_Done, MinerSourceID );
+                        await theMasterActor.UpdateSearchRequestStatus( Status.Mining_Done, TheSourceID );
                         
                         await onMineCompleteAsync();
                     } catch {
@@ -113,7 +111,10 @@ namespace WSP.MyActors {
         // (Both in case of problematic exit or correct return)
         protected abstract Task onMineEndAsync();
 
-        // Called after the Miner sucesfully finished its job (mainMineAsync)
+        // Called after the Miner sucesfully finished its job (mainMineAsync).
+        // The basic thing that every child actor class MUST do here, is 
+        // store the corresponding MinerData object with the number of total mined 
+        // texts corectly set.
         protected abstract Task onMineCompleteAsync();
         
     }

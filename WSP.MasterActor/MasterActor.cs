@@ -14,6 +14,7 @@ using WSP.MasterActor.Interfaces;
 using WSP.Models;
 using WSP.MyActors;
 using WSP.MinerActor.Interfaces;
+using WSP.AnalyserActor.Interfaces;
 using WSP.DBHandlerService.Interfaces;
 
 namespace WSP.MasterActor {
@@ -27,6 +28,8 @@ namespace WSP.MasterActor {
         protected abstract class NewStateNames: StateNames {
             public const string TheMinersToCreate = "theMinersToCreate";
             public const string TheMinersToFinish = "theMinersToFinish";
+            public const string TheAnalysersToCreate = "theAnalysersToCreate";
+            public const string TheAnalysersToFinish = "theAnalysersToFinish";
             public const string TheResults = "theResults";
         }
 
@@ -57,9 +60,11 @@ namespace WSP.MasterActor {
                 new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
                 new ServicePartitionKey( 1 ) );
 
-            // Flags to track wich Miners are left to be Created or Finish
+            // Flags to track which Miners, Analysers are left to be Created or Finish
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToCreate, null );
             await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheMinersToFinish, null );
+            await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheAnalysersToCreate, null );
+            await StateManager.TryAddStateAsync<MiningSource>( NewStateNames.TheAnalysersToFinish, null );
             // The Results that will be calculated in order to Fulfill the SearchRequest
             await StateManager.TryAddStateAsync<Results>( NewStateNames.TheResults, null );
         }
@@ -72,20 +77,20 @@ namespace WSP.MasterActor {
             await SaveTheSearchRequest( newSearchRequest );
         }
 
-        private Task<MiningSource> GetTheMinersLeft(string TheMinerLeftJob) {
-            return StateManager.GetStateAsync<MiningSource>( TheMinerLeftJob );
+        private Task<MiningSource> GetTheSourcesLeft(string TheSourcesLeftJob) {
+            return StateManager.GetStateAsync<MiningSource>( TheSourcesLeftJob );
         }
 
-        private async Task SaveTheMinersLeft(string TheMinerLeftJob, MiningSource minersLeft) {
+        private async Task SaveTheSourcesLeft(string TheMinerLeftJob, MiningSource minersLeft) {
             await StateManager.SetStateAsync( TheMinerLeftJob, new MiningSource( minersLeft ) );
             await SaveStateAsync();
         }
 
-        private async Task<MiningSource> DecreaseTheMinersLeft(string TheMinerLeftJob, SourceOption finishedMinerID) {
-            MiningSource minersLeft = await GetTheMinersLeft( TheMinerLeftJob );
-            minersLeft.RemoveSource( finishedMinerID );
-            await SaveTheMinersLeft( TheMinerLeftJob, minersLeft );
-            return minersLeft;
+        private async Task<MiningSource> DecreaseTheSourcesLeft(string TheSourcesLeftJob, SourceOption finishedSourceID) {
+            MiningSource sourcesLeft = await GetTheSourcesLeft( TheSourcesLeftJob );
+            sourcesLeft.RemoveSource( finishedSourceID );
+            await SaveTheSourcesLeft( TheSourcesLeftJob, sourcesLeft );
+            return sourcesLeft;
         }
 
         private Task<Results> GetTheResults() {
@@ -102,24 +107,34 @@ namespace WSP.MasterActor {
         public async Task FulfillSearchRequestAsync(BESearchRequest searchRequest) {
             // Initialize the values stored in the State Manager
             await SaveTheSearchRequest( searchRequest );
-            await SaveTheMinersLeft( NewStateNames.TheMinersToCreate, searchRequest.TheSelectedSources );
-            await SaveTheMinersLeft( NewStateNames.TheMinersToFinish, searchRequest.TheSelectedSources );
+            await SaveTheSourcesLeft( NewStateNames.TheMinersToCreate, searchRequest.TheSelectedSources );
+            await SaveTheSourcesLeft( NewStateNames.TheMinersToFinish, searchRequest.TheSelectedSources );
+            await SaveTheSourcesLeft( NewStateNames.TheAnalysersToCreate, searchRequest.TheSelectedSources );
+            await SaveTheSourcesLeft( NewStateNames.TheAnalysersToFinish, searchRequest.TheSelectedSources );
 
             // Set the Reminder for the method that implements the core logic of the Actor (mainFulfillSearchRequestAsync)
             await RegisterReminderAsync( ReminderNames.FulfillSReqReminder );
         }
 
-        public async Task UpdateSearchRequestStatus(Status newStatus, SourceOption finishedMinerID) {
+        public async Task UpdateSearchRequestStatus(Status newStatus, SourceOption finishedSourceID) {
             Status currentStatus = (await GetTheSearchRequest()).TheStatus;
             // Avoid going backwards
-            if(newStatus <= currentStatus) { 
+            if(newStatus <= currentStatus) {
                 return;
             }
 
             // In the case that the Miners are being awaited, progress when all of them have finished
             if(newStatus == Status.Mining_Done) { // If a miner finished
-                MiningSource minersLeft = await DecreaseTheMinersLeft( NewStateNames.TheMinersToFinish, finishedMinerID );
+                MiningSource minersLeft = await DecreaseTheSourcesLeft( NewStateNames.TheMinersToFinish, finishedSourceID );
                 if(minersLeft.IsEmpty() != true) { // If there are miners that haven't finished yet
+                    return;
+                }
+            }
+
+            // In the case that the Analysers are being awaited, progress when all of them have finished
+            if(newStatus == Status.Analysing_Done) { // If an analysers finished
+                MiningSource analysersLeft = await DecreaseTheSourcesLeft( NewStateNames.TheAnalysersToFinish, finishedSourceID );
+                if(analysersLeft.IsEmpty() != true) { // If there are analysers that haven't finished yet
                     return;
                 }
             }
@@ -128,7 +143,7 @@ namespace WSP.MasterActor {
             await RegisterReminderAsync( ReminderNames.FulfillSReqReminder );
         }
 
-        /******************** Remider Management Method ********************/
+        /******************** Reminder Management Method ********************/
 
         public async Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan duelTIme, TimeSpan period) {
             switch(reminderName) {
@@ -159,8 +174,8 @@ namespace WSP.MasterActor {
 
         /******************** Actor Logic Implementation Methods ********************/
 
-        // Fullfills the SearchRequest. Invoked by a Reminder (FulfillSReqReminder)
-        private async Task mainFulfillSearchRequestAsync() {
+        // Fullfills the SearchRequest. 
+        private async Task mainFulfillSearchRequestAsync(){
             BESearchRequest theSearchRequest = await GetTheSearchRequest();
 
             Status theStatus = theSearchRequest.TheStatus;
@@ -168,19 +183,32 @@ namespace WSP.MasterActor {
                 case Status.New:
                     await initExecution( theSearchRequest );
                     await activateMiners( theSearchRequest );
+                    // All Miners were created successfully
+                    await SetTheSearchRequestStatus( Status.Mining );
                     break;
 
                 case Status.Mining:
+                    await activateAnalysers( theSearchRequest );                    
                     break;
 
                 case Status.Mining_Done:
-                    // Create temporary random Results
-                    float negScore = (float)(new System.Random()).NextDouble() * 100.0f;
-                    await SaveTheResults( new Results( negScore, -negScore ) );
+                    await activateAnalysers( theSearchRequest );
+                    // All Analysers were created successfully
+                    await UpdateSearchRequestStatus( Status.Analysing, 0 );
+                    break;
+
+                case Status.Analysing:
+                    break;
+
+                case Status.Analysing_Done:
+                    if((await GetTheResults() == null)) {
+                        await calculateResults();
+                    }
                     await UpdateSearchRequestStatus( Status.Fulfilled, 0 );
                     break;
 
                 case Status.Fulfilled:
+
                     await updateDBEntries();
                     // Set a Reminder to Send the Results to the Website
                     await RegisterReminderAsync( ReminderNames.SendResultsReminder );
@@ -203,7 +231,7 @@ namespace WSP.MasterActor {
         // Creates and Activate all the MinerActors, in a Reliable way. 
         // Throws exception in case a Miner failed to activate, so that is can be retried.
         private async Task activateMiners(BESearchRequest theSearchRequest) {
-            MiningSource desiredSources = await GetTheMinersLeft( NewStateNames.TheMinersToCreate );
+            MiningSource desiredSources = await GetTheSourcesLeft( NewStateNames.TheMinersToCreate );
             Exception exOnMinerCall = null;
 
             foreach(var selectedSource in desiredSources.GetAsList()) {
@@ -212,16 +240,41 @@ namespace WSP.MasterActor {
 
                 try {
                     await theMiner.StartMiningAsync( theSearchRequest );
-                    await DecreaseTheMinersLeft( NewStateNames.TheMinersToCreate, selectedSource );
+                    await DecreaseTheSourcesLeft( NewStateNames.TheMinersToCreate, selectedSource );
                 } catch(Exception ex) {
                     exOnMinerCall = ex;
                 }
             }
             if(exOnMinerCall != null) { //A Miner failed
                 throw exOnMinerCall;
+            }            
+        }
+
+        private async Task activateAnalysers(BESearchRequest theSearchRequest) {
+            MiningSource desiredSources = await GetTheSourcesLeft( NewStateNames.TheAnalysersToCreate );
+            Exception exOnAnalyserCall = null;
+
+            foreach(var selectedSource in desiredSources.GetAsList()) {
+                var analyserUri = AnalyserActorsFactory.GetAnalyserUri( selectedSource );
+                IAnalyserActor theAnalyser = ActorProxy.Create<IAnalyserActor>( new ActorId( theSearchRequest.ID ), analyserUri );
+
+                try {
+                    await theAnalyser.StartAnalysingAsync( theSearchRequest );
+                    await DecreaseTheSourcesLeft( NewStateNames.TheAnalysersToCreate, selectedSource );
+                } catch(Exception ex) {
+                    exOnAnalyserCall = ex;
+                }
             }
-            // All Miners were created successfully
-            await SetTheSearchRequestStatus( Status.Mining );
+            if(exOnAnalyserCall != null) { //An Analyser failed
+                throw exOnAnalyserCall;
+            }
+            
+        }
+
+        private async Task calculateResults() {
+            // Temporary random Results
+            float posScore = (float)(new System.Random()).NextDouble() * 100.0f;
+            await SaveTheResults( new Results( posScore, 100 - posScore - 5 ) );
         }
 
         // Updates all the necessary DB Entries when the SearchRequest is successfully fulfilled

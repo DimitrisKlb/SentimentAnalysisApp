@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WSP.DBHandlerService\WSP.DBHandlerService.csproj" />
     <ProjectReference Include="..\WSP.MasterActor\WSP.MasterActor.csproj" />
+    <ProjectReference Include="..\WSP.TwitterAnalyserActor\WSP.TwitterAnalyserActor.csproj" />
     <ProjectReference Include="..\WSP.TwitterMinerActor\WSP.TwitterMinerActor.csproj" />
     <ProjectReference Include="..\WSP.WebAPI\WSP.WebAPI.csproj" />
   </ItemGroup>

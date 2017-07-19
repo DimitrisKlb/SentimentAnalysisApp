@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.TwitterMinerActor", "WS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.MyActors", "WSP.MyActors\WSP.MyActors.csproj", "{EA4AD9DF-2393-4343-8055-00363A6EDA2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.AnalyserActor.Interfaces", "WSP.AnalyserActor.Interfaces\WSP.AnalyserActor.Interfaces.csproj", "{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.TwitterAnalyserActor", "WSP.TwitterAnalyserActor\WSP.TwitterAnalyserActor.csproj", "{76A320C1-8809-4894-A024-3999B64648AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +123,18 @@ Global
 		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|x64.ActiveCfg = Release|Any CPU
 		{EA4AD9DF-2393-4343-8055-00363A6EDA2B}.Release|x64.Build.0 = Release|Any CPU
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Debug|x64.ActiveCfg = Debug|x64
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Debug|x64.Build.0 = Debug|x64
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Release|Any CPU.ActiveCfg = Release|x64
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Release|x64.ActiveCfg = Release|x64
+		{98C0366B-F061-48D9-B254-BF4EE7DB8EAF}.Release|x64.Build.0 = Release|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Debug|x64.ActiveCfg = Debug|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Debug|x64.Build.0 = Debug|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Release|Any CPU.ActiveCfg = Release|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Release|x64.ActiveCfg = Release|x64
+		{76A320C1-8809-4894-A024-3999B64648AC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

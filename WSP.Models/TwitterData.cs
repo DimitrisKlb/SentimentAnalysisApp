@@ -5,13 +5,10 @@ using System.Runtime.Serialization;
 using SentimentAnalysisApp.SharedModels;
 
 namespace WSP.Models {
-
+    
+    [Table( "TwitterDatas" )]
     [DataContract]
-    public class TwitterData {
-
-        [Key, ForeignKey( "TheBEExecution" )]
-        [DataMember]
-        public int ID { get; set; }
+    public class TwitterData : MinerData{
 
         // The IDs used by Twitter, belonging to the oldest and
         // newest tweets (MinedText) mined in a previous execution
@@ -21,28 +18,22 @@ namespace WSP.Models {
         [DataMember]
         public long TheIdNewest { get; set; }
 
-        [DataMember]
-        public int TheTextsNum { get; set; }
-
-        // Navigation property (one-to-oneOrZero) 
-        public virtual BEExecution TheBEExecution { get; set; }
-
         public TwitterData()
             : this( -1 ) {
         }
 
-        public TwitterData(int theBEExecID) {
-            ID = theBEExecID;
+        public TwitterData(int theBEExecID) 
+            :base(theBEExecID, SourceOption.Twitter){
             TheIdOldest = -1;
             TheIdNewest = -1;
-            TheTextsNum = 0;
-            TheBEExecution = null;
         }
 
-        public void IncreaseTextsNum(int textsNum) {
-            TheTextsNum += textsNum;
+        public bool IsNew() {
+            if( TheTextsNum == 0 && TheIdOldest == -1 && TheIdNewest == -1) {
+                return true;
+            }
+            return false;
         }
-
 
     }
 }

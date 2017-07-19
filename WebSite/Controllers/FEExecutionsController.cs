@@ -13,39 +13,45 @@ using WebSite.Models;
 namespace WebSite.Controllers {
 
     public class FEExecutionsController: ApiController {
-        private FEMainDBContext db = new FEMainDBContext();
+        //private FEMainDBContext db = new FEMainDBContext();
 
         [NonAction]
         public IEnumerable<FEExecution> GetFEExecutions(int searchRequestID) {
-            var executionsOfSReq = db.FEExecutions
+            IEnumerable<FEExecution> executionsOfSReq = null;
+            using(var db = new FEMainDBContext()) {
+                executionsOfSReq = db.FEExecutions
                                         .Where( exec => exec.SearchRequestID == searchRequestID )
                                         .Include( exec => exec.TheResults )
-                                        .OrderByDescending(exec=> exec.FinishedOn)
-                                        .ToList();                                        
+                                        .OrderByDescending( exec => exec.FinishedOn )
+                                        .ToList();
+            }
             return executionsOfSReq;
         }
 
         [NonAction]
         [ResponseType( typeof( FESearchRequest ) )]
-        public async Task<IHttpActionResult> PostFEExecution(FEExecution fEExecution) {           
+        public async Task<IHttpActionResult> PostFEExecution(FEExecution fEExecution) {
             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }
-            db.FEExecutions.Add( fEExecution );
-            await db.SaveChangesAsync();
-
+            using(var db = new FEMainDBContext()) {
+                db.FEExecutions.Add( fEExecution );
+                await db.SaveChangesAsync();
+            }
             return CreatedAtRoute( "DefaultApi", new { id = fEExecution.ID }, fEExecution );
         }
-
+        /*
         protected override void Dispose(bool disposing) {
             if(disposing) {
                 db.Dispose();
             }
             base.Dispose( disposing );
         }
-
+        */
         private bool FESearchRequestExists(int id) {
-            return db.FESearchRequests.Count( e => e.ID == id ) > 0;
+            using(var db = new FEMainDBContext()) {
+                return db.FESearchRequests.Count( e => e.ID == id ) > 0;
+            }
         }
 
 

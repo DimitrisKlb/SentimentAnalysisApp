@@ -33,6 +33,10 @@
         }
     });
 
+    //Manually Trigger the window's resize handler after page load
+    //to correctly resize content
+    $(window).trigger("resize");
+
     // Sidebar Dropdown
     var closeDropdown = false;
     $(".dropdown.keep-open").on("show.bs.dropdown", function () {
@@ -56,6 +60,12 @@
         if (e.keyCode == 27) {
             $("#bannerMsg .close").click();
         }
+    });
+
+    // Disable submit button on post forms to avoid possible double posting
+    $('.post-form').submit(function () {
+        $(this).find(".post-button").attr("disabled", true);
+        $(this).find(".loading-banner").show();
     });
 
 });

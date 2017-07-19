@@ -3,8 +3,13 @@
 
     /****************************** Google Charts ******************************/
 
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(initCharts);
+    try {
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(initCharts);
+    } catch (e) {
+        $(".chart-error").show();
+    }
+
 
     // Returns the 3 scores from a trigger row
     function getValuesFromRow(theExecRow) {
@@ -36,56 +41,71 @@
 
     // Initialize and draw the 2 charts
     function initCharts() {
+        var donutErrorTrigger = $("#chart-basic-container .chart-error");
+        var graphErrorTrigger = $("#chart-graph-container .chart-error");
 
-        // Get the row corresponding to the latest Execution
-        var latestExecRow = $(".update-chart-basic:first-of-type");
-        latestExecRow.addClass("selectedExec");
+        try {
+            dataDonut = initialiseDonutData();
+            drawDonut(dataDonut);
+        } catch (err) {
+            donutErrorTrigger.show();
+        }
 
-        // Initial Graph Data
-        dataGraph = new google.visualization.DataTable();
-        dataGraph.addColumn('date', 'Year');
-        dataGraph.addColumn('number', 'Positive');
-        dataGraph.addColumn('number', 'Negative');
-
-        $(".update-chart-basic").each(function () {
-            var values = getValuesFromRow($(this));
-            var dateData = getDateFromRow($(this));
-            var date = new Date(dateData[0], dateData[1], dateData[2]);
-            dataGraph.addRow([date, values[0] / 100, values[1] / 100]);
-        });
-
-        // Initial Donut Data
-        var initialValues = getValuesFromRow(latestExecRow);
-        dataDonut = google.visualization.arrayToDataTable([
-          ["Sentiment Type", "Percentage"],
-          [theLabels[0], 50],
-          [theLabels[1], 50],
-          [theLabels[2], 10]
-        ]);
-        updateDataDonut(dataDonut, latestExecRow);
-
-        drawGraph(dataGraph, 500);
-        drawDonut(dataDonut);
+        try {
+            dataGraph = initialiseGraphData();
+            drawGraph(dataGraph, 500);
+        } catch (err) {
+            graphErrorTrigger.show();
+        }
 
         // Redraw charts on window resize
         $(window).resize(function () {
-            drawGraph(dataGraph, 100);
-            drawDonut(dataDonut);
+            try {
+                drawDonut(dataDonut);
+            } catch (err) {
+                donutErrorTrigger.show();
+            }
+
+            try {
+                drawGraph(dataGraph, 100);
+            } catch (err) {
+                graphErrorTrigger.show();
+            }
         });
 
         // Table rows act as trigger to update the donut chart
         $(".update-chart-basic").click(function () {
-            $(".update-chart-basic").removeClass("selectedExec");
-            $(this).addClass("selectedExec");
-            var newData = updateDataDonut(dataDonut, $(this));
-            drawDonut(newData);
+            try {
+                $(".update-chart-basic").removeClass("selectedExec");
+                $(this).addClass("selectedExec");
+                var newData = updateDataDonut(dataDonut, $(this));
+                drawDonut(newData);
+            } catch (err) {
+                donutErrorTrigger.show();
+            }
         });
 
     }
 
     /**************** Donut Chart ***************/
-    function drawDonut(data) {
 
+    function initialiseDonutData() {
+        // Get the row corresponding to the latest Execution
+        var latestExecRow = $(".update-chart-basic:first-of-type");
+        latestExecRow.addClass("selectedExec");
+
+        // Initial Donut Data
+        var initialValues = getValuesFromRow(latestExecRow);
+        var data = google.visualization.arrayToDataTable([
+          ["Sentiment Type", "Percentage"],
+          [theLabels[0], 50],
+          [theLabels[1], 50],
+          [theLabels[2], 10]
+        ]);
+        return updateDataDonut(data, latestExecRow);
+    }
+
+    function drawDonut(data) {
         var options = {
             colors: theColors,
             fontName: "Roboto",
@@ -112,6 +132,23 @@
     }
 
     /**************** Line Chart ***************/
+
+    function initialiseGraphData() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Year');
+        data.addColumn('number', 'Positive');
+        data.addColumn('number', 'Negative');
+
+        $(".update-chart-basic").each(function () {
+            var values = getValuesFromRow($(this));
+            var dateData = getDateFromRow($(this));
+            var date = new Date(dateData[0], dateData[1], dateData[2]);
+            data.addRow([date, values[0] / 100, values[1] / 100]);
+        });
+
+        return data;
+    }
+
     function drawGraph(data, animDuration) {
 
         var options = {

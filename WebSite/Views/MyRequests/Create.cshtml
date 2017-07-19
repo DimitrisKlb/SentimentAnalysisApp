@@ -20,16 +20,16 @@
 
 <section class="container-fluid form-section">
     <h1>New Request</h1>
-    <h3>Search what the users of the social media and other sources you desire, <span class="visible-md visible-lg"></span> feel about something.</h3>
+    <h3>Search what the users of the social media and other sources, <span class="visible-md visible-lg"></span> feel about something.</h3>
     <br />
 
-    @using(Html.BeginForm( "Create", "MyRequests", FormMethod.Post, new { @class = "theForm", role = "form" } )) {
+    @using(Html.BeginForm( "Create", "MyRequests", FormMethod.Post, new { @class = "theForm post-form", role = "form" } )) {
         @Html.AntiForgeryToken()
 
         <div class="form-group float-label-control">
             <h3>Word of Interest</h3>
             <p>Select the word or phrase you are interested in.</p>
-            <br/>
+            <br />
 
             @Html.LabelFor( m => m.TheSearchRequest.TheSearchKeyword, new { @class = "" } )
             @Html.TextBoxFor( m => m.TheSearchRequest.TheSearchKeyword, new { @class = "form-control", placeholder = "coca cola cherry", spellcheck = "false" } )
@@ -57,7 +57,8 @@
             @Html.ValidationMessageFor( m => m.SelectedSources, "" )
         </div>
 
-        <button type="submit" class="btn btn-default basic">Create</button>
+        <button type="submit" class="post-button btn btn-default basic">Create</button>
+        <i class="loading-banner fa fa-spinner fa-pulse fa-3x fa-fw" style="display: none"></i>
     }
 
 </section>

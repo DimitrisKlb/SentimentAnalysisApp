@@ -1,7 +1,7 @@
 ﻿@using WebSite.ViewModels
 @model UserRoleInfo
 
-@using(Html.BeginForm( "CreateRole", null, FormMethod.Post, new { id = "create_form" } )) {
+@using(Html.BeginForm( "CreateRole", null, FormMethod.Post, new { @class = "post-form" } )) {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
@@ -25,12 +25,3 @@
 
     </div>
 }
-
-<script>
-    $(document).ready(function () {
-        $('#create_form').submit(function () {
-            $("#submit_button").attr('disabled', true);
-            $("#loadingBanner").show();
-        });
-    });
-</script>

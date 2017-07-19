@@ -18,6 +18,7 @@ namespace WSP.Models {
 
         public DbSet<Results> Results { get; set; }
 
+        public DbSet<MinerData> MinerData { get; set; }
         public DbSet<TwitterData> TwitterData { get; set; }
     }
 }

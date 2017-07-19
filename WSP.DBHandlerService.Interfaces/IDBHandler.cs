@@ -18,9 +18,17 @@ namespace WSP.DBHandlerService.Interfaces {
 
         Task<BEExecution> StoreExecution(BEExecution newBEExecution);
 
+
         Task StoreMinedTexts(IEnumerable<BEMinedText> newBEMinedTexts);
+        Task<IEnumerable<BEMinedText>> GetMinedTexts(int executionID, SourceOption source, TextStatus status, int windowSize);
+        Task<int> GetMinedTextsCount(int executionID, SourceOption source, TextStatus status);
+        Task UpdateMinedTexts(IEnumerable<BEMinedText> updatedTexts);
+
+        Task StoreMinerData(MinerData newMinerData);
+        Task<MinerData> GetMinerData(int executionID, SourceOption source);
 
         Task StoreTwitterData(TwitterData newTwitterData);
+        Task<TwitterData> GetTwitterData(int executionID);
         Task<TwitterData> GetLatestTwitterData(int searchRequestID);
 
     }

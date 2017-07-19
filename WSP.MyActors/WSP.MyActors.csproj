@@ -93,7 +93,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaceActor.cs" />
+    <Compile Include="BaseAnalyserActor.cs" />
     <Compile Include="BaseMinerActor.cs" />
+    <Compile Include="AnalyserActorsFactory.cs" />
     <Compile Include="MinerActorsFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -104,6 +106,10 @@
     <ProjectReference Include="..\SharedModels\SharedModels.csproj">
       <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
       <Name>SharedModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WSP.AnalyserActor.Interfaces\WSP.AnalyserActor.Interfaces.csproj">
+      <Project>{98c0366b-f061-48d9-b254-bf4ee7db8eaf}</Project>
+      <Name>WSP.AnalyserActor.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\WSP.DBHandlerService.Interfaces\WSP.DBHandlerService.Interfaces.csproj">
       <Project>{71bc7aca-55dc-4a4a-bf4c-1ff907730541}</Project>

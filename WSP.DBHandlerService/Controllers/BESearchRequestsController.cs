@@ -9,33 +9,42 @@ using WSP.Models;
 
 namespace WSP.DBHandlerService {
     public class BESearchRequestsController {
-        private BEMainDBContext db = new BEMainDBContext();
 
         public async Task<BESearchRequest> GetBESearchRequest(int id) {
-            BESearchRequest bESearchRequest = await db.BESearchRequests.FindAsync( id );
+            BESearchRequest bESearchRequest = null;
+            using(var db = new BEMainDBContext()) {
+                bESearchRequest = await db.BESearchRequests.FindAsync( id );
+            }
             return bESearchRequest;
         }
 
         public BESearchRequest GetBESearchRequestByReceived(int receivedID) {
             BESearchRequest theBESReq = null;
-            theBESReq = db.BESearchRequests
+            using(var db = new BEMainDBContext()) {
+                theBESReq = db.BESearchRequests
                             .Where( sReq => sReq.TheReceivedID == receivedID )
                             .ToList()
                             .FirstOrDefault();
+            }
             return theBESReq;
         }
 
         public async Task<BESearchRequest> PostBESearchRequest(BESearchRequest newBESearchRequest) {
-            var createdBESearchRequest = db.BESearchRequests.Add( newBESearchRequest );
-            await db.SaveChangesAsync();
+            BESearchRequest createdBESearchRequest;
+            using(var db = new BEMainDBContext()) {
+                createdBESearchRequest = db.BESearchRequests.Add( newBESearchRequest );
+                await db.SaveChangesAsync();
+            }
             return createdBESearchRequest;
         }
 
         public async Task UpdateBESearchRequest(BESearchRequest updatedBESearchRequest) {
-            db.BESearchRequests.AddOrUpdate( updatedBESearchRequest );
-            await db.SaveChangesAsync();
-        }        
-                
+            using(var db = new BEMainDBContext()) {
+                db.BESearchRequests.AddOrUpdate( updatedBESearchRequest );
+                await db.SaveChangesAsync();
+            }
+        }
+
 
 
     }

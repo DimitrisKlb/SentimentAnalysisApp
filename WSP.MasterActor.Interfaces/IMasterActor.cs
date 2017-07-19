@@ -9,6 +9,6 @@ namespace WSP.MasterActor.Interfaces {
 
     public interface IMasterActor: IActor {
         Task FulfillSearchRequestAsync(BESearchRequest searchRequest);
-        Task UpdateSearchRequestStatus(Status newStatus, SourceOption finishedMinerID);
+        Task UpdateSearchRequestStatus(Status newStatus, SourceOption finishedSourceID);
     }
 }

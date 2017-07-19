@@ -8,8 +8,7 @@ namespace SentimentAnalysisApp.SharedModels {
 
     [Flags]
     public enum SourceOption: short {
-        Twitter = 1,
-        Facebook = 2
+        Twitter = 1
     }
 
     [DataContract]

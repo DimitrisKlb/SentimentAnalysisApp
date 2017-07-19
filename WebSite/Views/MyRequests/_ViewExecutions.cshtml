@@ -27,7 +27,7 @@
                                 <td>@exec.StartedOn.Value.ToString( "dd MMMM yy" )</td>
                                 <td>@exec.FinishedOn.Value.ToString( "dd MMMM yy" )</td>
 
-                                <td class="theDate" style="display:none" >@exec.FinishedOn.Value.ToString( "yyyy MM dd")</td>
+                                <td class="theDate" style="display:none">@exec.FinishedOn.Value.ToString( "yyyy MM dd" )</td>
                                 <td class="posScore" style="display:none">@exec.TheResults.ThePositiveScore</td>
                                 <td class="negScore" style="display:none">@exec.TheResults.TheNegativeScore</td>
                                 <td class="inspect-button">
@@ -42,6 +42,7 @@
 
             <div id="chart-basic-container" class="col-lg-6">
                 <h4>Results:</h4>
+                <p class="chart-error" style="display:none">There was and error while loading the chart.</p>
                 <div id="chart-basic"></div>
             </div>
         </div>
@@ -49,13 +50,15 @@
 
 </section>
 
-<section class="inspect container-fluid">
-    <h3>Sentiment over time</h3>
-    <p>Observe how the overall sentiment (user opinions) develops over different points (executions) in time.</p>
-    <br />
+@if(Model != null && Model.Count() != 0) {
+    <section class="inspect container-fluid">
+        <h3>Sentiment over time</h3>
+        <p>Observe how the overall sentiment (user opinions) develops over different points (executions) in time.</p>
+        <br />
 
-    <div id="chart-graph-container">
-        <div id="chart-graph"></div>
-    </div>
-
-</section>
+        <div id="chart-graph-container">
+            <p class="chart-error" style="display:none">There was and error while loading the chart.</p>
+            <div id="chart-graph"></div>
+        </div>
+    </section>
+}

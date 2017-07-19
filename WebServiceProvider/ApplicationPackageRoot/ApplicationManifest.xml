@@ -11,10 +11,25 @@
     <Parameter Name="TwitterMinerActorService_PartitionCount" DefaultValue="10" />
     <Parameter Name="TwitterMinerActorService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="TwitterMinerActorService_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TwitterAnalyserActorService_PartitionCount" DefaultValue="10" />
+    <Parameter Name="TwitterAnalyserActorService_MinReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="TwitterAnalyserActorService_TargetReplicaSetSize" DefaultValue="3" />
   </Parameters>
   <!-- Import the ServiceManifest from the ServicePackage. The ServiceManifestName and ServiceManifestVersion 
        should match the Name and Version attributes of the ServiceManifest element defined in the 
        ServiceManifest.xml file. -->
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="WSP.TwitterAnalyserActorPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides>
+      <ConfigOverride Name="Config">
+        <Settings>
+          <Section Name="ApplicationServicesNames">
+            <Parameter Name="DBHandlerName" Value="fabric:/WebServiceProvider/DBHandlerService" />
+          </Section>
+        </Settings>
+      </ConfigOverride>
+    </ConfigOverrides>
+  </ServiceManifestImport>
   <ServiceManifestImport>
     <ServiceManifestRef ServiceManifestName="WSP.TwitterMinerActorPkg" ServiceManifestVersion="1.0.0" />
     <ConfigOverrides>
@@ -82,6 +97,11 @@
     <Service Name="TwitterMinerActorService" GeneratedIdRef="074987fd-3ec8-414c-8049-4097dd235939|Persisted">
       <StatefulService ServiceTypeName="TwitterMinerActorServiceType" TargetReplicaSetSize="[TwitterMinerActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TwitterMinerActorService_MinReplicaSetSize]">
         <UniformInt64Partition PartitionCount="[TwitterMinerActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+      </StatefulService>
+    </Service>
+    <Service Name="TwitterAnalyserActorService" GeneratedIdRef="ca74c7a2-a4a2-4fd3-b980-db79d73c2ab2|Persisted">
+      <StatefulService ServiceTypeName="TwitterAnalyserActorServiceType" TargetReplicaSetSize="[TwitterAnalyserActorService_TargetReplicaSetSize]" MinReplicaSetSize="[TwitterAnalyserActorService_MinReplicaSetSize]">
+        <UniformInt64Partition PartitionCount="[TwitterAnalyserActorService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
       </StatefulService>
     </Service>
   </DefaultServices>

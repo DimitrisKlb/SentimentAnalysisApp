@@ -27,7 +27,9 @@ namespace WSP.DBHandlerService {
         BESearchRequestsController TheSReqsContr = new BESearchRequestsController();
         BEExecutionsController TheExecsContr = new BEExecutionsController();
         BEMinedTextsController TheMinedTextsContr = new BEMinedTextsController();
+        MinerDataController TheMinerDataContr = new MinerDataController();
         TwitterDataController TheTwitterDataContr = new TwitterDataController();
+        ResultsController TheResultsContr = new ResultsController();
 
         private const int clusterSizeMax = 100;
         private const int waitTimeJobDone = 5;
@@ -51,7 +53,8 @@ namespace WSP.DBHandlerService {
 
         /******************** Service Interface Methods ********************/
 
-        public async Task<BESearchRequest> StoreOrUpdateSearchRequest(BESearchRequest newBESearchRequest){
+        /*---------- SearchRequest Management ----------*/
+        public async Task<BESearchRequest> StoreOrUpdateSearchRequest(BESearchRequest newBESearchRequest) {
             // Check if this SearchRequest has been received again
             BESearchRequest theSearchRequest = TheSReqsContr.GetBESearchRequestByReceived( newBESearchRequest.TheReceivedID );
 
@@ -59,7 +62,7 @@ namespace WSP.DBHandlerService {
                 theSearchRequest = await TheSReqsContr.PostBESearchRequest( newBESearchRequest );
 
             } else { // If it has, update its Status to new, since it will be executed again
-                theSearchRequest.TheStatus = Status.New; 
+                theSearchRequest.TheStatus = Status.New;
                 await TheSReqsContr.UpdateBESearchRequest( theSearchRequest );
             }
             return theSearchRequest;
@@ -72,16 +75,18 @@ namespace WSP.DBHandlerService {
 
             BEExecution theExec = await TheExecsContr.GetBEExecution( executionID );
             theExec.FinishedOn = DateTime.Now;
-            theExec.TheResults = theResults;
             await TheExecsContr.UpdateBEExecution( theExec );
 
+            theResults.ID = executionID;
+            await TheResultsContr.PostResults( theResults );
         }
 
+        /*---------- Execution Management ----------*/
         public async Task<BEExecution> StoreExecution(BEExecution newBEExecution) {
             return await TheExecsContr.PostBEExecution( newBEExecution );
         }
 
-
+        /*---------- MinedText Management ----------*/
         public async Task StoreMinedTexts(IEnumerable<BEMinedText> newBEMinedTexts) {
             var theQueue = await GetTheTextsQueue();
             using(var tx = StateManager.CreateTransaction()) {
@@ -90,9 +95,44 @@ namespace WSP.DBHandlerService {
             }
         }
 
+        public async Task<IEnumerable<BEMinedText>> GetMinedTexts(int executionID, SourceOption source, TextStatus status, int windowSize) {
+            var texts = await TheMinedTextsContr.GetBEMinedTexts( executionID, source, status, windowSize );
+            if(texts != null && texts.Count() != 0) {
+                var textIDs = texts.Select( t => t.ID );
+                await TheMinedTextsContr.UpdateBEMinedTextsStatus( textIDs, TextStatus.BeingProcessed );
+            }
+            return texts;
+        }
 
+        public async Task<int> GetMinedTextsCount(int executionID, SourceOption source, TextStatus status) {
+            return await TheMinedTextsContr.GetBEMinedTextsCount( executionID, source, status );
+        }
+
+        public async Task UpdateMinedTexts(IEnumerable<BEMinedText> updatedTexts) {
+            await TheMinedTextsContr.UpdateBEMinedTexts( updatedTexts );
+        }
+
+        /*---------- MinerData Management ----------*/
+        public async Task StoreMinerData(MinerData newMinerData) {
+            await TheMinerDataContr.PostMinerData( newMinerData );
+        }
+
+        public async Task<MinerData> GetMinerData(int executionID, SourceOption source) {
+            MinerData minerData = await TheMinerDataContr.GetMinerData( executionID, source );
+            // Return only the needed fields as an instance of the base class
+            return new MinerData() {
+                TheSource = minerData.TheSource,
+                TheTextsNum = minerData.TheTextsNum
+            };
+        }
+
+        /*---------- TwitterData Management ----------*/
         public async Task StoreTwitterData(TwitterData newTwitterData) {
             await TheTwitterDataContr.PostTwitterData( newTwitterData );
+        }
+
+        public async Task<TwitterData> GetTwitterData(int executionID) {
+            return await TheTwitterDataContr.GetTwitterData( executionID );
         }
 
         public async Task<TwitterData> GetLatestTwitterData(int searchRequestID) {
