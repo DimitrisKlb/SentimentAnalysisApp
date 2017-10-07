@@ -12,9 +12,18 @@
 
 <section id="intro" class="container-fluid">
     <div id="intro_overlay">
-        <div id="logo_description">
-            <h1>SentiMeter</h1>
-            <h3>A Sentiment Analysis miner tool</h3>
+        <div id="logo_description">            
+            <h1>What do they feel?</h1>
+            
+
+            <blockquote class="blockquote">
+                <p class="mb-0">When they look outside the window <br /> and it's raining again?</p>
+                <footer class="blockquote-footer">Beto Cohen, aka <cite title="Source Title">Betoko</cite></footer>
+            </blockquote>
+
+            <div id="logoDiv">
+                <img src="@Url.Content("~/Content/Images/logo_full.png")" class="img-responsive">
+            </div>
         </div>
     </div>
 </section>
@@ -24,13 +33,20 @@
     <h2 class="text-left">What it is and why it exists.</h2>
     <br />
     <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque id felis ut risus tempus tempus eget nec nibh. Integer ultricies sit amet risus sit amet sagittis. Donec dignissim mollis lectus. Sed imperdiet efficitur luctus. Suspendisse potenti. In sed nibh quis mi tristique dignissim. In tincidunt vitae urna sit amet mattis. Suspendisse nec tristique dolor. Etiam et suscipit turpis. Quisque in elit ac nulla molestie tristique. Aenean non turpis ac nulla egestas scelerisque in at massa. Cras a blandit velit, quis auctor risus. Suspendisse non lobortis sem, in congue sapien. Nulla eu velit dui. Proin id risus a diam vestibulum maximus. Curabitur mattis facilisis dui, nec varius nisl bibendum in.
+        SentiMeter is a Website application and part of a larger system designed to perform sentiment analysis on user text data
+        collected from social media, forums and around the web in general. In plain terms, you can see how people around the internet
+        feel about a particular subject. The users of this app can create their requests by selecting their desired words of interest
+        and the sources from which the texts will be collected, and execute them in order to watch the overall sentiment
+        - opinions, in the form of statistics and other charts.
     </p>
     <p>
-        Etiam imperdiet risus at erat pretium cursus. Etiam pulvinar tempor nisi, euismod convallis arcu hendrerit quis. Mauris suscipit velit sit amet luctus volutpat. Suspendisse viverra enim sed dolor sodales, a tempus odio rutrum. Morbi sit amet condimentum erat. Proin tincidunt, odio eget feugiat fringilla, purus ipsum porttitor mauris, non varius velit tortor id est. Vivamus facilisis finibus mauris ut mollis.
-    </p>
-    <p>
-        Curabitur dapibus faucibus pharetra. Curabitur porttitor vulputate elit, sed porttitor ipsum bibendum ornare. Sed non arcu eget dolor rutrum ornare sit amet ut tellus. Vestibulum cursus sollicitudin sem in sodales. Aliquam at nisl commodo, ullamcorper velit ut, tempor ipsum. Praesent varius semper nibh nec aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla in dolor quam. Donec dapibus mi non nulla ornare pretium.
+        This system was developed as a Thesis for the Diploma
+        in <a class="simple" href="https://www.ceid.upatras.gr/en">Computer Engineering &amp; Informatics Department</a>, at University of Patras.
+        The goal was to implement an extensible, scalable and reliable system that performs sentiment analysis.
+        Thefore, it was designed as a cloud system application using the
+        <a class="simple" href="https://azure.microsoft.com/en-us/services/service-fabric/">Microsoft Azure Service Fabric Platform</a> (PaaS),
+        as well as other important and basic programming patterns and techniques such us the Actor Model, RESTful Services,
+        microservices architectures, etc.
     </p>
 </section>
 
@@ -39,7 +55,15 @@
         <h1 class="text-center">Contact</h1>
         <br />
         <p>
-            Interested in learning more about blabla? Then, contact me in porttitor mauris, non varius velit tortor id est. Vivamus facilisis finibus mauris ut mollis.
+            My name is Dimitris Kallivokas and I'm a graduate student of <a class="simple" href="https://www.ceid.upatras.gr/en">CEID</a>, at University of Patras.
+            This application is a part of the open-source system I developed for my Thesis. If you are in any way interested in my
+            work, you can contact me or view - fork the project:
         </p>
+        <div id="icons">
+            <a href="" data-toggle="tooltip" data-placement="bottom" title="Personal Profile"><div class="icon"><i class="fa fa-user"></i></div></a>
+            <a href="" data-toggle="tooltip" data-placement="bottom" title="LinedIn Profile"><div class="icon"><i class="fa fa-linkedin"></i></div></a>
+            <a href="mailto:kallivokas@ceid.upatras.gr" data-toggle="tooltip" data-placement="bottom" title="kallivokas@ceid.upatras.gr"><div class="icon"><i class="fa fa-envelope"></i></div></a>
+            <a href="https://bitbucket.org/mmlabgr/sentimentanalysis"><div class="icon" data-toggle="tooltip" data-placement="bottom" title="Bitbucket Repository"><i class="fa fa-bitbucket"></i></div></a>
+        </div>
     </div>
 </section>

@@ -61,7 +61,10 @@
             $("#bannerMsg .close").click();
         }
     });
-
+    
+    // Correctly initialize Tooltips
+    $("[data-toggle='tooltip']").tooltip({ trigger: "hover" }); //Enable Bootstrap Tooltips	
+    
     // Disable submit button on post forms to avoid possible double posting
     $('.post-form').submit(function () {
         $(this).find(".post-button").attr("disabled", true);
