@@ -66,6 +66,10 @@
       <Project>{a69d3c88-d6c2-4077-a8ad-3ba8e6bacf99}</Project>
       <Name>SharedModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TextAnalysers\TextAnalysers.csproj">
+      <Project>{8e74930e-3abe-4770-add0-f198ee6ed392}</Project>
+      <Name>TextAnalysers</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

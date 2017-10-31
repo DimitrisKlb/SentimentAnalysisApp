@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Threading.Tasks;
 using System.Linq;
 
 using SentimentAnalysisApp.SharedModels;
 using WSP.Models;
-using System;
 
 namespace WSP.DBHandlerService {
     public class MinerDataController {
@@ -13,7 +14,18 @@ namespace WSP.DBHandlerService {
                 db.MinerData.Add( newMinerData );
                 await db.SaveChangesAsync();
             }
-        }      
+        }
+
+        public async Task<IEnumerable<MinerData>> GetMinerDatum(int executionID) {
+            IEnumerable<MinerData> minerDatum = null;
+            using(var db = new BEMainDBContext()) {
+                minerDatum = db.MinerData
+                                .Where( md => md.TheExecutionID == executionID )
+                                .ToList();
+            }
+            return minerDatum;
+        }
+
 
         public async Task<MinerData> GetMinerData(int executionID, SourceOption source) {
             MinerData minerData = null;
@@ -24,6 +36,13 @@ namespace WSP.DBHandlerService {
                                 .FirstOrDefault();
             }
             return minerData;
+        }
+
+        public async Task UpdateMinerData(MinerData updatedMinerData) {
+            using(var db = new BEMainDBContext()) {
+                db.MinerData.AddOrUpdate( updatedMinerData );
+                await db.SaveChangesAsync();
+            }
         }
 
     }

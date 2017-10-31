@@ -195,6 +195,7 @@ $ModuleFolderPath = (Get-ItemProperty -Path $RegKey -Name FabricSDKPSModulePath)
 Import-Module "$ModuleFolderPath\ServiceFabricSDK.psm1"
 
 $IsUpgrade = ($publishProfile.UpgradeDeployment -and $publishProfile.UpgradeDeployment.Enabled -and $OverrideUpgradeBehavior -ne 'VetoUpgrade') -or $OverrideUpgradeBehavior -eq 'ForceUpgrade'
+$CopyPackageTimeoutSec = 600
 
 if ($IsUpgrade)
 {

@@ -20,9 +20,15 @@ namespace WSP.Models {
         [DataMember]
         public SourceOption TheSource { get; set; }
 
-
         [DataMember]
         public int TheTextsNum { get; set; }
+
+        [DataMember]
+        public int ThePositivesNum { get; set; }
+
+        [DataMember]
+        public int TheNegativesNum { get; set; }
+
 
         // Navigation property (many-to-one) 
         public virtual BEExecution TheBEExecution { get; set; }
@@ -35,6 +41,17 @@ namespace WSP.Models {
             TheExecutionID = theBEExecID;
             TheSource = theSource;
             TheTextsNum = 0;
+            ThePositivesNum = 0;
+            TheNegativesNum = 0;
+            TheBEExecution = null;
+        }
+
+        public MinerData(MinerData source) {
+            TheExecutionID = source.TheExecutionID;
+            TheSource = source.TheSource;
+            TheTextsNum = source.TheTextsNum;
+            ThePositivesNum = source.ThePositivesNum;
+            TheNegativesNum = source.TheNegativesNum;
             TheBEExecution = null;
         }
 

@@ -34,6 +34,5 @@ namespace WSP.TwitterAnalyserActor {
             ActorEventSource.Current.ActorMessage( this, "TwitterAnalyserActor {0} activated.", this.Id );
         }
 
-
     }
 }

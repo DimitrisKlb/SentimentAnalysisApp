@@ -25,7 +25,9 @@ namespace WSP.DBHandlerService.Interfaces {
         Task UpdateMinedTexts(IEnumerable<BEMinedText> updatedTexts);
 
         Task StoreMinerData(MinerData newMinerData);
+        Task<IEnumerable<MinerData>> GetMinerDatum(int executionID);
         Task<MinerData> GetMinerData(int executionID, SourceOption source);
+        Task UpdateMinerData(MinerData updatedMinerData);
 
         Task StoreTwitterData(TwitterData newTwitterData);
         Task<TwitterData> GetTwitterData(int executionID);

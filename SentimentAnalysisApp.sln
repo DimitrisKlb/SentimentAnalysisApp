@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.AnalyserActor.Interface
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSP.TwitterAnalyserActor", "WSP.TwitterAnalyserActor\WSP.TwitterAnalyserActor.csproj", "{76A320C1-8809-4894-A024-3999B64648AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextAnalysers", "TextAnalysers\TextAnalysers.csproj", "{8E74930E-3ABE-4770-ADD0-F198EE6ED392}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,14 @@ Global
 		{76A320C1-8809-4894-A024-3999B64648AC}.Release|Any CPU.ActiveCfg = Release|x64
 		{76A320C1-8809-4894-A024-3999B64648AC}.Release|x64.ActiveCfg = Release|x64
 		{76A320C1-8809-4894-A024-3999B64648AC}.Release|x64.Build.0 = Release|x64
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E74930E-3ABE-4770-ADD0-F198EE6ED392}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

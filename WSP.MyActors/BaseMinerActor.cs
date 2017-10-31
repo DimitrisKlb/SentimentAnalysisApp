@@ -26,6 +26,10 @@ namespace WSP.MyActors {
             public const string MineCompleteReminder = "MineComplete";
         }
 
+        protected abstract class NewStateNames: StateNames {
+            public const string TheMinerData = "theMinerData";
+        }        
+
         /******************** Fields and Core Methods ********************/
 
         protected IDBHandlerService dbHandlerService;
@@ -42,14 +46,26 @@ namespace WSP.MyActors {
             dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
                 new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
                 new ServicePartitionKey( 1 ) );
+
+            await StateManager.TryAddStateAsync<MinerData>( NewStateNames.TheMinerData, null );
+        }
+
+        /******************** State Management Methods ********************/
+
+        protected Task<MinerData> GetTheMinerData() {
+            return StateManager.GetStateAsync<MinerData>( NewStateNames.TheMinerData );
+        }
+
+        protected async Task SaveTheMinerData(MinerData theMinerData) {
+            await StateManager.SetStateAsync( NewStateNames.TheMinerData, theMinerData );
+            await SaveStateAsync();
         }
 
         /******************** Actor Interface Methods ********************/
 
         public virtual async Task StartMiningAsync(BESearchRequest searchRequest) {
-            // Initialize the SearchRequest in the state manager if this MinerActor is called for the first time 
+            // Initialize the SearchRequest in the state manager 
             await SaveTheSearchRequest( searchRequest );
-
             // Set the Reminder for the method to begin Mining
             await RegisterReminderAsync( ReminderNames.MineBeginReminder);
         }
@@ -105,7 +121,12 @@ namespace WSP.MyActors {
         protected abstract Task<bool> mainMineAsync();
 
         // Called before the Miner starts its job (mainMineAsync)
-        protected abstract Task onMineBeginAsync();
+        protected virtual async Task onMineBeginAsync() {
+            // Initialize the MinerData for this Execution
+            BESearchRequest theSearchRequest = await GetTheSearchRequest();
+            MinerData theMinerData = new MinerData( theSearchRequest.ActiveExecutionID, TheSourceID );            
+            await SaveTheMinerData( theMinerData );
+        }
 
         // Define the strategy that will be followed when mainMineAsync() ended 
         // (Both in case of problematic exit or correct return)
@@ -115,7 +136,9 @@ namespace WSP.MyActors {
         // The basic thing that every child actor class MUST do here, is 
         // store the corresponding MinerData object with the number of total mined 
         // texts corectly set.
-        protected abstract Task onMineCompleteAsync();
+        protected virtual async Task onMineCompleteAsync() {
+            await dbHandlerService.StoreMinerData( await GetTheMinerData() );
+        }
         
     }
 }

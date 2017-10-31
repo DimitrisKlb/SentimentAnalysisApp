@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 using SentimentAnalysisApp.SharedModels;
+using TextAnalysers;
 
 namespace WSP.Models {
 
@@ -20,10 +21,7 @@ namespace WSP.Models {
         public TextStatus TheStatus { get; set; }
 
         [DataMember]
-        public float ThePosScoreSum { get; set; }
-
-        [DataMember]
-        public float TheNegScoreSum { get; set; }
+        public SentiClass TheClass { get; set; }     
 
 
         [ForeignKey( "TheExecution" )]
@@ -37,6 +35,7 @@ namespace WSP.Models {
         public BEMinedText()
             : base() {
             TheStatus = TextStatus.New;
+            TheClass = SentiClass.Neutral;
         }
 
     }

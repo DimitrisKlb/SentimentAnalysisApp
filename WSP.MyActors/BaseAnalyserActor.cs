@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using WSP.MasterActor.Interfaces;
 using WSP.Models;
 using WSP.MyActors;
 using WSP.DBHandlerService.Interfaces;
+using TextAnalysers;
 
 namespace WSP.MyActors {
 
@@ -32,16 +34,19 @@ namespace WSP.MyActors {
 
         protected abstract class NewStateNames: StateNames {
             public const string TheMinerData = "theMinerData";
+            public const string ThePositivesNum = "thePositivesNum";
+            public const string TheNegativesNum = "theNegativesNum";
         }
 
         /******************** Fields and Core Methods ********************/
 
         protected IDBHandlerService dbHandlerService;
+        protected DataPackage dataPackage;
 
         protected int textsRequestWindowSize = 1000;
         // The time the actor will wait before requesting texts again, after a request has wielded no results
         protected double textsRequestRetryTime = 1000; // In msec
-        //protected TextAnalyser theTextAnalyser;
+        protected TextAnalyser theTextAnalyser;
 
         protected abstract SourceOption TheSourceID { get; }
 
@@ -52,11 +57,14 @@ namespace WSP.MyActors {
         protected override async Task OnActivateAsync() {
             await base.OnActivateAsync();
 
+            dataPackage = ActorService.Context.CodePackageActivationContext.GetDataPackageObject( "SentiData" );
             dbHandlerService = ServiceProxy.Create<IDBHandlerService>(
                 new Uri( configSettings.Settings.Sections["ApplicationServicesNames"].Parameters["DBHandlerName"].Value ),
                 new ServicePartitionKey( 1 ) );
 
             await StateManager.TryAddStateAsync<MinerData>( NewStateNames.TheMinerData, null );
+            await StateManager.TryAddStateAsync<int>( NewStateNames.ThePositivesNum, 0 );
+            await StateManager.TryAddStateAsync<int>( NewStateNames.TheNegativesNum, 0 );
         }
 
         /******************** State Management Methods ********************/
@@ -68,6 +76,21 @@ namespace WSP.MyActors {
         protected async Task SaveTheMinerData(MinerData theMinerData) {
             await StateManager.SetStateAsync( NewStateNames.TheMinerData, theMinerData );
             await SaveStateAsync();
+        }
+
+        protected Task<int> GetTheTextsNum(string theTextsNumType) {
+            return StateManager.GetStateAsync<int>( theTextsNumType );
+        }
+
+        protected async Task SaveTheTextsNum(string theTextsNumType, int theTextsNum) {
+            await StateManager.SetStateAsync( theTextsNumType, theTextsNum );
+            await SaveStateAsync();
+        }
+
+        private async Task IncreaseTheTextsNum(string theTextsNumType, int addedTextsNum) {
+            int textsNum = await GetTheTextsNum( theTextsNumType );
+            textsNum += addedTextsNum;
+            await SaveTheTextsNum( theTextsNumType, textsNum );
         }
 
         /******************** Actor Interface Methods ********************/
@@ -112,6 +135,8 @@ namespace WSP.MyActors {
 
                 case ReminderNames.AnalyseCompleteReminder:
                     try {
+                        await onAnalyseCompleteAsync();
+                        // Notify the MasterActor that the job was done
                         IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( this.Id );
                         await theMasterActor.UpdateSearchRequestStatus( Status.Analysing_Done, TheSourceID );
                     } catch {
@@ -128,11 +153,22 @@ namespace WSP.MyActors {
         /******************** Actor Logic Implementation Methods ********************/
 
         // Called before the Analyser starts its job (mainAnalyseAsync)
-        protected async Task onAnalyseBeginAsync() {
-            //theTextAnalyser = new TextAnalyser( dataPackage.Path );
+        protected virtual async Task onAnalyseBeginAsync() {
+            string stanfNLP_Path = Path.Combine( dataPackage.Path, "SNLP" );
+            string SWN_Path = Path.Combine( dataPackage.Path, "SWN" );
+            theTextAnalyser = new SWNAnalyser( stanfNLP_Path, SWN_Path );
         }
 
-        // Basic Actor method.
+        // Called after the Analyser sucesfully finished its job
+        protected virtual async Task onAnalyseCompleteAsync() {
+            MinerData minerData = await GetTheMinerData();
+            minerData.ThePositivesNum = await GetTheTextsNum( NewStateNames.ThePositivesNum );
+            minerData.TheNegativesNum = await GetTheTextsNum( NewStateNames.TheNegativesNum );
+            // Store the updated MinerData in the DB     
+            await dbHandlerService.UpdateMinerData( minerData );
+        }
+
+        // Basic Actor method
         private async Task<bool> mainAnalyseAsync() {
             BESearchRequest theSearchRequest;
             MinerData theMinerData;
@@ -146,22 +182,29 @@ namespace WSP.MyActors {
                 theMinedTexts = await dbHandlerService.GetMinedTexts( theSearchRequest.ActiveExecutionID, TheSourceID, TextStatus.New, textsRequestWindowSize );
 
                 if(theMinedTexts != null && theMinedTexts.Count() != 0) {
+                    int positivesNum = 0;
+                    int negativesNum = 0;
 
                     // Analyse each text
                     foreach(BEMinedText minedText in theMinedTexts) {
-                        float posScoreSum, negScoreSum;
-
+                        SentiClass textClass;
                         try {
-                            //theTextAnalyser.analyseText( minedText.TheText, out posScoreSum, out negScoreSum );
-                            //minedText.ThePosScoreSum = posScoreSum;
-                            //minedText.TheNegScoreSum = negScoreSum;
+                            textClass = theTextAnalyser.classifyText( minedText.TheText );
+                            minedText.TheClass = textClass;
+
+                            if(textClass == SentiClass.Positive) {
+                                positivesNum++;
+                            } else if(textClass == SentiClass.Negative) {
+                                negativesNum++;
+                            }
                             minedText.TheStatus = TextStatus.Processed;
                         } catch {
                         }
                     }
                     // Write back the analysed texts to the DB
                     await dbHandlerService.UpdateMinedTexts( theMinedTexts );
-
+                    await IncreaseTheTextsNum( NewStateNames.ThePositivesNum, positivesNum );
+                    await IncreaseTheTextsNum( NewStateNames.TheNegativesNum, negativesNum );
                 } else {    // No texts were returned
                     // Determine whether there are no more texts right now, or all of the texts were successfully analysed.
                     if(theMinerData == null) {

@@ -117,13 +117,23 @@ namespace WSP.DBHandlerService {
             await TheMinerDataContr.PostMinerData( newMinerData );
         }
 
+        public async Task<IEnumerable<MinerData>> GetMinerDatum(int executionID) {
+            IEnumerable<MinerData> minerDatum = await TheMinerDataContr.GetMinerDatum( executionID );
+            List<MinerData> actualMinerDatum = new List<MinerData>();          
+            foreach(var md in minerDatum) {
+                actualMinerDatum.Add( new MinerData(md) );
+            }
+            return actualMinerDatum;
+        }
+
         public async Task<MinerData> GetMinerData(int executionID, SourceOption source) {
             MinerData minerData = await TheMinerDataContr.GetMinerData( executionID, source );
             // Return only the needed fields as an instance of the base class
-            return new MinerData() {
-                TheSource = minerData.TheSource,
-                TheTextsNum = minerData.TheTextsNum
-            };
+            return new MinerData( minerData );
+        }
+
+        public async Task UpdateMinerData(MinerData updatedMinerData) {
+            await TheMinerDataContr.UpdateMinerData( updatedMinerData );
         }
 
         /*---------- TwitterData Management ----------*/

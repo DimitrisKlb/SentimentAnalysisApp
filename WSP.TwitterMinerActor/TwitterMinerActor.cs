@@ -22,7 +22,7 @@ namespace WSP.TwitterMinerActor {
     [StatePersistence( StatePersistence.Persisted )]
     internal class TwitterMinerActor: BaseMinerActor, ITwitterMinerActor {
 
-        /************* Helper Classes for String definitions *************/
+        /************* Helper Classes for String definitions ************
 
         protected abstract class NewStateNames: StateNames {
             public const string TheTwitterData = "theTwitterData";
@@ -35,7 +35,7 @@ namespace WSP.TwitterMinerActor {
            }
         }         
         private const int minMinedTextsNum = 10; // The minimum number of texts that must be mined before successful return       
-        private const int minMinedTextsNumFirstTime = 100;
+        private const int minMinedTextsNumFirstTime = 10;
         private bool miningForFirstTime = false;
         private double rateLimitsResetTime;
 
@@ -47,18 +47,23 @@ namespace WSP.TwitterMinerActor {
         protected override async Task OnActivateAsync() {
             await base.OnActivateAsync();
             ActorEventSource.Current.ActorMessage( this, "TwitterMinerActor {0} activated.", this.Id );
+
+            // This MinerActor will specifically store TwitterData and not MinerData
+            await StateManager.TryRemoveStateAsync( NewStateNames.TheMinerData );
+            await StateManager.TryAddStateAsync<TwitterData>( NewStateNames.TheMinerData, null );
         }
 
-        /******************** State Management Methods ********************/
-
-        protected Task<TwitterData> GetTheTwitterData() {
-            return StateManager.GetStateAsync<TwitterData>( NewStateNames.TheTwitterData );
+        /******************** State Management Methods ********************/      
+        
+        protected new Task<TwitterData> GetTheMinerData() {
+            return StateManager.GetStateAsync<TwitterData>( NewStateNames.TheMinerData );
         }
 
-        protected async Task SaveTheTwitterData(TwitterData theTwitterData) {
-            await StateManager.SetStateAsync( NewStateNames.TheTwitterData, theTwitterData );
+        protected async Task SaveTheMinerData(TwitterData theTwitterData) {
+            await StateManager.SetStateAsync( NewStateNames.TheMinerData, theTwitterData );
             await SaveStateAsync();
         }
+        
 
         /******************** Actor Interface Methods ********************/
         
@@ -81,13 +86,13 @@ namespace WSP.TwitterMinerActor {
                 theTwitterData.TheTextsNum = 0;
                 theTwitterData.TheExecutionID = theSearchRequest.ActiveExecutionID;
             }
-            await SaveTheTwitterData( theTwitterData );
+            await SaveTheMinerData( theTwitterData );
         }
         
         // Register a reminder to rerun mainMineAsync after the rateLimits of Twitter are reset, if that was the reason
         // it failed, or after a certain ammount of time in any other case
         protected override async Task onMineEndAsync() {
-            int minedTextsNum = (await GetTheTwitterData()).TheTextsNum;
+            int minedTextsNum = (await GetTheMinerData()).TheTextsNum;
             int minMinedTextsLimit = minedTextsNum;
             if(miningForFirstTime == true) {
                 minMinedTextsLimit = minMinedTextsNumFirstTime;
@@ -103,7 +108,7 @@ namespace WSP.TwitterMinerActor {
         // Called after the Miner sucesfully finished its job
         protected override async Task onMineCompleteAsync() {
             // Store the TwitterData in the DB
-            await dbHandlerService.StoreTwitterData( await GetTheTwitterData() );
+            await dbHandlerService.StoreTwitterData( await GetTheMinerData() );
         }
 
         // Basic Twitter miner, to get tweets that contain a certain keyword. Invoked by a Reminder (MineReminder)
@@ -120,7 +125,7 @@ namespace WSP.TwitterMinerActor {
 
             // Get the SearchRequest saved in the Stage Manager
             theSearchRequest = await GetTheSearchRequest();
-            theTwitterData = await GetTheTwitterData();
+            theTwitterData = await GetTheMinerData();
 
             // Disable the exception swallowing to allow exception to be thrown by Tweetinvi
             ExceptionHandler.SwallowWebExceptions = false;
@@ -165,7 +170,7 @@ namespace WSP.TwitterMinerActor {
             Auth.SetUserCredentials( twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret );
 
             // Basic Search Parameters 
-            windowSize = 50;
+            windowSize = 100;
             searchParameters = new SearchTweetsParameters(theSearchRequest.TheSearchKeyword) {
                 Lang = LanguageFilter.English,
                 SearchType = SearchResultType.Recent,
@@ -209,7 +214,7 @@ namespace WSP.TwitterMinerActor {
                         if(theTwitterData.IsNew() == true) {     // The first time tweets were mined                
                             theTwitterData.TheIdNewest = theTweets.First().Id; // Save the id of the newest tweet
                         }
-                        theTwitterData.IncreaseTextsNum( tweetsReturned );
+                        theTwitterData.TheTextsNum += tweetsReturned;
                        
                         // Determine whether the mining should be done newer to older or inverse
                         if(miningToOlder == true) {
@@ -226,7 +231,7 @@ namespace WSP.TwitterMinerActor {
                         }
 
                         await SaveTheSearchRequest( theSearchRequest );
-                        await SaveTheTwitterData( theTwitterData );
+                        await SaveTheMinerData( theTwitterData );
                     }
                 } catch {
                     return false;
