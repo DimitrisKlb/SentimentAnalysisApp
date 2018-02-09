@@ -137,7 +137,6 @@ namespace WebSite.Controllers {
         }
 
         private async Task<ActionResult> Execute(FESearchRequest searchRequest) {
-
             Status previousStatus = searchRequest.TheStatus;
             if(previousStatus == Status.Executing) {
                 return RedirectTo( "Inspect", MR_BannerMsg.ErrorAlreadyExecuting, routeValues: new { id = searchRequest.ID } );
@@ -147,7 +146,6 @@ namespace WebSite.Controllers {
 
             // Send the Search Request to the BE Server for execution
             try {
-
                 var response = await clientBEserver.PostAsJsonAsync(
                                 WebConfigurationManager.AppSettings["WebApiProvider-SubmitRoute"],
                                 (BaseSearchRequest)searchRequest );
@@ -164,8 +162,8 @@ namespace WebSite.Controllers {
                 await TheSReqController.UpdateFESearchRequestStatus( searchRequest.ID, previousStatus );
                 return RedirectTo( "Inspect", MR_BannerMsg.ErrorNotExecuted, routeValues: new { id = searchRequest.ID } );
             }
-        }
-
+        }    
+        
 
     }
 }

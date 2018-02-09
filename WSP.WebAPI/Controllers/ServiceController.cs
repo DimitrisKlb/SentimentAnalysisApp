@@ -19,16 +19,21 @@ namespace WSP.WebAPI.Controllers {
                 new Uri( "fabric:/WebServiceProvider/DBHandlerService" ),
                 new ServicePartitionKey( 1 ) );
 
-        [Route( "Service/Submit" )]
+        //[Route( "Service/Ping" )]
+        [HttpGet]
+        public string Get() {
+            return "OK";
+        }
+
+        //[Route( "Service/Submit" )]
         [HttpPost]
         [ResponseType( typeof( BaseSearchRequest ) )]
-        public async Task<IHttpActionResult> SubmitSearchRequest(BaseSearchRequest baseSearchRequest) {
-            if(!ModelState.IsValid) {
+        public async Task<IHttpActionResult> PostSearchRequest(BaseSearchRequest baseSearchRequest) {
+             if(!ModelState.IsValid) {
                 return BadRequest( ModelState );
             }
             BESearchRequest theSearchRequest;
             BESearchRequest newBESearchRequest = new BESearchRequest( baseSearchRequest );
-                   
             try {
                 theSearchRequest = await dbHandlerService.StoreOrUpdateSearchRequest( newBESearchRequest);
                 IMasterActor theMasterActor = ActorProxy.Create<IMasterActor>( new ActorId( theSearchRequest.ID ) );
@@ -39,6 +44,8 @@ namespace WSP.WebAPI.Controllers {
 
             return Ok();
         }
+
+
 
     }
 }

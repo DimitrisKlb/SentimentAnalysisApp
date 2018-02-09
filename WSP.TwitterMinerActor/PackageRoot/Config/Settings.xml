@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Section Name="TwitterCredentials">
-    <Parameter Name="ConsumerKey" Value="bQ05Y6TcsbrNIJKayFHHDeS5k" />
-    <Parameter Name="ConsumerSecret" Value="OFtnT8a6rNs71k56z7IyqYqmnOJlbrk5nOMHTQrLzdRwVhecFq" />
-    <Parameter Name="AccessToken" Value="790073232472862720-sMVIAUR3Nm0Ja3vy4NFdStOeNB52lLJ" />
-    <Parameter Name="AccessTokenSecret" Value="RuxkMABK4UrmjSY27BqbTRCEjkvldkhps9gtgfwIiwKOV" />
+    <Parameter Name="ConsumerKey" Value="lpJPOYJylTf4tjiRV7L9A9IGn" />
+    <Parameter Name="ConsumerSecret" Value="FsKLEkl2TkvcZylXVxKeTovdD4dDtqgRq3Mf3TdOxBFNyr0Aff" />
+    <Parameter Name="AccessToken" Value="790073232472862720-PieJs5d0wuZBns1gEIFsArslXs3ybnV" />
+    <Parameter Name="AccessTokenSecret" Value="jFtp2UFCx7w8jv5fbPhbc0wkeOjhAEZyr1dZ7xpmaoI0H" />
   </Section>
   <Section Name="TwitterMinerActorServiceReplicatorConfig">
     <Parameter Name="ReplicatorEndpoint" Value="TwitterMinerActorServiceReplicatorEndpoint" />

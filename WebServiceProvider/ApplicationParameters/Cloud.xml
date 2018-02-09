@@ -2,8 +2,17 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/WebServiceProvider" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="DBHandlerService_PartitionCount" Value="1" />
-    <Parameter Name="DBHandlerService_MinReplicaSetSize" Value="3" />
-    <Parameter Name="DBHandlerService_TargetReplicaSetSize" Value="3" />
-    <Parameter Name="WebAPI_InstanceCount" Value="-1" />
+    <Parameter Name="DBHandlerService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="DBHandlerService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="WebAPI_InstanceCount" Value="1" />
+    <Parameter Name="MasterActorService_PartitionCount" Value="1" />
+    <Parameter Name="MasterActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="MasterActorService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterMinerActorService_PartitionCount" Value="1" />
+    <Parameter Name="TwitterMinerActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterMinerActorService_MinReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterAnalyserActorService_PartitionCount" Value="1" />
+    <Parameter Name="TwitterAnalyserActorService_TargetReplicaSetSize" Value="1" />
+    <Parameter Name="TwitterAnalyserActorService_MinReplicaSetSize" Value="1" />
   </Parameters>
 </Application>

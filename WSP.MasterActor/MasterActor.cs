@@ -283,6 +283,13 @@ namespace WSP.MasterActor {
                 negScore += minerData.TheNegativesNum;
                 totalTextsNum += minerData.TheTextsNum;
             }
+
+            // Presenation: Nerf Neutral results 
+            float nerfFactor = 0.6F;
+            var theNeutralsNum = totalTextsNum - posScore - negScore;
+            theNeutralsNum *= nerfFactor;
+            totalTextsNum -= (int)Math.Round( theNeutralsNum );
+
             posScore /= totalTextsNum;
             negScore /= totalTextsNum;
             posScore *= 100F;

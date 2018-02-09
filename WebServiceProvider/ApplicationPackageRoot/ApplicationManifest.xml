@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="WebServiceProviderType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+<ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="WebServiceProviderType" ApplicationTypeVersion="1.0.9" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="DBHandlerService_MinReplicaSetSize" DefaultValue="3" />
     <Parameter Name="DBHandlerService_PartitionCount" DefaultValue="1" />
@@ -31,7 +31,7 @@
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.TwitterMinerActorPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="WSP.TwitterMinerActorPkg" ServiceManifestVersion="1.0.1" />
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
@@ -43,16 +43,16 @@
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.DBHandlerServicePkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="WSP.DBHandlerServicePkg" ServiceManifestVersion="1.0.1" />
     <ConfigOverrides />
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.MasterActorPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="WSP.MasterActorPkg" ServiceManifestVersion="1.0.2" />
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>
           <Section Name="WebSiteInfo">
-            <Parameter Name="WebSiteURI" Value="http://localhost:60500/" />
+            <Parameter Name="WebSiteURI" Value="http://sentimetersaa.azurewebsites.net/" />
           </Section>
           <Section Name="ApplicationServicesNames">
             <Parameter Name="DBHandlerName" Value="fabric:/WebServiceProvider/DBHandlerService" />
@@ -62,7 +62,7 @@
     </ConfigOverrides>
   </ServiceManifestImport>
   <ServiceManifestImport>
-    <ServiceManifestRef ServiceManifestName="WSP.WebAPIPkg" ServiceManifestVersion="1.0.0" />
+    <ServiceManifestRef ServiceManifestName="WSP.WebAPIPkg" ServiceManifestVersion="1.0.5" />
     <ConfigOverrides>
       <ConfigOverride Name="Config">
         <Settings>

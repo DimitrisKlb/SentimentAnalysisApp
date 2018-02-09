@@ -187,7 +187,7 @@ namespace WSP.TwitterMinerActor {
                 searchParameters.SinceId = theTwitterData.TheIdNewest;
             }
 
-            // Find relevant tweets iteratively, in windows of a certains size (windowSize)
+            // Find relevant tweets iteratively, in windows of a certain size (windowSize)
             tweetsReturned = windowSize;
             theTweets = null;
             do {
