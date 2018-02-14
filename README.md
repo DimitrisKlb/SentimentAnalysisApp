@@ -12,6 +12,8 @@ mined from sources around the internet like social media, forums, etc. It is com
 ## FrontEnd Server - SentiMeter Application
 This is a web app that enables users to graphically create and manage requests for sentiment analysis. It was created using the .NET Framework libraries (EntityFramework, MCV, etc).
 
+![ScreenWelcome](screenshots/userHome.jpg)
+
 ## BackEnd Server - WebServiceProvider
 This is the main subsystem that performs all of the project's core funcionality, by acting as a BackEnd Server in order to fulfil the requests received by the
 SentiMeter app:
@@ -36,6 +38,10 @@ Therefore, the system can easily be extended to support :
 - the implementation of other sentiment analysis algorithms, for each different source, combination etc, making easy to observe their results and test their efficiency
 - additional features like results caching, more specific search criteria, live observation of the progress of users' sentimental trends and opinions, etc
 
+## Web Application Screenshots
+![Screen1](screenshots/userNewReq.jpg)
+![Screen2](screenshots/userReqFulfilled.jpg)
+![Screen3](screenshots/userResults.jpg)
 
 [ceid]: <https://www.ceid.upatras.gr/en>
 [asf]: <https://azure.microsoft.com/en-us/services/service-fabric/>
